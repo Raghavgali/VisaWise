@@ -1,0 +1,6 @@
+category,llm_only_score,rag_score,config,overall_avg_llm_only_score,overall_avg_rag_score
+F-1,6.714285714285714,7.571428571428571,test_results_llama_3_8B_instruct_bge-base-en-v1.5__768_1024_50_20_5,6.956,7.266
+Green Card,7.875,6.1875,test_results_llama_3_8B_instruct_bge-base-en-v1.5__768_1024_50_20_5,6.956,7.266
+H-1B,6.464285714285714,7.464285714285714,test_results_llama_3_8B_instruct_bge-base-en-v1.5__768_1024_50_20_5,6.956,7.266
+O Visa,6.475,7.5375,test_results_llama_3_8B_instruct_bge-base-en-v1.5__768_1024_50_20_5,6.956,7.266
+RFE,8.083333333333334,7.166666666666667,test_results_llama_3_8B_instruct_bge-base-en-v1.5__768_1024_50_20_5,6.956,7.266
