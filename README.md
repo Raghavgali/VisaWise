@@ -1,54 +1,132 @@
+# VisaWise
 
-# USCIS chatbot using RAG system 
+**A production RAG system for U.S. immigration policy (USCIS), built eval-first.**
 
-## Motivation
-Given the importance of understanding visa regulations for maintaining legal status, avoiding penalties, and ensuring a smooth academic journey, it is imperative to develop a solution that simplifies these complexities. 
+Ask questions about F-1/OPT, H-1B, green cards, and status changes — answered from a
+continuously refreshable corpus of official USCIS pages, with citations. Every retrieval
+decision in this system (hybrid weights, chunking strategy, reranking) is a **measured
+experiment**, not a belief: the evaluation harness is the product's centerpiece, and the
+configuration that serves traffic is the configuration that won on the benchmarks.
 
-## Architecture 
+> ⚠️ Educational demo — not legal advice. Verify anything important at
+> [uscis.gov](https://www.uscis.gov) or with an immigration attorney.
 
-The core idea behind RAG is to leverage the vast amount of information available in external knowledge bases to supplement the generative capabilities of models like Llama 3-instruct, LLM used in this project.
+## Why this exists
 
-RAG has 2 main parts - one part that retrieves the context by searching a large corpus of doucments to find relevant information and the other part that generates response using the fetched context from the retriever.
+Immigration policy changes fast and the cost of stale answers is high. The H-1B page in
+this corpus, for example, leads with a September 2025 proclamation adding a **$100,000
+payment condition** to certain petitions — a policy that did not exist when this project's
+2024 research corpus was built. A chatbot serving last year's policy is worse than no
+chatbot. VisaWise treats that as a systems problem: a re-runnable ingestion pipeline,
+staleness detection, and an eval suite that regression-gates every change.
 
-![Screenshot 1](https://raw.github.com/divyahegde-07/Visa-Wise/main/Screenshots/Screenshot%202024-08-12%20at%2000.52.05.png)
+## Architecture
 
-![Screenshot 1](https://raw.github.com/divyahegde-07/Visa-Wise/main/Screenshots/Screenshot%202024-08-12%20at%2000.52.18.png)
+```
+             INGESTION (visawise-ingest: idempotent, re-runnable)
+  configs/sources.yaml ── fetch ─→ extract ─→ chunk ─→ index
+   24 curated USCIS URLs    │         │          │        │
+                       raw HTML   markdown   chunks.jsonl  LanceDB (embedded)
+                       snapshots  + frontmatter  (single    ├─ bge-768 vectors
+                       + hashes   (trafilatura)  source     └─ stemmed BM25 FTS
+                       + archive               of truth)      — hybrid in ONE store,
+                         detection                              no external DB service
+                                                    │
+             RAG CORE (LangGraph — one graph factory shared by app & evals)
+                      ┌─→ dense_retrieve (cosine kNN) ──┐
+             query ──►│                                 ├─→ fuse (weighted RRF)
+                      └─→ bm25_retrieve (native FTS) ───┘        │
+                                                              rerank (local cross-encoder)
+                                                                 │
+                                                              generate (Groq · Llama 3.3)
+                                                                 │
+             EVALS (visawise-eval)                            answer + citations
+             YAML experiments × versioned golden datasets
+             → RAGAS 0.4 (judge: gpt-4o-mini) + hit-rate/MRR/NDCG
+             → committed RunRecords → regression gates → live dashboard
+```
 
-Retriever - The documents (could be PDF, PPT, even images and videos) are chunked using chunking strategy. Chunking is important since it decides how many tokens are consdiered as a single sentence and how much overlap should be there between 2 sentences. For this project, 1024 and 2048 chunking sizes were tried and 1024 was found to be performing the best with overlap of 50. Smaller chunk sizes (than 1024) increased retrieval time which wasn't pleasant.
-Each chunk is converted into dense vector embeddings using models like BAAI/bge-base-en-v1.5. These embeddings capture the semantic meaning of the text, enabling effective similarity searches during retrieval.
+**Design principles**
 
-To store these high-dimension vectors, vector databases like Pinecone, Chroma can be used. Here, Pinecone is used with a vector dimention of 768. These vector DBs are really easy to integrate with frameworks like LlamaIndex.
+- **One source of truth per layer.** `chunks.jsonl` feeds the vector index, the BM25 index,
+  and eval provenance. One embedding loader serves both indexing and queries. One engine
+  factory (`build_graph(EngineConfig)`) serves both the app and the eval harness — so
+  benchmark numbers always describe the system that's actually deployed.
+- **Framework-thin retrieval.** Direct LanceDB calls and a hand-rolled weighted
+  reciprocal-rank fusion (~15 lines) instead of framework retriever abstractions.
+  RRF fuses *ranks*, so the incompatible score scales of the two legs never mix.
+- **Loud failures.** Dead links, pages that USCIS 301-redirects into `/archive/`
+  (still HTTP 200 — but officially stale!), and suspiciously short extractions all fail
+  visibly. Silent data decay is how RAG corpora rot.
+- **Determinism end-to-end.** Content-hashed fetches, deterministic chunk IDs, and a
+  `corpus_hash` stamped into every eval run — any result is traceable to the exact corpus
+  that produced it.
 
-For the generation part, Llama 3-instruct-8B LLM is used along with a propmt template and the context from retriever.
- 
-## Experimentations and analysis
-First experiment performed was on chunking strategy. It was found that 1024 chunk size with 100 overlap performed the best in terms of retreival time.
+## The research this builds on (2024)
 
-For a RAG system to be effective, it should get all the relevant information. Now this is where retrievers are important. So I was interested in improving the accuracy of context. Initially, only vector search retrieval was used where it would search based on the semantic similarity. This did perform well when a query was asked but missed some key pieces in some responses. 
-So hybrid retrieval was tried - combining vector seach and keyword search using BM25. It was then observed that in some responses, the keyword search messed up the context as more or equal weightage was given to both retreievers. This further led me to explore weight tuning and using COHERE re-ranker model after retreival. The context provided to the generator was much better. 
+VisaWise began as a masters project (with two teammates) evaluating **how much retrieval
+strategy matters in RAG**, using RAGAS over a USCIS corpus. Key findings, preserved in
+[`research/`](research/):
 
-The RAG system was evaluated on both these retrieval techniques using the RAGAS framework. This was a qunatitative evaluation done by syntethically generating questions using generator from RAGAS.
-Qualitative analysis was done by providing some context based questions and manually going over the responses for different weights of retrievers. 
+| Configuration | Faithfulness | Answer relevancy |
+|---|---|---|
+| Vector-only retrieval | 0.44 | 0.63 |
+| **Hybrid (vector + BM25, RRF)** | **0.83** | **0.76** |
 
+A weight sweep found **0.6 vector / 0.4 BM25** optimal (relevancy 0.89 with Cohere
+reranking), and qualitative analysis showed *why* keyword-heavy retrieval fails: it
+latches onto surface terms and injects wrong-context chunks. Those validated decisions —
+hybrid retrieval at 0.6/0.4, rerank-to-4, 1024-token chunks, bge-base embeddings — are
+this system's defaults, and the production eval harness re-tests them against the fresh
+corpus rather than assuming they still hold.
 
-## Results
+## Status
 
-- RAGAS evaluation score for vector search only retrieval
+| Phase | Scope | State |
+|---|---|---|
+| 1 — Ingestion pipeline | fetch / extract / chunk / index, CLI, tests | ✅ done |
+| 2 — RAG core | hybrid retrieval ✅ · reranking · LangGraph pipeline | 🔨 in progress |
+| 3 — Eval harness | golden datasets, RAGAS 0.4 + retrieval metrics, YAML experiments, regression gates | planned |
+| 4 — App | FastAPI + chat UI + live eval dashboard | planned |
+| 5 — Deploy | single self-contained container (index ships inside) | planned |
 
-![Screenshot 1](https://raw.github.com/divyahegde-07/Visa-Wise/main/Screenshots/Screenshot%202024-08-12%20at%2000.29.07.png)
+## Quickstart
 
-- RAGAS evaluation score for hybrid search retrieval
-![Screenshot 1](https://raw.github.com/divyahegde-07/Visa-Wise/main/Screenshots/Screenshot%202024-08-12%20at%2000.29.18.png)
+```bash
+uv sync                                # Python 3.12, uv-managed
+cp .env.example .env                   # add GROQ_API_KEY (+ OPENAI_API_KEY for evals)
 
-- RAGAS evaluation score for different weights in hybrid search retrieval
+uv run visawise-ingest all             # fetch → extract → chunk → index (~35s)
+uv run visawise-ingest status          # corpus ⇄ index drift report
 
-![Screenshot 2](https://raw.github.com/divyahegde-07/Visa-Wise/main/Screenshots/Screenshot%202024-08-11%20at%2016.04.05.png)
+uv run python -c "
+from visawise.rag.retrieval import hybrid_search
+for hit in hybrid_search('Can an F-1 student work off campus?', top_k=4):
+    print(f'{hit.score:.4f}  {hit.title}')"
 
-- Qualitative evaluation of responses for different weights in hybrid search retrieval
-![Screenshot 3](https://raw.github.com/divyahegde-07/Visa-Wise/main/Screenshots/Screenshot%202024-08-11%20at%2015.54.56.png)
+uv run pytest                          # fast, no-network unit tests
+```
 
-## Conclusion
+No vector-DB account needed: LanceDB is embedded — dense vectors and full-text search
+live in one local table that ships inside the deploy container.
 
-Hybrid search retrieval is preferred in RAG because it blends the best of both worlds: dense retrieval, which captures the overall meaning of a query, and sparse retrieval, which focuses on exact keyword matches. By combining these approaches, hybrid search can find a wider range of relevant information and provide more accurate results. This makes it better at handling different types of queries, whether they need a broad understanding or specific details, leading to a more reliable and user-friendly search experience as seen in the examples in this project.
+## Repo layout
 
-Weight tuning in hybrid search retrieval is key to getting the best results. It helps balance the influence of dense and sparse retrieval methods, so the system can deliver more relevant and accurate information. By adjusting the weights, you ensure the search results fit the specific needs of different queries, improving overall performance and making sure you get the information you're really looking for.
+```
+configs/            source catalog + experiment definitions (YAML)
+src/visawise/
+  ingestion/        fetch → extract → chunk → index (+ visawise-ingest CLI)
+  rag/              retrieval, rerank, LangGraph engine factory, versioned prompts
+  evals/            datasets, metrics, runner, reports (+ visawise-eval CLI)
+  app/              FastAPI: /api/chat + eval dashboard
+data/               build artifacts (gitignored) + committed fetch manifest
+evals/              versioned golden datasets + committed eval RunRecords
+research/           the original 2024 notebooks, eval CSVs, and findings
+docs/               build lessons log
+```
+
+## Stack
+
+Python 3.12 · LangChain 1.x + LangGraph · LanceDB (embedded; vectors + tantivy FTS) ·
+`BAAI/bge-base-en-v1.5` embeddings · `bge-reranker-base` cross-encoder · Groq
+(Llama 3.3 70B) generation · RAGAS 0.4 + gpt-4o-mini judge · FastAPI · uv
