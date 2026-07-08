@@ -1,0 +1,86 @@
+# Curated USCIS corpus sources. Every URL verified live 2026-07-07.
+# The fetcher fails loudly on non-200s so link rot is visible on every refresh.
+# Topics are carried through to chunk metadata (filterable at retrieval time).
+
+sources:
+  # ── F-1 students & employment ────────────────────────────────
+  - url: https://www.uscis.gov/working-in-the-united-states/students-and-exchange-visitors
+    topic: students
+    title: Students and Exchange Visitors
+  - url: https://www.uscis.gov/working-in-the-united-states/students-and-exchange-visitors/students-and-employment
+    topic: students
+    title: Students and Employment
+  - url: https://www.uscis.gov/working-in-the-united-states/students-and-exchange-visitors/optional-practical-training-opt-for-f-1-students
+    topic: opt
+    title: Optional Practical Training (OPT) for F-1 Students
+  - url: https://www.uscis.gov/working-in-the-united-states/students-and-exchange-visitors/optional-practical-training-extension-for-stem-students-stem-opt
+    topic: opt
+    title: STEM OPT Extension
+  - url: https://www.uscis.gov/working-in-the-united-states/students-and-exchange-visitors/exchange-visitors
+    topic: students
+    title: Exchange Visitors (J)
+
+  # ── H-1B & dependents ────────────────────────────────────────
+  - url: https://www.uscis.gov/working-in-the-united-states/h-1b-specialty-occupations
+    topic: h1b
+    title: H-1B Specialty Occupations
+  - url: https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-1b-specialty-occupations/h-1b-cap-season
+    topic: h1b
+    title: H-1B Cap Season
+  - url: https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-1b-specialty-occupations/h-1b-electronic-registration-process
+    topic: h1b
+    title: H-1B Electronic Registration Process
+  - url: https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-1b-specialty-occupations/h-1b-electronic-registration-frequently-asked-questions
+    topic: h1b
+    title: H-1B Electronic Registration FAQs
+  - url: https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-1b-specialty-occupations/employment-authorization-for-certain-h-4-dependent-spouses
+    topic: dependents
+    title: Employment Authorization for Certain H-4 Dependent Spouses
+
+  # ── Other work visas ─────────────────────────────────────────
+  - url: https://www.uscis.gov/working-in-the-united-states
+    topic: working
+    title: Working in the United States
+  - url: https://www.uscis.gov/working-in-the-united-states/temporary-nonimmigrant-workers
+    topic: working
+    title: Temporary (Nonimmigrant) Workers
+  - url: https://www.uscis.gov/working-in-the-united-states/temporary-workers/o-1-visa-individuals-with-extraordinary-ability-or-achievement
+    topic: o1
+    title: O-1 Visa (Extraordinary Ability or Achievement)
+
+  # ── Green card ───────────────────────────────────────────────
+  - url: https://www.uscis.gov/green-card/green-card-eligibility-categories
+    topic: green_card
+    title: Green Card Eligibility Categories
+  - url: https://www.uscis.gov/green-card/how-to-apply-for-a-green-card
+    topic: green_card
+    title: How to Apply for a Green Card
+  - url: https://www.uscis.gov/green-card/green-card-processes-and-procedures/visa-availability-priority-dates
+    topic: green_card
+    title: Visa Availability and Priority Dates
+  - url: https://www.uscis.gov/green-card/green-card-processes-and-procedures/adjustment-of-status
+    topic: green_card
+    title: Adjustment of Status
+  - url: https://www.uscis.gov/green-card/green-card-processes-and-procedures/employment-authorization-document
+    topic: green_card
+    title: Employment Authorization Document (EAD)
+
+  # ── Status changes & forms ───────────────────────────────────
+  - url: https://www.uscis.gov/visit-the-united-states/change-my-nonimmigrant-status
+    topic: status
+    title: Change My Nonimmigrant Status
+  - url: https://www.uscis.gov/forms/all-forms
+    topic: forms
+    title: All Forms
+  - url: https://www.uscis.gov/i-539
+    topic: forms
+    title: Form I-539, Extend/Change Nonimmigrant Status
+  - url: https://www.uscis.gov/i-765
+    topic: forms
+    title: Form I-765, Application for Employment Authorization
+  - url: https://www.uscis.gov/i-131
+    topic: forms
+    title: Form I-131, Application for Travel Documents
+  - url: https://www.uscis.gov/i-140
+    topic: forms
+    title: Form I-140, Immigrant Petition for Alien Workers

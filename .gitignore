@@ -1,0 +1,19 @@
+# environments & secrets
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# pipeline data artifacts (manifest.json is committed; bulk artifacts are not)
+data/raw/*.html
+data/extracted/*.md
+data/chunks/chunks.jsonl
+data/lancedb/
+
+# eval runs are committed selectively (headline runs only)
+evals/runs/scratch/
+
+# OS noise
+.DS_Store

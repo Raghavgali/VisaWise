@@ -1,0 +1,9 @@
+# Ablation: reproduces the 2024 vector-only baseline (faithfulness 0.44 vs
+# hybrid 0.83 back then -- this experiment re-tests that finding on the new stack).
+name: vector_only
+dataset: synthetic_v1
+metrics: all
+engine:
+  retriever: vector
+  top_k: 8
+  reranker: none
