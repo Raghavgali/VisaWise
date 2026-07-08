@@ -1,0 +1,4 @@
+# The 2024 research archive is documentation, not the codebase --
+# keep its ~13MB of notebook outputs out of GitHub's language stats.
+research/** linguist-documentation
+*.ipynb linguist-detectable=false
