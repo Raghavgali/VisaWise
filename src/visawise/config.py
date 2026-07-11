@@ -18,6 +18,7 @@ class Settings(BaseSettings):
 
     # --- API keys ---
     groq_api_key: str = ""
+    nvidia_api_key: str = ""  # build.nvidia.com NIM (free tier)
     openai_api_key: str = ""  # RAGAS judge only
     cohere_api_key: str = ""  # eval-side rerank parity only, never serving
 
@@ -52,7 +53,11 @@ class Settings(BaseSettings):
     local_reranker_model: str = "BAAI/bge-reranker-base"
 
     # --- generation ---
-    groq_model: str = "llama-3.3-70b-versatile"
+    # Provider-prefixed: "nvidia:<model>" (hosted NIM, OpenAI-compatible) or
+    # "groq:<model>". Small model by default -- model size is an eval
+    # experiment axis (configs/experiments/model_ablation.yaml), not a belief.
+    generation_llm: str = "nvidia:meta/llama-3.1-8b-instruct"
+    nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
 
     # --- eval ---
     judge_model: str = "gpt-4o-mini"

@@ -15,6 +15,7 @@ build_graph(EngineConfig) -> compiled LangGraph:
 from typing import TypedDict, Literal
 
 from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 
 from dataclasses import asdict, dataclass
@@ -33,7 +34,7 @@ class EngineConfig:
     vector_weight: float = settings.hybrid_vector_weight  # hybrid only
     reranker: RerankerKind = "local"
     rerank_top_n: int = settings.rerank_top_n
-    llm: str = f"groq:{settings.groq_model}"
+    llm: str = settings.generation_llm
     prompt_version: str = "v1"
 
     def to_dict(self) -> dict:
@@ -54,20 +55,25 @@ def build_graph(config: EngineConfig):
         raise ValueError(f"Unsupported prompt version: {config.prompt_version}")
     
     provider, separator, model_name = config.llm.partition(":")
-    if provider != "groq" or not separator or not model_name:
-        raise ValueError("llm must use the format 'groq:<model-name>'")
+    if provider not in ("groq", "nvidia") or not separator or not model_name:
+        raise ValueError("llm must look like 'groq:<model>' or 'nvidia:<model>'")
 
     if config.retriever not in ("vector", "bm25", "hybrid"):
         raise ValueError(f"Unknown retriever: {config.retriever!r}")
 
-    if not settings.groq_api_key:
-        raise RuntimeError("GROQ_API_KEY is not set -- the generate node requires it (.env)")
-
-    llm = ChatGroq(
-        model=model_name, 
-        api_key=settings.groq_api_key,
-        temperature=0,
-    )
+    if provider == "groq":
+        if not settings.groq_api_key:
+            raise RuntimeError("GROQ_API_KEY is not set -- llm 'groq:...' requires it (.env)")
+        llm = ChatGroq(model=model_name, api_key=settings.groq_api_key, temperature=0)
+    else:  # nvidia: hosted NIM, OpenAI-compatible endpoint
+        if not settings.nvidia_api_key:
+            raise RuntimeError("NVIDIA_API_KEY is not set -- llm 'nvidia:...' requires it (.env)")
+        llm = ChatOpenAI(
+            model=model_name,
+            api_key=settings.nvidia_api_key,
+            base_url=settings.nvidia_base_url,
+            temperature=0,
+        )
     rank_chunks = build_reranker(config.reranker)
 
     def dense_retrieve(state: GraphState) -> dict:

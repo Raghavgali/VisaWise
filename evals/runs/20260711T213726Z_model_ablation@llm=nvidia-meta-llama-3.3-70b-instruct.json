@@ -1,0 +1,196 @@
+{
+  "aborted": {
+    "at_sample": "syn-005",
+    "error": "InternalServerError: Error code: 503 - {'error': {'message': 'ResourceExhausted: Worker local total request limit reached (45/16)', 'type': 'Service Unavailable', 'code': 503}}"
+  },
+  "aggregates": {
+    "context_precision": 0.7277777777551852,
+    "context_recall": 1.0,
+    "faithfulness": 0.9007936507936508,
+    "hit_rate": 0.8,
+    "mrr": 0.8,
+    "ndcg": 0.8,
+    "response_relevancy": 0.7345668128402365
+  },
+  "corpus_hash": "f71c71028b200578ea35fbd94e49641b45412c2a1fc2ebdc957af0159cb5ebcc",
+  "dataset": {
+    "limit": null,
+    "n_samples": 5,
+    "name": "synthetic_v1",
+    "sha256": "584c78102a513618523e59bbf40b7162b7bfeb71227253c8a793d701062e8349"
+  },
+  "engine_config": {
+    "llm": "nvidia:meta/llama-3.3-70b-instruct",
+    "prompt_version": "v1",
+    "rerank_top_n": 4,
+    "reranker": "local",
+    "retriever": "hybrid",
+    "top_k": 8,
+    "vector_weight": 0.6
+  },
+  "experiment": "model_ablation",
+  "git_sha": "9db7ae5",
+  "judge_model": "gpt-4o-mini",
+  "prompt_version": "v1",
+  "run_id": "20260711T213726Z_model_ablation@llm=nvidia-meta-llama-3.3-70b-instruct",
+  "samples": [
+    {
+      "id": "syn-000",
+      "response": "The context information provided does not mention an \"M form\" for immigration purposes. It discusses various USCIS forms, such as Form I-765 for Employment Authorization, Form I-140 for Immigrant Petition for Alien Workers, and others, but does not reference an \"M form\". \n\nIf you are looking for information on a specific form, please let me know the actual form number or name, and I will do my best to provide you with the relevant information based on the context provided.",
+      "retrieved_chunk_ids": [
+        "9cf8560df8c1e33cd6dc5c63",
+        "87b4ec3b2a2e2d3688bad872",
+        "79afb1420ea0730a09ff72d5",
+        "58571826b83f21996195083e"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.0
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.7142857142857143
+        },
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "id": "syn-001",
+      "response": "Form I-539 is used for the following purposes:\n\n1. To extend the stay of certain nonimmigrants in the United States.\n2. To change to another nonimmigrant status.\n3. For Commonwealth of the Northern Mariana Islands (CNMI) residents applying for an initial grant of status.\n4. For F and M nonimmigrants applying for reinstatement.\n5. For persons seeking V nonimmigrant status or an extension of stay as a V nonimmigrant.\n\nIn general, Form I-539 is used to apply for an extension of stay or a change of status in the United States for certain nonimmigrant visa categories. However, it's important to note that not all nonimmigrant visa categories are eligible to extend or change status using Form I-539, and some may require a different form, such as Form I-129.",
+      "retrieved_chunk_ids": [
+        "b414ace6d15f5e934b252d95",
+        "3c6c3e7217e18a57145d821a",
+        "6710afed16c9e1e4ac5cedb8",
+        "9cf8560df8c1e33cd6dc5c63"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9823925717646707
+        }
+      }
+    },
+    {
+      "id": "syn-002",
+      "response": "According to the context information, the essential filing tips for B-1 nonimmigrants when completing Form I-539 to extend or change their nonimmigrant status are as follows:\n\n1. Complete all sections of the form. The form will be rejected if the following fields are missing:\n   - Part 1: Information About You - Family Name, Mailing Address, Date of Birth, and Current nonimmigrant status.\n   - Part 2: Application Type - I am applying for (1, 2, or 3.a.), The status I am requesting (3.b or 3.c), and Total number of People Included in This Application.\n\n2. Review the Tips for Filing Forms by Mail page for information on how to ensure the form will be accepted.\n\n3. Don't forget to sign the form. The form will be rejected if it is unsigned.\n\nNote: There are no specific additional instructions mentioned in the context information for B-1 nonimmigrants. The general instructions for completing Form I-539 apply.",
+      "retrieved_chunk_ids": [
+        "3c6c3e7217e18a57145d821a",
+        "b414ace6d15f5e934b252d95",
+        "6710afed16c9e1e4ac5cedb8",
+        "e85159be0b023859a4bec0e2"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.8888888888888888
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9509111677597227
+        }
+      }
+    },
+    {
+      "id": "syn-003",
+      "response": "The Student and Exchange Visitor Program (SEVP) is a program that certifies schools to enroll international students and allows them to issue Forms I-20, which are required for F-1 and M-1 visa applications. The SEVP is administered by the U.S. Department of Homeland Security, specifically by Immigration and Customs Enforcement (ICE).\n\nIn the context of STEM OPT extensions, the SEVP plays a crucial role. To be eligible for a STEM OPT extension, an F-1 student must have earned a bachelor's, master's, or doctoral degree from a school that is accredited by a U.S. Department of Education-recognized accrediting agency and is certified by the SEVP at the time they submit their STEM OPT extension application. This means that the school must be SEVP-certified in order for the student to be eligible for a STEM OPT extension.\n\nAdditionally, the student's designated school official (DSO) must endorse their Form I-20 within the last 60 days, and the student must submit this endorsed Form I-20 as part of their STEM OPT extension application. The DSO is responsible for maintaining the student's record in the SEVIS system, which is used to track international students' and exchange visitors' information.\n\nIn summary, the Student and Exchange Visitor Program is essential for F-1 students who wish to apply for a STEM OPT extension, as it certifies schools to enroll international students and allows them to issue the necessary Forms I-20. The SEVP certification is a requirement for STEM OPT extension eligibility, and the DSO's endorsement of the Form I-20 is a critical step in the application process.",
+      "retrieved_chunk_ids": [
+        "dfff6180a4b3449b5950df42",
+        "c4740459fee7ffaad7beeb7d",
+        "c3186fc9986366e028825845",
+        "4d1a631c1694ada55be7f932"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "error": "The output is incomplete due to a max_tokens length limit."
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.84619851176562
+        }
+      }
+    },
+    {
+      "id": "syn-004",
+      "response": "According to the context information, the role of a Designated School Official (DSO) in the STEM OPT extension process includes:\n\n1. Endorsing Form I-20, Certificate of Eligibility for Nonimmigrant Student Status, within the last 60 days, which is required for the student to apply for a STEM OPT extension.\n2. Entering the recommendation for OPT into the student's Student and Exchange Visitor Information System (SEVIS) record, which triggers the 60-day window for the student to file Form I-765, Application for Employment Authorization.\n3. Receiving reports from the student on changes to their information, such as legal name, residential or mailing address, email address, employer's name, and employer's address, within 10 days of the change.\n4. Receiving reports from the student every 6 months to confirm their information, even if none of their information has changed.\n5. Receiving a modified Form I-983, Training Plan for STEM OPT Students, from the employer and student, which reports material changes to the student's employment, such as a change in employment address.\n\nOverall, the DSO plays a crucial role in verifying the student's eligibility for the STEM OPT extension, tracking their employment and personal information, and ensuring compliance with the program requirements.",
+      "retrieved_chunk_ids": [
+        "0df80670745e49f170b3c8d9",
+        "75e8450a2be2e0f4de8ed51a",
+        "dfff6180a4b3449b5950df42",
+        "f27efba68416a29a253fc23a"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.6388888888675925
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.893331812911169
+        }
+      }
+    }
+  ],
+  "timings": {
+    "p50_ms": 186636.2670410308,
+    "p95_ms": 264253.6061999737
+  }
+}

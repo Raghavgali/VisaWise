@@ -256,3 +256,66 @@ crashed. The other four were *silent* — they'd have shipped wrong behavior.
   quality decay is how the 2024 corpus rotted.
 - **CLI = thin presentation layer** over library functions that take explicit
   arguments (testable, composable); settings bind at the edge.
+
+## 11. graph.py (Phase 2) — issues caught in review
+
+Nine bugs, and a new *class* of bug: stringly-typed graph wiring. Node names,
+edge targets, and state-dict keys are all strings — nothing checks them until
+runtime (or ever, for dict keys).
+
+1. **Misspelled attribute, twice** (`config.retreiver`) — would have raised
+   `AttributeError` on every query. Frozen dataclasses don't autocomplete
+   typos away.
+2. **Edge to a node that doesn't exist** (`"dense_retriever"` vs registered
+   `"dense_retrieve"`) + `add_node(START, ...)` where `add_edge` was meant +
+   `previous_node = "bm25_retreive"` typo. LangGraph catches these at
+   `compile()` — *if* you compile that branch. Ablation branches that only
+   run in eval configs are exactly the ones that never get exercised manually.
+3. **Conditional swallowed into an f-string**:
+   `f"Section: {hit.section}\n if hit.section else"` — syntactically valid,
+   renders the literal text into the LLM prompt. And `list.append(a, b, c, d)`
+   — `append` takes one argument.
+4. **Type annotation disagreed with the code**: `Literal["dense", "hybrid"]`
+   while every dispatch checked `"vector"`/`"bm25"`/`"hybrid"`.
+
+**Lessons:**
+- **Compile-shape tests are nearly free and kill the whole wiring-bug class**:
+  compiling a LangGraph executes no nodes, so `build_graph(cfg)` +
+  `compiled.get_graph().nodes` assertions run in CI with a fake API key —
+  every retriever/reranker branch gets its wiring checked on every test run.
+- **Validate config before constructing resources.** The unknown-retriever
+  check originally sat *below* `ChatGroq(...)`, so a bad retriever with a
+  missing key reported the wrong error.
+
+## 12. Eval harness (Phase 3) — RAGAS 0.4 live-fire lessons
+
+Built with two subagents in parallel (opus for datasets/metrics/runner, sonnet
+for report/CLI) against pinned contracts; offline tests all passed first try.
+Every failure happened in the *live* path — the part tests can't cover.
+
+- **Verify model names against the API, not memory.** "gpt-5.1-mini" doesn't
+  exist (`/v1/models` says so); the general-purpose minis are gpt-5-mini and
+  gpt-5.4-mini. Same pattern as invented API schemas, one level up. (Settled
+  on gpt-4o-mini — for a 50-sample × 4-metric judge run, cost-fit beats
+  horsepower, and judge *consistency across runs* matters more than judge IQ.)
+- **ragas 0.4.3's `default_transforms` crashes on short docs**: it only
+  extracts `headlines` for documents > 500 tokens but runs `HeadlineSplitter`
+  on *all* document nodes → `ValueError: 'headlines' property not found`. Fix:
+  filter short docs out of the generator input (they're nav hubs — poor exam
+  material anyway; they stay in the retrieval corpus). Also needs `rapidfuzz`
+  (undeclared optional dep of the transform pipeline).
+- **Naive equality never survives contact with generated text.** Mapping
+  ragas `reference_contexts` back to source URLs by substring failed 4/6:
+  multi-hop contexts get a `<N-hop>\n\n` prefix and the splitter mangles
+  punctuation at chunk boundaries. Fix: match on an alphanumeric-only key,
+  exact substring first, `rapidfuzz.partial_ratio >= 85` fallback → 49/52
+  mapped. When one generator writes and another program reads, normalize
+  aggressively and keep a fuzzy fallback.
+- **The renamed-metric trap**: ragas 0.4 has no `ResponseRelevancy` — the
+  metric class is `AnswerRelevancy` (and it silently *requires* an
+  `embeddings=` arg). The subagent caught this by reading the installed
+  package source instead of trusting the obvious name — the single
+  highest-value instruction in the delegation prompt.
+- **Samples with no ground-truth mapping score `None`, never 0** — faking a
+  zero would poison aggregates; `None` gets skipped in aggregation and the
+  honesty probes (out-of-scope curated questions) stay usable.

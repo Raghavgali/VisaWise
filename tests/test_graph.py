@@ -11,8 +11,9 @@ from visawise.rag.graph import EngineConfig, build_graph
 
 
 @pytest.fixture(autouse=True)
-def fake_groq_key(monkeypatch):
+def fake_api_keys(monkeypatch):
     monkeypatch.setattr(settings, "groq_api_key", "gsk_fake_key_for_tests")
+    monkeypatch.setattr(settings, "nvidia_api_key", "nvapi-fake_key_for_tests")
 
 
 def node_names(compiled) -> set[str]:
@@ -38,7 +39,13 @@ def test_unknown_retriever_raises():
 def test_missing_groq_key_raises(monkeypatch):
     monkeypatch.setattr(settings, "groq_api_key", None)
     with pytest.raises(RuntimeError, match="GROQ_API_KEY"):
-        build_graph(EngineConfig())
+        build_graph(EngineConfig(llm="groq:llama-3.3-70b-versatile"))
+
+
+def test_missing_nvidia_key_raises(monkeypatch):
+    monkeypatch.setattr(settings, "nvidia_api_key", None)
+    with pytest.raises(RuntimeError, match="NVIDIA_API_KEY"):
+        build_graph(EngineConfig(llm="nvidia:meta/llama-3.1-8b-instruct"))
 
 
 def test_hybrid_graph_shape():

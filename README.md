@@ -38,7 +38,7 @@ staleness detection, and an eval suite that regression-gates every change.
                       └─→ bm25_retrieve (native FTS) ───┘        │
                                                               rerank (local cross-encoder)
                                                                  │
-                                                              generate (Groq · Llama 3.3)
+                                                              generate (NIM · Llama 3.1 8B)
                                                                  │
              EVALS (visawise-eval)                            answer + citations
              YAML experiments × versioned golden datasets
@@ -86,7 +86,7 @@ corpus rather than assuming they still hold.
 |---|---|---|
 | 1 — Ingestion pipeline | fetch / extract / chunk / index, CLI, tests | ✅ done |
 | 2 — RAG core | hybrid retrieval, reranking, LangGraph pipeline | ✅ done |
-| 3 — Eval harness | golden datasets, RAGAS 0.4 + retrieval metrics, YAML experiments, regression gates | planned |
+| 3 — Eval harness | golden datasets, RAGAS 0.4 + retrieval metrics, YAML experiments, regression gates | ✅ done ([leaderboard](docs/EVALS.md)) |
 | 4 — App | FastAPI + chat UI + live eval dashboard | planned |
 | 5 — Deploy | single self-contained container (index ships inside) | planned |
 
@@ -94,7 +94,7 @@ corpus rather than assuming they still hold.
 
 ```bash
 uv sync                                # Python 3.12, uv-managed
-cp .env.example .env                   # add GROQ_API_KEY (+ OPENAI_API_KEY for evals)
+cp .env.example .env                   # add NVIDIA_API_KEY (+ OPENAI_API_KEY for evals)
 
 uv run visawise-ingest all             # fetch → extract → chunk → index (~35s)
 uv run visawise-ingest status          # corpus ⇄ index drift report
@@ -128,5 +128,6 @@ docs/               build lessons log
 ## Stack
 
 Python 3.12 · LangChain 1.x + LangGraph · LanceDB (embedded; vectors + tantivy FTS) ·
-`BAAI/bge-base-en-v1.5` embeddings · `bge-reranker-base` cross-encoder · Groq
-(Llama 3.3 70B) generation · RAGAS 0.4 + gpt-4o-mini judge · FastAPI · uv
+`BAAI/bge-base-en-v1.5` embeddings · `bge-reranker-base` cross-encoder · Llama 3.1 8B
+generation (NVIDIA NIM; model size chosen by the eval harness — Groq one flag away) ·
+RAGAS 0.4 + gpt-4o-mini judge · FastAPI · uv
