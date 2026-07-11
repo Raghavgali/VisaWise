@@ -25,11 +25,14 @@ dependencies = [
     "uvicorn>=0.30",
     "cohere>=7.0.5",
     "rapidfuzz>=3.14.5",
+    "sse-starlette>=3.4.5",
+    "slowapi>=0.1.10",
 ]
 
 [project.scripts]
 visawise-ingest = "visawise.ingestion.cli:main"
 visawise-eval = "visawise.evals.cli:main"
+visawise-app = "visawise.app.main:main"
 
 [dependency-groups]
 dev = [
