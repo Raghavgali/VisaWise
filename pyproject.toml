@@ -23,6 +23,7 @@ dependencies = [
     "typer>=0.12",
     "fastapi>=0.115",
     "uvicorn>=0.30",
+    "cohere>=7.0.5",
 ]
 
 [project.scripts]
