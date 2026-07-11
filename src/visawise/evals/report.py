@@ -66,6 +66,7 @@ def _compact_run(record: dict) -> dict:
         "retriever": engine.get("retriever"),
         "vector_weight": engine.get("vector_weight"),
         "reranker": engine.get("reranker"),
+        "llm": engine.get("llm"),
         "p50_ms": timings.get("p50_ms"),
     }
     for key in _METRIC_KEYS:

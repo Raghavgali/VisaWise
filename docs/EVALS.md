@@ -1,6 +1,6 @@
 # VisaWise Eval Leaderboard
 
-Generated 2026-07-11T21:39:06.014982+00:00 -- 4 run(s).
+Generated 2026-07-11T22:59:55.936536+00:00 -- 4 run(s).
 
 | run_id | retriever | w_vec | reranker | dataset | n | faith | relevancy | ctx_prec | ctx_recall | hit_rate | mrr | ndcg | p50_ms |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|

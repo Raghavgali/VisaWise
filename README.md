@@ -87,7 +87,7 @@ corpus rather than assuming they still hold.
 | 1 — Ingestion pipeline | fetch / extract / chunk / index, CLI, tests | ✅ done |
 | 2 — RAG core | hybrid retrieval, reranking, LangGraph pipeline | ✅ done |
 | 3 — Eval harness | golden datasets, RAGAS 0.4 + retrieval metrics, YAML experiments, regression gates | ✅ done ([leaderboard](docs/EVALS.md)) |
-| 4 — App | FastAPI + chat UI + live eval dashboard | 🔨 API done (SSE chat, eval feed, rate limits) · UI pending |
+| 4 — App | FastAPI + chat UI + live eval dashboard | ✅ done |
 | 5 — Deploy | single self-contained container (index ships inside) | planned |
 
 ## Quickstart

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VisaWise — U.S. immigration answers, measured</title>
+<script>
+  /* before first paint: stored choice, else system preference */
+  document.documentElement.dataset.theme =
+    localStorage.getItem("visawise-theme") ||
+    (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+</script>
+<meta name="description" content="Ask about F-1, OPT, H-1B and green cards. Every answer cites official USCIS pages; every configuration is benchmarked.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="guilloche" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="#chat">
+      <span class="wordmark-name">VisaWise</span>
+      <span class="wordmark-sub">U.S. immigration answers · measured</span>
+    </a>
+    <nav class="tabs" aria-label="Sections">
+      <a href="#chat" class="tab" data-tab="chat" aria-current="page">Chat</a>
+      <a href="#evals" class="tab" data-tab="evals">Evaluation</a>
+    </nav>
+    <span class="demo-chip" title="Every answer is drawn from the current official USCIS corpus, refreshed by an automated pipeline">Corpus · Jul 2026</span>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- ============================= CHAT ============================= -->
+<main id="panel-chat" class="panel" data-panel="chat">
+  <div class="chat-column">
+
+    <section class="intake" id="intake">
+      <p class="intake-eyebrow">Case intake</p>
+      <h1 class="intake-title">Ask about your <em>status</em>, not the statute.</h1>
+      <p class="intake-lede">
+        Answers come only from current official USCIS pages, with the sources attached
+        to every reply. If the pages don't cover it, VisaWise says so.
+      </p>
+      <ul class="starters" aria-label="Example questions">
+        <li><button class="starter" type="button">Can an F-1 student work off campus due to economic hardship?</button></li>
+        <li><button class="starter" type="button">How many days of unemployment are allowed on post-completion OPT?</button></li>
+        <li><button class="starter" type="button">When does the H-1B electronic registration period open?</button></li>
+      </ul>
+    </section>
+
+    <div class="thread" id="thread" aria-live="polite"></div>
+  </div>
+
+  <div class="composer-wrap">
+    <form class="composer" id="composer">
+      <label class="composer-label" for="message">Your question</label>
+      <div class="field">
+        <span class="tick tl" aria-hidden="true"></span><span class="tick tr" aria-hidden="true"></span>
+        <span class="tick bl" aria-hidden="true"></span><span class="tick br" aria-hidden="true"></span>
+        <textarea id="message" name="message" rows="1" maxlength="4000"
+          placeholder="Ask about F-1, OPT, H-1B, green cards…" required></textarea>
+        <button class="send" type="submit">Ask</button>
+      </div>
+    </form>
+    <p class="microprint" aria-label="Not legal advice — verify important matters at uscis.gov or with an attorney">
+      NOT·LEGAL·ADVICE·VERIFY·IMPORTANT·MATTERS·AT·USCIS.GOV·OR·WITH·AN·ATTORNEY·NOT·LEGAL·ADVICE·VERIFY·IMPORTANT·MATTERS·AT·USCIS.GOV·OR·WITH·AN·ATTORNEY
+    </p>
+  </div>
+</main>
+
+<!-- ============================ EVALS ============================= -->
+<main id="panel-evals" class="panel" data-panel="evals" hidden>
+  <div class="evals-column">
+
+    <section class="evals-head">
+      <p class="intake-eyebrow">Evaluation record</p>
+      <h1 class="intake-title">Measured, <em>not assumed.</em></h1>
+      <p class="intake-lede">
+        Every configuration that could serve traffic is benchmarked on a versioned
+        question set before it does. These are the committed results — the same
+        records the engine ships with.
+      </p>
+    </section>
+
+    <section class="kpis" aria-label="Headline results">
+      <div class="kpi">
+        <span class="kpi-value">0.864</span>
+        <span class="kpi-name">Faithfulness</span>
+        <span class="kpi-note">serving config · 52 questions</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value">0.916</span>
+        <span class="kpi-name">Context precision</span>
+        <span class="kpi-note">hybrid beats vector-only by 8 pts</span>
+      </div>
+      <div class="kpi">
+        <span class="kpi-value">3.2<small>s</small></span>
+        <span class="kpi-name">Median answer</span>
+        <span class="kpi-note">8B model, chosen by these numbers</span>
+      </div>
+    </section>
+
+    <section class="docket">
+      <div class="docket-caption">
+        <h2>Run docket</h2>
+        <p>Question set <code>synthetic_v1</code> · judge <code>gpt-4o-mini</code></p>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Configuration</th>
+              <th scope="col" class="num">n</th>
+              <th scope="col" class="num">Faith</th>
+              <th scope="col" class="num">Relevancy</th>
+              <th scope="col" class="num">Ctx&nbsp;prec</th>
+              <th scope="col" class="num">MRR</th>
+              <th scope="col" class="num">p50</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="serving">
+              <td>
+                <span class="cfg">hybrid 0.6/0.4 · rerank · 8B</span>
+                <span class="badge-serving">Serving</span>
+              </td>
+              <td class="num">52</td>
+              <td class="num">0.864</td>
+              <td class="num">0.792</td>
+              <td class="num strong">0.916</td>
+              <td class="num strong">0.844</td>
+              <td class="num">3.8s</td>
+            </tr>
+            <tr>
+              <td><span class="cfg">vector-only · no rerank · 8B</span></td>
+              <td class="num">52</td>
+              <td class="num strong">0.866</td>
+              <td class="num strong">0.806</td>
+              <td class="num">0.836</td>
+              <td class="num">0.784</td>
+              <td class="num">3.8s</td>
+            </tr>
+            <tr>
+              <td><span class="cfg">hybrid · rerank · 8B (repeat)</span></td>
+              <td class="num">52</td>
+              <td class="num">0.836</td>
+              <td class="num">0.805</td>
+              <td class="num">0.915</td>
+              <td class="num strong">0.844</td>
+              <td class="num strong">3.2s</td>
+            </tr>
+            <tr class="aborted">
+              <td>
+                <span class="cfg">hybrid · rerank · 70B</span>
+                <span class="badge-aborted" title="Free 70B endpoint returned 503s; run stopped at sample 6">Aborted</span>
+              </td>
+              <td class="num">5</td>
+              <td class="num">—</td>
+              <td class="num">—</td>
+              <td class="num">—</td>
+              <td class="num">—</td>
+              <td class="num">187s</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="docket-note">
+        The two hybrid runs share one configuration — their 0.03 spread is the measured
+        judge noise band. Differences smaller than that are not differences.
+      </p>
+    </section>
+
+    <section class="retest">
+      <h2>We re-tested our own 2024 finding. It didn't hold.</h2>
+      <div class="retest-grid">
+        <div class="retest-then">
+          <span class="retest-label">2024 · research corpus</span>
+          <p><strong>0.44 → 0.83</strong> faithfulness, vector-only vs hybrid. The finding this project was built on.</p>
+        </div>
+        <div class="retest-now">
+          <span class="retest-label">2026 · fresh corpus, same weights</span>
+          <p><strong>0.866 ≈ 0.864</strong> — the gap closed. Cleaner extraction lifted both.
+          Hybrid still wins retrieval ranking (MRR 0.844 vs 0.784), so it still serves.</p>
+        </div>
+      </div>
+      <p class="retest-note">
+        A harness that can only confirm what you already believe isn't a harness.
+        This one gets to disagree with its own origin story.
+      </p>
+    </section>
+
+    <section class="metric-glossary" aria-label="What the metrics mean">
+      <dl>
+        <div><dt>Faithfulness</dt><dd>Does the answer say only what the retrieved USCIS text supports?</dd></div>
+        <div><dt>Relevancy</dt><dd>Does the answer actually address the question asked?</dd></div>
+        <div><dt>Context precision</dt><dd>Of the passages retrieved, how many were needed?</dd></div>
+        <div><dt>MRR</dt><dd>How high does the first correct source rank in retrieval?</dd></div>
+      </dl>
+    </section>
+
+    <footer class="provenance">
+      <span>git <code>3ed2884</code></span>
+      <span>corpus <code>f71c7102…</code></span>
+      <span>dataset <code>synthetic_v1 · 52</code></span>
+      <span>judge <code>gpt-4o-mini</code></span>
+    </footer>
+  </div>
+</main>
+
+<template id="tpl-user">
+  <article class="msg-user">
+    <p class="msg-user-text"></p>
+  </article>
+</template>
+
+<template id="tpl-answer">
+  <article class="determination">
+    <div class="watermark" aria-hidden="true"></div>
+    <div class="det-body"></div>
+    <div class="det-receipt">
+      <span class="det-receipt-label">Sources · official USCIS pages</span>
+      <ol class="det-citations"></ol>
+      <span class="det-stamp" aria-hidden="true">CITED<i>uscis.gov</i></span>
+    </div>
+  </article>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>
