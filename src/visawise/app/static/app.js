@@ -307,12 +307,26 @@ function isServingConfig(run) {
     !e.aborted &&
     e.retriever === "hybrid" &&
     e.reranker === "local" &&
+    // rerank→4 is the serving default; the rerank→8 ablation rung must NOT be
+    // mistaken for it (rerank_top_n absent in older summaries -> assume serving).
+    (e.rerank_top_n == null || e.rerank_top_n === 4) &&
     /8b/i.test(e.llm ?? "8b") // llm absent in older summaries -> assume serving default
   );
 }
 
 function fmt(value, decimals = 3) {
   return value == null ? "—" : Number(value).toFixed(decimals);
+}
+
+/* Aggregate + coverage: "0.864" at full coverage, "0.866 ⚠29/52" when the
+   judge only scored a subset — a partial average must never look complete. */
+function metricCell(run, key) {
+  const value = run[key];
+  if (value == null) return "—";
+  let cell = fmt(value);
+  const cov = run.coverage?.[key];
+  if (cov && cov.scored < cov.total) cell += ` ⚠${cov.scored}/${cov.total}`;
+  return cell;
 }
 
 function renderDocket(runs) {
@@ -329,9 +343,18 @@ function renderDocket(runs) {
       run.retriever === "hybrid" && run.vector_weight != null
         ? ` ${run.vector_weight}/${(1 - run.vector_weight).toFixed(1)}`
         : "";
+    // Contexts reaching the LLM: rerank_top_n when reranked, else top_k. This
+    // is the axis the reranker ablation turns on, so it belongs in the label —
+    // "rerank→4" vs "rerank→8" is the difference between two otherwise-identical rows.
+    const rerankLabel =
+      run.reranker === "none"
+        ? "no rerank"
+        : run.rerank_top_n != null
+          ? `rerank→${run.rerank_top_n}`
+          : "rerank";
     const label = [
       `${run.retriever}${weight}`,
-      run.reranker === "none" ? "no rerank" : "rerank",
+      rerankLabel,
       shortModel(run.llm) || null,
     ].filter(Boolean).join(" · ");
 
@@ -360,10 +383,10 @@ function renderDocket(runs) {
     const p50 = run.p50_ms == null ? null : run.p50_ms / 1000;
     const cells = [
       run.n_samples ?? "—",
-      fmt(run.faithfulness),
-      fmt(run.response_relevancy),
-      fmt(run.context_precision),
-      fmt(run.mrr),
+      metricCell(run, "faithfulness"),
+      metricCell(run, "response_relevancy"),
+      metricCell(run, "context_precision"),
+      metricCell(run, "mrr"),
       p50 == null ? "—" : `${p50.toFixed(1)}s`,
     ];
     for (const text of cells) {

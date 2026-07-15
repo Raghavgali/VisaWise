@@ -97,17 +97,17 @@
 
     <section class="kpis" aria-label="Headline results">
       <div class="kpi">
-        <span class="kpi-value">0.864</span>
+        <span class="kpi-value">0.913</span>
         <span class="kpi-name">Faithfulness</span>
-        <span class="kpi-note">serving config · 52 questions</span>
+        <span class="kpi-note">serving config · all 52 scored</span>
       </div>
       <div class="kpi">
-        <span class="kpi-value">0.916</span>
+        <span class="kpi-value">0.925</span>
         <span class="kpi-name">Context precision</span>
         <span class="kpi-note">hybrid beats vector-only by 8 pts</span>
       </div>
       <div class="kpi">
-        <span class="kpi-value">3.2<small>s</small></span>
+        <span class="kpi-value">4.1<small>s</small></span>
         <span class="kpi-name">Median answer</span>
         <span class="kpi-note">8B model, chosen by these numbers</span>
       </div>
@@ -116,7 +116,7 @@
     <section class="docket">
       <div class="docket-caption">
         <h2>Run docket</h2>
-        <p>Question set <code>synthetic_v1</code> · judge <code>gpt-4o-mini</code></p>
+        <p>Question set <code>synthetic_v2</code> · judge <code>gpt-4o-mini</code> · a controlled ablation: each row changes one variable</p>
       </div>
       <div class="table-scroll">
         <table>
@@ -132,39 +132,48 @@
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td><span class="cfg">hybrid · no rerank · 8B</span></td>
+              <td class="num">52</td>
+              <td class="num strong">0.945</td>
+              <td class="num">0.800</td>
+              <td class="num">0.887</td>
+              <td class="num">0.798</td>
+              <td class="num strong">3.3s</td>
+            </tr>
+            <tr>
+              <td><span class="cfg">hybrid · rerank→8 · 8B</span></td>
+              <td class="num">52</td>
+              <td class="num">0.929</td>
+              <td class="num strong">0.829</td>
+              <td class="num">0.887</td>
+              <td class="num strong">0.838</td>
+              <td class="num">6.1s</td>
+            </tr>
             <tr class="serving">
               <td>
-                <span class="cfg">hybrid 0.6/0.4 · rerank · 8B</span>
+                <span class="cfg">hybrid · rerank→4 · 8B</span>
                 <span class="badge-serving">Serving</span>
               </td>
               <td class="num">52</td>
-              <td class="num">0.864</td>
-              <td class="num">0.792</td>
-              <td class="num strong">0.916</td>
-              <td class="num strong">0.844</td>
-              <td class="num">3.8s</td>
+              <td class="num">0.913</td>
+              <td class="num">0.786</td>
+              <td class="num strong">0.925</td>
+              <td class="num">0.833</td>
+              <td class="num">4.1s</td>
             </tr>
             <tr>
-              <td><span class="cfg">vector-only · no rerank · 8B</span></td>
+              <td><span class="cfg">vector · no rerank · 8B</span></td>
               <td class="num">52</td>
-              <td class="num strong">0.866</td>
-              <td class="num strong">0.806</td>
-              <td class="num">0.836</td>
-              <td class="num">0.784</td>
-              <td class="num">3.8s</td>
-            </tr>
-            <tr>
-              <td><span class="cfg">hybrid · rerank · 8B (repeat)</span></td>
-              <td class="num">52</td>
-              <td class="num">0.836</td>
-              <td class="num">0.805</td>
-              <td class="num">0.915</td>
-              <td class="num strong">0.844</td>
-              <td class="num strong">3.2s</td>
+              <td class="num">0.908</td>
+              <td class="num">0.803</td>
+              <td class="num">0.849</td>
+              <td class="num">0.777</td>
+              <td class="num">9.1s</td>
             </tr>
             <tr class="aborted">
               <td>
-                <span class="cfg">hybrid · rerank · 70B</span>
+                <span class="cfg">hybrid · rerank→4 · 70B</span>
                 <span class="badge-aborted" title="Free 70B endpoint returned 503s; run stopped at sample 6">Aborted</span>
               </td>
               <td class="num">5</td>
@@ -178,8 +187,36 @@
         </table>
       </div>
       <p class="docket-note">
-        The two hybrid runs share one configuration — their 0.03 spread is the measured
-        judge noise band. Differences smaller than that are not differences.
+        Each row is one controlled config — same dataset, model, prompt, corpus and judge,
+        differing by a single variable — so any two can be compared cleanly. All 52
+        questions scored. The two <code>rerank→4 · 8B</code> runs are one identical config
+        run twice: they differ by ~0.03 on the judged metrics, which is the noise floor —
+        and why the reranker's <strong>+0.04 MRR</strong> (a judge-free retrieval metric)
+        is the result to trust here.
+      </p>
+    </section>
+
+    <section class="retest">
+      <h2>Reranking does two things at once. We measured them apart.</h2>
+      <div class="retest-grid">
+        <div class="retest-then">
+          <span class="retest-label">Reranking — reorder</span>
+          <p><code>rerank→8</code> vs <code>no rerank</code>: the same 8 passages, reordered
+          by a cross-encoder. Hit-rate is <strong>identical</strong> (nothing new retrieved),
+          but MRR climbs <strong>0.798 → 0.838</strong>. The reranker earns its place by
+          ranking the right passage higher — cleanly, with no judge in the loop.</p>
+        </div>
+        <div class="retest-now">
+          <span class="retest-label">Reranking — truncate</span>
+          <p><code>rerank→4</code> vs <code>rerank→8</code>: keeping only the top
+          <strong>4</strong> passages instead of 8 is what nudges hit-rate down
+          (0.885 → 0.865) — <em>that</em>, not the reranking, is the recall cost. In exchange:
+          higher context precision and half the input tokens, so a free 8B model answers in ~4s.</p>
+        </div>
+      </div>
+      <p class="retest-note">
+        The uncontrolled version of this comparison couldn't tell these three effects
+        apart. The controlled ladder can — and it changes what "reranking helps" means.
       </p>
     </section>
 
@@ -188,12 +225,12 @@
       <div class="retest-grid">
         <div class="retest-then">
           <span class="retest-label">2024 · research corpus</span>
-          <p><strong>0.44 → 0.83</strong> faithfulness, vector-only vs hybrid. The finding this project was built on.</p>
+          <p><strong>0.44 → 0.83</strong> faithfulness, vector vs hybrid. A chasm — the finding this project was built on.</p>
         </div>
         <div class="retest-now">
           <span class="retest-label">2026 · fresh corpus, same weights</span>
-          <p><strong>0.866 ≈ 0.864</strong> — the gap closed. Cleaner extraction lifted both.
-          Hybrid still wins retrieval ranking (MRR 0.844 vs 0.784), so it still serves.</p>
+          <p><strong>0.908 vs 0.945</strong> (vector vs hybrid, neither reranked) — both strong, the chasm gone.
+          Cleaner extraction lifted vector-only. Hybrid still wins ranking (MRR 0.798 vs 0.777), so it still serves.</p>
         </div>
       </div>
       <p class="retest-note">
@@ -212,9 +249,9 @@
     </section>
 
     <footer class="provenance">
-      <span>git <code>3ed2884</code></span>
+      <span>git <code>40dd25b</code></span>
       <span>corpus <code>f71c7102…</code></span>
-      <span>dataset <code>synthetic_v1 · 52</code></span>
+      <span>dataset <code>synthetic_v2 · 52</code></span>
       <span>judge <code>gpt-4o-mini</code></span>
     </footer>
   </div>

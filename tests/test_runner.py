@@ -1,7 +1,22 @@
-"""Runner pure helpers -- sweep expansion + engine-config validation (offline)."""
+"""Runner pure helpers -- sweep expansion + engine-config validation (offline).
+
+Also covers run_experiment's coverage gate end-to-end, with build_graph and
+score_judged monkeypatched out (no LLM/network) and a fake compiled graph
+standing in for rag.graph.build_graph.
+"""
+import json
+
 import pytest
 
-from visawise.evals.runner import _aggregate, _build_engine_config, expand_experiment
+from visawise.config import settings
+from visawise.evals import runner as runner_module
+from visawise.evals.datasets import GoldenSample
+from visawise.evals.runner import (
+    _aggregate,
+    _build_engine_config,
+    expand_experiment,
+    run_experiment,
+)
 
 
 def test_expand_no_sweep_single_run():
@@ -64,3 +79,99 @@ def test_sweep_values_with_path_chars_are_slugged():
     (run_name, overrides), = expand_experiment(spec)
     assert "/" not in run_name and ":" not in run_name
     assert overrides == {"llm": "nvidia:meta/llama-3.1-8b-instruct"}
+
+
+# --- run_experiment coverage gate: fake graph + fake dataset, offline -------
+
+
+class _FakeHit:
+    def __init__(self, chunk_id: str, text: str, url: str):
+        self.chunk_id = chunk_id
+        self.text = text
+        self.url = url
+
+
+class _FakeGraph:
+    def invoke(self, state: dict) -> dict:
+        return {
+            "answer": f"answer for {state['query']}",
+            "reranked": [_FakeHit("chunk-1", "some context", "https://example.com/a")],
+        }
+
+
+def _fake_samples() -> list[GoldenSample]:
+    return [
+        GoldenSample(
+            id=f"s{i}",
+            user_input=f"question {i}",
+            reference="reference text",
+            reference_contexts=["ctx"],
+            source_urls=["https://example.com/a"],
+            origin="curated",
+        )
+        for i in range(3)
+    ]
+
+
+async def _score_judged_partial_failure(samples: list[dict], judge_model: str) -> list[dict]:
+    # 1/3 samples errors on faithfulness -> 2/3 = 0.667, below the 0.95 gate.
+    return [
+        {"faithfulness": {"error": "boom"}} if i == 1 else {"faithfulness": {"value": 0.9, "reason": None}}
+        for i in range(len(samples))
+    ]
+
+
+async def _score_judged_all_pass(samples: list[dict], judge_model: str) -> list[dict]:
+    return [{"faithfulness": {"value": 0.9, "reason": None}} for _ in samples]
+
+
+def _write_experiment(tmp_path, metrics: str = "judged"):
+    path = tmp_path / "experiment.yaml"
+    path.write_text(f"name: judged_exp\ndataset: curated_v1\nmetrics: {metrics}\n", encoding="utf-8")
+    return path
+
+
+@pytest.fixture
+def wired_runner(tmp_path, monkeypatch):
+    """Wire run_experiment to a fake compiled graph + fake dataset, fully
+    offline: no LLM, no retriever, no rate-limit sleeps."""
+    dataset_file = tmp_path / "curated_v1.jsonl"
+    dataset_file.write_text('{"fake": "dataset bytes, only sha256 of this matters"}\n', encoding="utf-8")
+
+    monkeypatch.setattr(runner_module, "build_graph", lambda config: _FakeGraph())
+    monkeypatch.setattr(runner_module, "load_dataset", lambda name: _fake_samples())
+    monkeypatch.setattr(runner_module, "dataset_path", lambda name: dataset_file)
+    monkeypatch.setattr(runner_module, "load_chunks", lambda: [])
+    monkeypatch.setattr(runner_module, "corpus_hash", lambda chunks: "fakecorpus")
+    monkeypatch.setattr(runner_module, "_MIN_INVOKE_INTERVAL_S", 0.0)
+    monkeypatch.setattr(settings, "runs_dir", tmp_path / "runs")
+    return tmp_path
+
+
+def test_run_experiment_raises_on_low_judged_coverage_but_still_writes_record(
+    wired_runner, monkeypatch
+):
+    monkeypatch.setattr(runner_module, "score_judged", _score_judged_partial_failure)
+    experiment_path = _write_experiment(wired_runner)
+
+    with pytest.raises(RuntimeError, match="faithfulness"):
+        run_experiment(str(experiment_path))
+
+    records = list(settings.runs_dir.glob("*.json"))
+    assert len(records) == 1
+    record = json.loads(records[0].read_text(encoding="utf-8"))
+    assert record["coverage"]["faithfulness"] == {"scored": 2, "total": 3}
+
+
+def test_run_experiment_full_coverage_passes_and_records_coverage(wired_runner, monkeypatch):
+    monkeypatch.setattr(runner_module, "score_judged", _score_judged_all_pass)
+    experiment_path = _write_experiment(wired_runner)
+
+    run_ids = run_experiment(str(experiment_path))
+
+    assert len(run_ids) == 1
+    records = list(settings.runs_dir.glob("*.json"))
+    assert len(records) == 1
+    record = json.loads(records[0].read_text(encoding="utf-8"))
+    assert record["run_id"] == run_ids[0]
+    assert record["coverage"]["faithfulness"] == {"scored": 3, "total": 3}

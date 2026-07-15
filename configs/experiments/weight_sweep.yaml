@@ -1,7 +1,7 @@
 # Reproduces the 2024 weight-tuning research as config instead of notebook code.
 # (2024 result: response relevancy peaked at vector_weight=0.6.)
 name: weight_sweep
-dataset: synthetic_v1
+dataset: synthetic_v2
 metrics: all
 engine:
   retriever: hybrid

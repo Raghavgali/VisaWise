@@ -3,7 +3,7 @@ import math
 
 import pytest
 
-from visawise.evals.metrics import score_retrieval
+from visawise.evals.metrics import coverage_from_scores, score_retrieval
 
 
 def test_perfect_hit_at_rank_1():
@@ -45,3 +45,31 @@ def test_duplicate_url_dedup_keeps_first_rank():
 def test_empty_source_urls_returns_none():
     (result,) = score_retrieval([{"retrieved_urls": ["a", "b"], "source_urls": []}])
     assert result == {"hit_rate": None, "mrr": None, "ndcg": None}
+
+
+def test_coverage_counts_plain_floats_and_value_dicts():
+    per_sample = [
+        {"hit_rate": 1.0, "faithfulness": {"value": 0.8, "reason": None}},
+        {"hit_rate": 0.0, "faithfulness": {"value": 0.6, "reason": None}},
+    ]
+    coverage = coverage_from_scores(per_sample)
+    assert coverage == {
+        "hit_rate": {"scored": 2, "total": 2},
+        "faithfulness": {"scored": 2, "total": 2},
+    }
+
+
+def test_coverage_excludes_none_error_bool_and_nan():
+    per_sample = [
+        {"faithfulness": {"value": 0.8, "reason": None}},
+        {"faithfulness": None},
+        {"faithfulness": {"error": "boom"}},
+        {"faithfulness": True},
+        {"faithfulness": float("nan")},
+    ]
+    coverage = coverage_from_scores(per_sample)
+    assert coverage == {"faithfulness": {"scored": 1, "total": 5}}
+
+
+def test_coverage_from_empty_input():
+    assert coverage_from_scores([]) == {}

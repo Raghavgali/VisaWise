@@ -1,6 +1,9 @@
 # The production configuration [validated 2024: hybrid 0.6/0.4 + rerank].
+# Controlled ablation rung 4/4 (hybrid, rerank, top_n=4 -> 4 contexts). The
+# ladder: vector_only -> hybrid_no_rerank -> hybrid_rerank_full -> here. Each
+# adjacent pair changes exactly ONE variable; see hybrid_rerank_full.yaml.
 name: hybrid_default
-dataset: synthetic_v1
+dataset: synthetic_v2
 metrics: all
 engine:
   retriever: hybrid

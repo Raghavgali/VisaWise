@@ -1,7 +1,7 @@
 # Model size as a measured decision, not a belief: same retrieval config,
 # same dataset, 8B vs 70B -- the leaderboard picks the serving default.
 name: model_ablation
-dataset: synthetic_v1
+dataset: synthetic_v2
 metrics: all
 engine:
   retriever: hybrid
@@ -12,4 +12,7 @@ engine:
 sweep:
   llm:
     - "nvidia:meta/llama-3.1-8b-instruct"
-    - "nvidia:meta/llama-3.3-70b-instruct"
+    # 70B leg measured 2026-07-11 and dropped from the sweep: NVIDIA's free
+    # 70B endpoint is operationally unusable (503 ResourceExhausted at sample
+    # 6, 186s p50). The aborted RunRecord is kept in evals/runs/ as evidence.
+    # - "nvidia:meta/llama-3.3-70b-instruct"

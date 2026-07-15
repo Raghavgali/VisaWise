@@ -11,6 +11,7 @@ from typer.testing import CliRunner
 
 from visawise.config import settings
 from visawise.evals import cli, report
+from visawise.evals.report import _compact_run, _metric_cell
 
 
 def make_run(
@@ -211,3 +212,68 @@ class TestCli:
         result = runner.invoke(cli.app, ["report"])
         assert result.exit_code == 0
         assert evals_md.exists()
+
+
+class TestMetricCell:
+    def test_partial_coverage_appends_warning(self):
+        compact = {
+            "faithfulness": 0.866,
+            "coverage": {"faithfulness": {"scored": 29, "total": 52}},
+        }
+        assert _metric_cell(compact, "faithfulness") == "0.866 ⚠29/52"
+
+    def test_full_coverage_has_no_warning(self):
+        compact = {
+            "faithfulness": 0.864,
+            "coverage": {"faithfulness": {"scored": 52, "total": 52}},
+        }
+        assert _metric_cell(compact, "faithfulness") == "0.864"
+
+    def test_missing_value_renders_dash(self):
+        compact = {"faithfulness": None, "coverage": {}}
+        assert _metric_cell(compact, "faithfulness") == "—"
+
+
+class TestCompactRunCoverage:
+    def test_uses_stored_coverage_when_present(self):
+        record = {
+            "aggregates": {"faithfulness": 0.9},
+            "coverage": {"faithfulness": {"scored": 10, "total": 10}},
+            "samples": [],
+        }
+        compact = _compact_run(record)
+        assert compact["coverage"] == {"faithfulness": {"scored": 10, "total": 10}}
+
+    def test_derives_coverage_from_samples_for_old_records(self):
+        # Pre-coverage RunRecords have no top-level "coverage" key.
+        record = {
+            "aggregates": {"faithfulness": 0.75},
+            "samples": [
+                {"scores": {"faithfulness": {"value": 0.9, "reason": None}}},
+                {"scores": {"faithfulness": {"error": "boom"}}},
+            ],
+        }
+        compact = _compact_run(record)
+        assert compact["coverage"] == {"faithfulness": {"scored": 1, "total": 2}}
+
+
+class TestReportPartialCoverageWarning:
+    def test_markdown_shows_warning_annotation(self, runs_dir, evals_md):
+        run_d = make_run(
+            "20260710T020000Z_partial_cov",
+            dataset_name="curated_v1",
+            dataset_sha="sha_common",
+            corpus_hash="corpus_common",
+            retriever="hybrid",
+            vector_weight=0.6,
+            reranker="local",
+            aggregates={"faithfulness": 0.866, "hit_rate": 0.9},
+            p50_ms=200.0,
+        )
+        run_d["coverage"] = {"faithfulness": {"scored": 29, "total": 52}}
+        (runs_dir / f"{run_d['run_id']}.json").write_text(json.dumps(run_d), encoding="utf-8")
+
+        report.report()
+
+        markdown = evals_md.read_text(encoding="utf-8")
+        assert "⚠29/52" in markdown

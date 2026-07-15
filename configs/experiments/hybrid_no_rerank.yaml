@@ -1,0 +1,21 @@
+# Controlled ablation rung 2/4: hybrid retrieval, NO reranker -> 8 contexts.
+#
+# vs vector_only (rung 1): isolates the retrieval algorithm. Both pass 8
+#   contexts, neither reranks, so any metric delta is vector-vs-hybrid alone.
+# vs hybrid_rerank_full (rung 3): isolates the reranker's REORDERING. Both
+#   retrieve the same hybrid top-8 SET; rung 3 only reorders it. So set-based
+#   metrics (hit_rate, context_recall) MUST match rung 3 -- any gap there is a
+#   bug -- while rank-aware metrics (MRR, context_precision) reveal the
+#   reorder's value.
+#
+# Everything except retriever/reranker is held to the serving config:
+# synthetic_v2, 8B LLM (engine default), prompt v1, top_k=8, temperature 0,
+# same corpus, gpt-4o-mini judge.
+name: hybrid_no_rerank
+dataset: synthetic_v2
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: none

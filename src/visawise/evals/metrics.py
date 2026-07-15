@@ -37,7 +37,10 @@ async def score_judged(samples: list[dict], judge_model: str) -> list[dict]:
     from ..config import settings
 
     client = AsyncOpenAI(api_key=settings.openai_api_key)
-    llm = llm_factory(judge_model, client=client)
+    # max_tokens: ragas' instructor adapter defaults to 1024, which truncates
+    # the faithfulness statement/verdict JSON on long answers -- instructor
+    # then raises and the sample lands in the error bucket.
+    llm = llm_factory(judge_model, client=client, max_tokens=settings.judge_max_tokens)
     embeddings = embedding_factory("openai", client=client)
 
     # (metric instance, kwarg-builder) keyed by the name we report under.
@@ -97,6 +100,45 @@ async def score_judged(samples: list[dict], judge_model: str) -> list[dict]:
             )
 
     return results
+
+
+def coverage_from_scores(per_sample_scores: list[dict]) -> dict[str, dict]:
+    """{metric: {scored, total}} -- how many samples produced a usable number.
+
+    An aggregate over 29/52 samples is not comparable to one over 52/52
+    (failures skew toward long, hard answers), so coverage travels with every
+    aggregate: stored in RunRecords, gated by the runner, shown in reports.
+    """
+    metric_names: set[str] = set()
+    for scores in per_sample_scores:
+        metric_names.update(scores)
+
+    total = len(per_sample_scores)
+    coverage: dict[str, dict] = {}
+    for name in sorted(metric_names):
+        scored = sum(
+            1
+            for scores in per_sample_scores
+            if _is_scored(scores.get(name))
+        )
+        coverage[name] = {"scored": scored, "total": total}
+    return coverage
+
+
+def _is_scored(value: object) -> bool:
+    """True if a per-sample score entry holds a usable number (mirrors the
+    runner's aggregation rules: None sentinels, error dicts and NaN don't count)."""
+    if value is None:
+        return False
+    if isinstance(value, dict):
+        if "value" not in value:  # error entry
+            return False
+        value = value["value"]
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, (int, float)):
+        return not math.isnan(float(value))
+    return False
 
 
 def score_retrieval(samples: list[dict]) -> list[dict]:

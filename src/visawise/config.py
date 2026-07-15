@@ -61,6 +61,13 @@ class Settings(BaseSettings):
 
     # --- eval ---
     judge_model: str = "gpt-4o-mini"
+    # ragas' InstructorLLM defaults to max_tokens=1024, which truncates the
+    # faithfulness verdict JSON on long answers (~40% of samples failed silently
+    # into the error bucket before this was raised). gpt-4o-mini allows 16K out.
+    judge_max_tokens: int = 8192
+    # A judged metric scoring fewer than this fraction of samples fails the run:
+    # averages over different survivor subsets are not comparable.
+    judged_coverage_threshold: float = 0.95
     datasets_dir: Path = REPO_ROOT / "evals" / "datasets"
     runs_dir: Path = REPO_ROOT / "evals" / "runs"
 

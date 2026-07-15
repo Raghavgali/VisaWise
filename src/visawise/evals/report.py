@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from ..config import REPO_ROOT, settings
+from .metrics import coverage_from_scores
 
 EVALS_MD = REPO_ROOT / "docs" / "EVALS.md"
 
@@ -57,6 +58,14 @@ def _compact_run(record: dict) -> dict:
     aggregates = record.get("aggregates") or {}
     timings = record.get("timings") or {}
 
+    # Coverage: stored by the runner since the max_tokens fix; derived from
+    # per-sample scores for records that predate it.
+    coverage = record.get("coverage")
+    if coverage is None:
+        coverage = coverage_from_scores(
+            [(s.get("scores") or {}) for s in (record.get("samples") or [])]
+        )
+
     compact = {
         "run_id": record.get("run_id"),
         "experiment": record.get("experiment"),
@@ -66,12 +75,28 @@ def _compact_run(record: dict) -> dict:
         "retriever": engine.get("retriever"),
         "vector_weight": engine.get("vector_weight"),
         "reranker": engine.get("reranker"),
+        "rerank_top_n": engine.get("rerank_top_n"),
+        "top_k": engine.get("top_k"),
         "llm": engine.get("llm"),
         "p50_ms": timings.get("p50_ms"),
+        "coverage": coverage,
     }
     for key in _METRIC_KEYS:
         compact[key] = aggregates.get(key)
     return compact
+
+
+def _metric_cell(compact: dict, key: str, decimals: int = 3) -> str:
+    """Aggregate + coverage: '0.864' at full coverage, '0.866 ⚠29/52' when the
+    metric only scored a subset (partial averages must never look complete)."""
+    value = compact.get(key)
+    if value is None:
+        return "—"
+    cell = f"{value:.{decimals}f}"
+    cov = (compact.get("coverage") or {}).get(key)
+    if cov and cov["scored"] < cov["total"]:
+        cell += f" ⚠{cov['scored']}/{cov['total']}"
+    return cell
 
 
 def _sort_key(compact: dict) -> tuple[int, int, float, float]:
@@ -114,13 +139,13 @@ def _render_markdown(compacts: list[dict], generated_at: str) -> str:
                 w_vec=_fmt(c["vector_weight"], 3),
                 reranker=c["reranker"] or "—",
                 dataset=c["dataset"] or "—",
-                faith=_fmt(c["faithfulness"], 3),
-                relevancy=_fmt(c["response_relevancy"], 3),
-                ctx_prec=_fmt(c["context_precision"], 3),
-                ctx_recall=_fmt(c["context_recall"], 3),
-                hit_rate=_fmt(c["hit_rate"], 3),
-                mrr=_fmt(c["mrr"], 3),
-                ndcg=_fmt(c["ndcg"], 3),
+                faith=_metric_cell(c, "faithfulness"),
+                relevancy=_metric_cell(c, "response_relevancy"),
+                ctx_prec=_metric_cell(c, "context_precision"),
+                ctx_recall=_metric_cell(c, "context_recall"),
+                hit_rate=_metric_cell(c, "hit_rate"),
+                mrr=_metric_cell(c, "mrr"),
+                ndcg=_metric_cell(c, "ndcg"),
                 p50_ms=_fmt(c["p50_ms"], 0),
             )
         )
@@ -180,6 +205,19 @@ def compare(baseline: str, candidate: str, max_drop: float = 0.05) -> bool:
     for record, label in ((base, "baseline"), (cand, "candidate")):
         if record.get("aborted"):
             print(f"WARNING: {label} run was aborted mid-run: {record['aborted']}")
+        coverage = record.get("coverage") or coverage_from_scores(
+            [(s.get("scores") or {}) for s in (record.get("samples") or [])]
+        )
+        partial = {
+            metric: f"{cov['scored']}/{cov['total']}"
+            for metric, cov in coverage.items()
+            if metric in gated and cov["scored"] < cov["total"]
+        }
+        if partial:
+            print(
+                f"WARNING: {label} has partial metric coverage {partial}; "
+                "its aggregates average a survivor subset, not the dataset."
+            )
 
     if base.get("corpus_hash") != cand.get("corpus_hash"):
         print(

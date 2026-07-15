@@ -1,0 +1,27 @@
+# Controlled ablation rung 3/4: hybrid retrieval, local reranker, but
+# rerank_top_n=8 -> the cross-encoder REORDERS the hybrid top-8 without
+# truncating. 8 contexts, same SET as rung 2, different ORDER.
+#
+# This rung exists to break a confound the 3-arm design can't: the serving
+# reranker (rung 4) does two things at once -- it reorders AND truncates 8->4.
+# Comparing "rerank vs no rerank" therefore tangles reranking with context
+# count. This rung holds context count at 8 so the two effects separate:
+#
+#   rung 2 -> rung 3 : pure REORDER   (same 8-context set; order changes)
+#                      => hit_rate / context_recall unchanged (set-based);
+#                         MRR / context_precision move iff reorder helps.
+#   rung 3 -> rung 4 : pure TRUNCATION (same rerank order; 8 contexts -> 4)
+#                      => explains any hit_rate / recall drop and precision
+#                         gain seen at serving.
+#
+# Held constant with the rest of the ladder: synthetic_v2, 8B LLM, prompt v1,
+# top_k=8, vector_weight 0.6, temperature 0, corpus, gpt-4o-mini judge.
+name: hybrid_rerank_full
+dataset: synthetic_v2
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: local
+  rerank_top_n: 8

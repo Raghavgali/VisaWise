@@ -1,9 +1,14 @@
 # Ablation: reproduces the 2024 vector-only baseline (faithfulness 0.44 vs
 # hybrid 0.83 back then -- this experiment re-tests that finding on the new stack).
+# Controlled ablation rung 1/4 (vector, no rerank -> 8 contexts). vs
+# hybrid_no_rerank (rung 2) this isolates the retrieval algorithm: both pass 8
+# contexts with no reranker, so any delta is vector-vs-hybrid, nothing else.
 name: vector_only
-dataset: synthetic_v1
+dataset: synthetic_v2
 metrics: all
 engine:
   retriever: vector
   top_k: 8
   reranker: none
+  # rerank_top_n is irrelevant here (the graph skips the rerank node when
+  # reranker=none); vector_only passes all top_k=8 fused contexts to the LLM.

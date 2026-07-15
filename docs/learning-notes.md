@@ -319,3 +319,117 @@ Every failure happened in the *live* path — the part tests can't cover.
 - **Samples with no ground-truth mapping score `None`, never 0** — faking a
   zero would poison aggregates; `None` gets skipped in aggregation and the
   honesty probes (out-of-scope curated questions) stay usable.
+
+## 13. The coverage bug — when "loud failures" aren't loud enough
+
+An external review of the committed RunRecords caught what our own reporting
+missed: faithfulness had only scored 24–31 of 52 samples per run. Every
+failure was the same — ragas' instructor adapter defaults the judge to
+`max_tokens=1024`, and the faithfulness verdict JSON (statement decomposition
++ per-statement verdicts) blows past that on long answers. The harness did
+capture each failure as an `{"error": ...}` entry and printed a warning count,
+but the *aggregates* then averaged the survivors and the leaderboard rendered
+`0.866` with nothing marking it as a 29-of-52 number.
+
+- **Partial averages are biased averages.** The failures weren't random: they
+  hit exactly the long, claim-dense answers — the hardest samples. A survivor
+  mean over the easy subset silently flatters every run, and each run keeps a
+  *different* survivor subset, so cross-run deltas were doubly meaningless.
+- **Error capture without coverage accounting is half a safety net.** Catching
+  the exception kept runs alive (good) but let a 56%-coverage aggregate wear
+  the same clothes as a 100% one (bad). Fix: `coverage: {metric: {scored,
+  total}}` in every RunRecord, `⚠k/n` beside every partial aggregate in the
+  leaderboard and dashboard, and a runner gate that fails the run when a
+  judged metric covers < 95% (records still written first — salvage, then
+  scream).
+- **A one-run warning is not a report-level guarantee.** The `score_judged`
+  warning printed at run time and scrolled away; coverage now travels *with
+  the data* so no later reader depends on having watched the console.
+- **Read the library's own fine print**: ragas' `llm_factory` docstring
+  literally says "If structured output is truncated, increase max_tokens."
+  Default 1024; gpt-4o-mini allows 16K out; `judge_max_tokens = 8192` ended
+  truncation entirely (52/52 in the reruns).
+- The superseded runs moved to `evals/runs/archive/` with a README — a wrong
+  number, once published, should leave a paper trail, not vanish.
+
+## 14. Controlled reranker ablation — separating three tangled effects
+
+A review pointed out our headline comparison wasn't controlled: `vector_only`
+was (vector retrieval, no reranker) and `hybrid_default` was (hybrid
+retrieval, local reranker). Two variables moved at once, so "hybrid wins"
+couldn't distinguish *retrieval* from *reranking*. Worse, the reranker itself
+moves two things simultaneously — it **reorders** the candidates *and*
+**truncates** them (top_k=8 → rerank_top_n=4) — so even "rerank vs no rerank"
+tangles reranking with how many contexts reach the LLM.
+
+Fix: a 4-rung ladder where each adjacent pair changes exactly ONE variable.
+Everything else (dataset synthetic_v2, 8B LLM, prompt v1, top_k=8, vector
+weight 0.6, temperature 0, corpus hash, gpt-4o-mini judge) is held fixed.
+
+| Rung | Config | Contexts to LLM |
+|---|---|---|
+| 1 `vector_only` | vector, no rerank | 8 |
+| 2 `hybrid_no_rerank` | hybrid, no rerank | 8 |
+| 3 `hybrid_rerank_full` | hybrid, rerank, top_n=**8** | 8 (reordered) |
+| 4 `hybrid_default` | hybrid, rerank, top_n=**4** | 4 (serving) |
+
+- **1→2 isolates the retrieval algorithm** (vector vs hybrid): both pass 8
+  contexts, neither reranks.
+- **2→3 isolates the reranker's reordering**: identical 8-context *set*, only
+  the order differs. This is the key rung the naive 3-arm design omits — it
+  holds context count at 8 so reordering doesn't get credit for truncation.
+- **3→4 isolates truncation** (8→4 contexts): identical rerank order.
+
+Falsifiable predictions written down *before* reading the results:
+- Set-based metrics (`hit_rate`, `context_recall`) are computed over the
+  retrieved set, which is byte-identical between rung 2 and rung 3 → they
+  **must be equal** across 2 and 3. If they aren't, there's a bug in how the
+  runner captures the final context set. (A built-in consistency check.)
+- Rank-aware metrics (`MRR`, `context_precision`) should improve 2→3 iff the
+  cross-encoder genuinely ranks better than RRF.
+- The `hit_rate` / `context_recall` *drop* the reviewer saw at serving should
+  appear at **3→4** (truncation), not 2→3 (reranking) — i.e. it's the price of
+  passing 4 contexts instead of 8, not a failing of the reranker.
+
+### What we found (synthetic_v2, 52/52 coverage)
+
+Deterministic retrieval metrics (no judge, so no noise — the trustworthy ones):
+
+| Rung | hit_rate | MRR | NDCG |
+|---|---|---|---|
+| 1 vector | 0.885 | 0.777 | 0.781 |
+| 2 hybrid, no rerank | 0.885 | 0.798 | 0.802 |
+| 3 hybrid, rerank→8 | 0.885 | **0.838** | **0.826** |
+| 4 hybrid, rerank→4 (serving) | 0.865 | 0.833 | 0.813 |
+
+The decomposition, one variable at a time:
+- **1→2 retrieval (vector→hybrid):** hit_rate flat (0.885), MRR +0.021, NDCG
+  +0.021. Both find a relevant page equally often; hybrid just ranks it higher.
+- **2→3 reranking, set held identical:** hit_rate provably flat (0.885 =
+  0.885), but **MRR +0.040 and NDCG +0.024**. This is the cleanest result in
+  the whole harness — the cross-encoder's reordering lifts ranking by an amount
+  *far* above the judge noise floor, with the retrieved set byte-identical. The
+  reranker earns its place here, unambiguously.
+- **3→4 truncation (8→4 contexts):** hit_rate 0.885→0.865 — the entire
+  hit_rate drop the reviewer flagged is *truncation*, exactly as predicted, not
+  reranking. It buys context_precision (0.887→0.925) and halves generation
+  input tokens (p50 6.1s→4.1s), which is why serving keeps it on a free tier.
+
+**Judge-noise calibration (v2):** the two byte-identical hybrid+rerank+8B runs
+differ by |Δ|faithfulness = 0.025, everything else ≤ 0.005. So ~0.03 is the
+noise floor — which is *exactly* why the deterministic MRR/NDCG gains matter:
+the reranker's value is invisible in the judged metrics (they wiggle within
+noise) but crisp in MRR (+0.040, no noise).
+
+**A prediction I got wrong — and the lesson.** I pre-registered that *both*
+`hit_rate` and `context_recall` must be exactly equal across rungs 2 and 3
+because "they're computed over the retrieved set." `hit_rate` held (0.885 =
+0.885) and the per-sample retrieved sets were verified byte-identical. But
+`context_recall` came out 0.928 vs 0.937 — because I misclassified it.
+`context_recall` is a **RAGAS LLM-judged** metric (it decomposes the reference
+answer into claims and asks the judge whether each is supported), so it carries
+judge noise even when the context set is identical. Only `hit_rate` / `MRR` /
+`NDCG` are deterministic. The consistency check was still valuable — it just
+lives entirely in the deterministic metrics, and the 0.009 recall wiggle is
+noise, not a bug. Lesson: know which of your metrics have an LLM in the loop
+before you claim two of them must be bit-identical.

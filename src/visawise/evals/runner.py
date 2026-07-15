@@ -8,7 +8,8 @@ RunRecord (evals/runs/<utc_ts>_<experiment>.json):
     {run_id, experiment, git_sha, corpus_hash, dataset: {name, sha256},
      engine_config: {...}, judge_model, prompt_version,
      samples: [{id, response, retrieved_chunk_ids, scores}],
-     aggregates: {metric: mean}, timings: {p50_ms, p95_ms}, cost: {...}}
+     aggregates: {metric: mean}, coverage: {metric: {scored, total}},
+     timings: {p50_ms, p95_ms}, cost: {...}}
 
 Experiment YAML (configs/experiments/*.yaml):
     name, dataset, engine: {retriever, top_k, vector_weight, reranker, ...},
@@ -32,10 +33,20 @@ from ..config import REPO_ROOT, settings
 from ..ingestion.chunk import corpus_hash, load_chunks
 from ..rag.graph import EngineConfig, build_graph
 from .datasets import dataset_path, load_dataset
-from .metrics import score_judged, score_retrieval
+from .metrics import coverage_from_scores, score_judged, score_retrieval
 
 _MIN_INVOKE_INTERVAL_S = 2.5  # Groq free tier: 30 req/min
 _METRIC_MODES = {"judged", "retrieval", "all"}
+# Judged metrics are gated on coverage (settings.judged_coverage_threshold):
+# judge failures skew toward long, hard answers, so a partial average is a
+# biased average. Retrieval metrics are exempt -- curated honesty probes have
+# empty source_urls by design and score None on purpose.
+_COVERAGE_GATED_METRICS = {
+    "faithfulness",
+    "response_relevancy",
+    "context_precision",
+    "context_recall",
+}
 
 
 def expand_experiment(spec: dict) -> list[tuple[str, dict]]:
@@ -166,6 +177,7 @@ def run_experiment(experiment_path: str) -> list[str]:
     git_sha = _git_sha()
 
     run_ids: list[str] = []
+    coverage_failures: list[str] = []
     for run_name, overrides in expand_experiment(spec):
         config = _build_engine_config({**engine_block, **overrides})
         graph = build_graph(config)
@@ -244,6 +256,7 @@ def run_experiment(experiment_path: str) -> list[str]:
         per_sample_scores = [
             {**retrieval_scores[i], **judged_scores[i]} for i in range(len(raw_samples))
         ]
+        coverage = coverage_from_scores(per_sample_scores)
 
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         run_id = f"{timestamp}_{run_name}"
@@ -273,6 +286,7 @@ def run_experiment(experiment_path: str) -> list[str]:
                 for i, item in enumerate(raw_samples)
             ],
             "aggregates": _aggregate(per_sample_scores),
+            "coverage": coverage,
             "timings": {
                 "p50_ms": _percentile(latencies, 0.50),
                 "p95_ms": _percentile(latencies, 0.95),
@@ -281,5 +295,21 @@ def run_experiment(experiment_path: str) -> list[str]:
 
         _write_record(record)
         run_ids.append(run_id)
+
+        for metric, cov in coverage.items():
+            if metric not in _COVERAGE_GATED_METRICS or not cov["total"]:
+                continue
+            if cov["scored"] / cov["total"] < settings.judged_coverage_threshold:
+                coverage_failures.append(
+                    f"[{run_name}] {metric}: {cov['scored']}/{cov['total']} scored "
+                    f"(< {settings.judged_coverage_threshold:.0%})"
+                )
+
+    if coverage_failures:
+        # Records are already written (nothing is lost), but the run fails:
+        # partial-coverage aggregates must never pass silently as results.
+        raise RuntimeError(
+            "judged-metric coverage below threshold:\n  " + "\n  ".join(coverage_failures)
+        )
 
     return run_ids

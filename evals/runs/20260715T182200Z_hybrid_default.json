@@ -1,0 +1,1681 @@
+{
+  "aborted": null,
+  "aggregates": {
+    "context_precision": 0.9252136751819534,
+    "context_recall": 0.9331501831501832,
+    "faithfulness": 0.9134447769722538,
+    "hit_rate": 0.8653846153846154,
+    "mrr": 0.8333333333333334,
+    "ndcg": 0.8130181716971262,
+    "response_relevancy": 0.7858190847621507
+  },
+  "corpus_hash": "f71c71028b200578ea35fbd94e49641b45412c2a1fc2ebdc957af0159cb5ebcc",
+  "coverage": {
+    "context_precision": {
+      "scored": 52,
+      "total": 52
+    },
+    "context_recall": {
+      "scored": 52,
+      "total": 52
+    },
+    "faithfulness": {
+      "scored": 52,
+      "total": 52
+    },
+    "hit_rate": {
+      "scored": 52,
+      "total": 52
+    },
+    "mrr": {
+      "scored": 52,
+      "total": 52
+    },
+    "ndcg": {
+      "scored": 52,
+      "total": 52
+    },
+    "response_relevancy": {
+      "scored": 52,
+      "total": 52
+    }
+  },
+  "dataset": {
+    "limit": null,
+    "n_samples": 52,
+    "name": "synthetic_v2",
+    "sha256": "e5dfa633389f379af6e03331d9cac801cfac6ff967f1ba8b4244666a82685609"
+  },
+  "engine_config": {
+    "llm": "nvidia:meta/llama-3.1-8b-instruct",
+    "prompt_version": "v1",
+    "rerank_top_n": 4,
+    "reranker": "local",
+    "retriever": "hybrid",
+    "top_k": 8,
+    "vector_weight": 0.6
+  },
+  "experiment": "hybrid_default",
+  "git_sha": "40dd25b",
+  "judge_model": "gpt-4o-mini",
+  "prompt_version": "v1",
+  "run_id": "20260715T182200Z_hybrid_default",
+  "samples": [
+    {
+      "id": "syn-000",
+      "response": "Based on the provided context information, it appears that the M form is not explicitly mentioned. However, the context does mention the following forms that may be related to immigration:\n\n1. Form I-765, Application for Employment Authorization: This form is used to apply for employment authorization, and it is mentioned that certain individuals, such as Afghan parolees, Liberian Refugee Immigration Fairness (LRIF) applicants, and Deferred Action for Childhood Arrivals (DACA) requestors, may need to file this form.\n2. Form I-140, Immigrant Petition for Alien Workers: This form is used to petition for an alien worker to become a lawful permanent resident in the United States. It is mentioned that this form can be filed by mail or online, and that certain individuals, such as self-petitioners, may need to provide specific information when filing this form.\n\nIt is not clear from the provided context information who can use the M form for immigration purposes. If you could provide more information or context about the M form, I would be happy to try and assist you further.",
+      "retrieved_chunk_ids": [
+        "9cf8560df8c1e33cd6dc5c63",
+        "87b4ec3b2a2e2d3688bad872",
+        "79afb1420ea0730a09ff72d5",
+        "58571826b83f21996195083e"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.0
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "id": "syn-001",
+      "response": "According to the context information, Form I-539, Extend/Change Nonimmigrant Status, is used by the following groups:\n\n1. Certain nonimmigrants extending their stay or changing to another nonimmigrant status.\n2. Commonwealth of the Northern Mariana Islands (CNMI) residents applying for an initial grant of status.\n3. F and M nonimmigrants applying for reinstatement.\n4. Persons seeking V nonimmigrant status or an extension of stay as a V nonimmigrant.\n\nThis form is used to apply for an extension of stay or change of status in the United States.",
+      "retrieved_chunk_ids": [
+        "b414ace6d15f5e934b252d95",
+        "3c6c3e7217e18a57145d821a",
+        "6710afed16c9e1e4ac5cedb8",
+        "9cf8560df8c1e33cd6dc5c63"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9823925717646707
+        }
+      }
+    },
+    {
+      "id": "syn-002",
+      "response": "Based on the provided context information, the essential filing tips for B-1 nonimmigrants when completing Form I-539 to extend or change their nonimmigrant status are as follows:\n\n1. **Complete all sections of the form**: Ensure that all required fields in Part 1 \u2013 Information About You and Part 2 \u2013 Application Type are filled in accurately. This includes:\n   - Family Name\n   - Mailing Address\n   - Date of Birth\n   - Current nonimmigrant status\n   - Application Type (1, 2, or 3.a.)\n   - The status you are requesting (3.b or 3.c)\n   - Total number of People Included in This Application\n\n2. **Review the Form I-539 filing instructions**: Before submitting your request, ensure you are filing the correct form for your specific situation.\n\n3. **Do not file Form I-539 for certain employment-based classifications**: B-1 nonimmigrants are not eligible to file Form I-539 for extension of stay in, or change of status to, certain employment-based classifications, such as H-1B, H-1B1, H-2A, H-2B, and H-3 nonimmigrants, L-1 nonimmigrants, O-1 and O-2 nonimmigrants, P-1, P-2, P-3, P-1S, P-2S, or P-3S nonimmigrants, Q-1 nonimmigrants, R-1 nonimmigrants, TN-1 and TN-2 nonimmigrants.\n\n4. **Submit your Form I-539 application before the expiration date**: You must submit your Form I-539 application for an extension or change of status by mail or online before the expiration date as shown on the admission stamp in your travel document on your Form I-94, Arrival-Departure Record.\n\n5. **Ensure your passport is valid for the entire requested period of stay**: Your passport must be valid for your entire requested period of stay in the new nonimmigrant classification in the United States.\n\n6. **Do not assume your status has been approved**: Until you receive approval from USCIS, do not assume the status has been approved, and do not change your activity in the United States.\n\n7. **Review the Form I-539 Direct Filing Addresses page**: For a complete list of mailing addresses, visit the USCIS website.\n\n8. **Do not file Form I-539 for automatic extension of employment authorization**: If you are eligible for automatic extension of your existing employment authorization, you should not file Form I-539. Instead, see the USCIS website for more information on this automatic extension.",
+      "retrieved_chunk_ids": [
+        "3c6c3e7217e18a57145d821a",
+        "b414ace6d15f5e934b252d95",
+        "6710afed16c9e1e4ac5cedb8",
+        "e85159be0b023859a4bec0e2"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.8823529411764706
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9510409613140777
+        }
+      }
+    },
+    {
+      "id": "syn-003",
+      "response": "The Student and Exchange Visitor Program (SEVP) is a U.S. government program that monitors and tracks international students and exchange visitors in the United States. It is administered by U.S. Immigration and Customs Enforcement (ICE) and is responsible for ensuring that international students and exchange visitors comply with the terms of their nonimmigrant status.\n\nIn the context of STEM OPT extensions, SEVP plays a crucial role in certifying institutions of higher education that are eligible to sponsor international students. To qualify for a STEM OPT extension, a student must have earned a qualifying STEM degree from a school that is accredited by a U.S. Department of Education-recognized accrediting agency and is certified by SEVP at the time the student submits their STEM OPT extension application.\n\nSEVP also maintains the Student and Exchange Visitor Information System (SEVIS), which is a database that tracks the status of international students and exchange visitors in the United States. When a student applies for a STEM OPT extension, their designated school official (DSO) must enter a recommendation for OPT into the student's SEVIS record.\n\nIn addition, SEVP is responsible for ensuring that employers who hire STEM OPT students comply with the requirements of the STEM OPT program, including registering with E-Verify and providing a valid E-Verify Company Identification Number or valid E-Verify Client Company Identification Number on the student's Form I-765 application.\n\nOverall, SEVP plays a critical role in ensuring that international students and exchange visitors comply with the terms of their nonimmigrant status and that employers who hire them comply with the requirements of the STEM OPT program.",
+      "retrieved_chunk_ids": [
+        "dfff6180a4b3449b5950df42",
+        "c4740459fee7ffaad7beeb7d",
+        "c3186fc9986366e028825845",
+        "4d1a631c1694ada55be7f932"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.9333333333333333
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.8667833820337414
+        }
+      }
+    },
+    {
+      "id": "syn-004",
+      "response": "According to the context information, a Designated School Official (DSO) plays a crucial role in the STEM OPT extension process. The DSO is responsible for:\n\n1. Endorsing the student's Form I-20, Certificate of Eligibility for Nonimmigrant Student Status, within the last 60 days.\n2. Recommending the student for OPT and entering the recommendation into the Student and Exchange Visitor Information System (SEVIS) record.\n3. Receiving and reviewing the student's Form I-983, Training Plan for STEM OPT Students, and ensuring that the student's employer meets the requirements.\n4. Receiving and reviewing any modified Form I-983 from the student's employer in the event of a material change in the student's employment.\n5. Receiving and reviewing the student's report of changes to their information, such as their name, address, email, employer's name, and employer's address, within 10 days of the change.\n6. Receiving and reviewing the student's report to confirm their information every 6 months, even if none of their information has changed.\n\nThe DSO's role is to ensure that the student and their employer comply with the STEM OPT extension requirements and regulations.",
+      "retrieved_chunk_ids": [
+        "0df80670745e49f170b3c8d9",
+        "75e8450a2be2e0f4de8ed51a",
+        "dfff6180a4b3449b5950df42",
+        "f27efba68416a29a253fc23a"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.893331812911169
+        }
+      }
+    },
+    {
+      "id": "syn-005",
+      "response": "According to the USCIS Policy Manual, the key responsibilities of employers under the STEM OPT program are as follows:\n\n1. **Enrollment in E-Verify**: The employer must be enrolled in E-Verify, as evidenced by either a valid E-Verify company identification number or, if the employer is using an employer agent to create its E-Verify cases, a valid E-Verify client company identification number.\n\n2. **Remain a participant in good standing with E-Verify**: The employer must remain a participant in good standing with E-Verify, as determined by USCIS.\n\n3. **Have a valid Employer Identification Number (EIN)**: The employer must have a valid Employer Identification Number (EIN) issued by the IRS for tax purposes.\n\n4. **Report material changes of the STEM OPT student\u2019s employment**: The employer must report material changes of the STEM OPT student\u2019s employment by submitting a modified Form I-983 to the DSO at the earliest available opportunity.\n\n5. **Report the STEM OPT student\u2019s termination of employment or departure**: The employer must report the STEM OPT student\u2019s termination of employment or departure to the DSO within 5 business days.\n\n6. **Implement a formal training program**: The employer must implement a formal training program to build on the student\u2019s academic learning through practical experience.\n\n7. **Provide an OPT opportunity commensurate with U.S. workers**: The employer must provide an OPT opportunity that is commensurate with those of similarly situated U.S. workers in duties, hours, and compensation.\n\n8. **Maintain a bona fide employer-employee relationship**: The employer must have and maintain a bona fide employer-employee relationship with the student.\n\n9. **Have sufficient resources and personnel available**: The employer must have sufficient resources and personnel available to provide appropriate training in connection with the specified opportunity at the location(s) specified in the Form I-983.\n\n10. **Ensure the training opportunity assists the student in attaining their training goals**: The employer must ensure that the training opportunity will assist the student in attaining their training goals.\n\n11. **Report changes in the student\u2019s employment address**: The employer and student must report any change in the student\u2019s employment address by submitting a modified Form I-983 to the DSO at the earliest available opportunity.\n\n12. **Comply with site visits**: The employer must comply with site visits conducted by DHS to ensure that the employer possesses and maintains the ability and resources to provide structured and guided work-based learning experiences consistent with the Form I-983.\n\nThese responsibilities are outlined in the USCIS Policy Manual and are essential for employers to ensure compliance with the STEM OPT program.",
+      "retrieved_chunk_ids": [
+        "0df80670745e49f170b3c8d9",
+        "75e8450a2be2e0f4de8ed51a",
+        "dfff6180a4b3449b5950df42",
+        "c4740459fee7ffaad7beeb7d"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.91452893706126
+        }
+      }
+    },
+    {
+      "id": "syn-006",
+      "response": "According to the context information, the U.S. Department of State (DOS) plays a crucial role in the allocation of immigrant visas. The DOS is responsible for allocating immigrant visas according to the following steps:\n\n1. The DOS allocates immigrant visas based on the number of visas available each year, as set by the Immigration and Nationality Act (INA).\n2. The DOS divides the available visas into several categories, including immediate relatives of U.S. citizens, family-sponsored preference categories, and employment-based preference categories.\n3. Within each category, the DOS allocates visas based on the priority date, which is the date when the underlying immigrant petition was filed.\n4. The DOS uses the priority date to determine an immigrant's place in the visa queue. When the priority date becomes available, or is \"current,\" immigrants may be able to apply for adjustment of status or apply for an immigrant visa with the DOS.\n\nThe DOS determines priority dates based on the following factors:\n\n* For family-sponsored preference cases, the priority date is the date when the Form I-130, Petition for Alien Relative, or in certain instances the Form I-360, Petition for Amerasian, Widow(er), or Special Immigrant, is properly filed with USCIS.\n* For employment-based preference cases, the priority date depends on the following:\n\t+ If the preference category requires a labor certification from the Department of Labor (DOL), the priority date is the date when the DOL accepts the labor certification application for processing.\n\t+ If the preference category does not require a DOL labor certification, the priority date is the date when USCIS accepts the Form I-140, Immigrant Petition for Alien Worker, for processing.\n\t+ If the immigrant is a fourth preference special immigrant, including religious workers, the priority date is the date when USCIS accepts the Form I-360, Petition for Amerasian, Widow(er) or Special Immigrant, for processing.\n\t+ If the immigrant is a fifth preference investor, the priority date is the date when USCIS accepts the Form I-526, Immigrant Petition by Alien Entrepreneur, for processing.\n\nThe DOS publishes a monthly Visa Bulletin that summarizes the availability of immigrant visas according to the Application Final Action Dates chart and the Dates for Filing Applications chart. The Visa Bulletin provides the most recent date for when a visa number is available for the different categories and countries for family-sponsored, employment-based, and diversity (lottery) visas.",
+      "retrieved_chunk_ids": [
+        "38ff211d2360217fb0b81ae2",
+        "79afb1420ea0730a09ff72d5",
+        "0af9946863f62fc44ff60d28",
+        "22d9fd89cbb106b18504acd0"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7366634670549578
+        }
+      }
+    },
+    {
+      "id": "syn-007",
+      "response": "According to the context information, the U.S. Department of State (DOS) allocates immigrant visas according to a prospective immigrant's preference category, country of chargeability, and priority date. They use the priority date to determine an immigrant's place in the visa queue. When the priority date becomes available, or is \"current,\" immigrants may be able to apply for adjustment of status (or apply for an immigrant visa with DOS if they are outside the U.S.) and obtain lawful permanent resident status, if otherwise eligible.\n\nAdditionally, the DOS publishes a monthly Visa Bulletin that summarizes the availability of immigrant visas according to the:\n\n1. Application Final Action Dates chart (consistent with previous Visa Bulletins)\n2. Dates for Filing Applications chart indicating when immigrant visa applicants should be notified to assemble and submit required documentation to the National Visa Center.\n\nThe DOS, working with the Department of Homeland Security, revises the Visa Bulletin each month to estimate immigrant visa availability for prospective adjustment of status applicants.",
+      "retrieved_chunk_ids": [
+        "38ff211d2360217fb0b81ae2",
+        "e18c6b5a16f9f82ddf695443",
+        "107ad5e98bda3a0f24d32e55",
+        "e85159be0b023859a4bec0e2"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.99999999995
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.4209726456477607
+        }
+      }
+    },
+    {
+      "id": "syn-008",
+      "response": "According to the context information, for family-sponsored immigrants, the priority date is the date that the Form I-130, Petition for Alien Relative, is properly filed with USCIS.",
+      "retrieved_chunk_ids": [
+        "79afb1420ea0730a09ff72d5",
+        "38ff211d2360217fb0b81ae2",
+        "58571826b83f21996195083e",
+        "1e513271bef26c844205523a"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9166666666361111
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7586273773026891
+        }
+      }
+    },
+    {
+      "id": "syn-009",
+      "response": "The Visa Bulletin is a monthly publication by the U.S. Department of State (DOS) that summarizes the availability of immigrant visas according to the preference category, country of chargeability, and priority date. It provides the most recent date for when a visa number is available for the different categories and countries for family-sponsored, employment-based, and diversity (lottery) visas.\n\nThe Visa Bulletin affects visa retrogression in the following ways:\n\n1. **Cut-off dates**: The Visa Bulletin sets cut-off dates for each preference category and country of chargeability. If the demand for immigrant visas is more than the supply for a particular category and country, DOS considers the category and country \"oversubscribed\" and must impose a cut-off date to keep the allocation of visas within the statutory limits.\n2. **Priority dates**: The Visa Bulletin provides the priority date for each preference category and country of chargeability. A visa is available to an immigrant when their priority date is earlier than the cut-off date shown for their preference category and country of chargeability in the applicable chart in the Visa Bulletin.\n3. **Visa availability**: The Visa Bulletin indicates when immigrant visas are available for each preference category and country of chargeability. If the Visa Bulletin shows a date, it means that visas are currently available for immigrants who have a priority date earlier than that date. If the Visa Bulletin shows \"C,\" it means that immigrant visas are currently available to all qualified adjustment of status applicants and overseas immigrant visa applicants in that particular preference category and country of chargeability.\n4. **Visa retrogression**: Visa retrogression occurs when more people apply for a visa in a particular category than there are visas available for that month. This can cause the cut-off date to move backward to an earlier date, making it more difficult for immigrants to obtain a visa.\n\nTo illustrate how the Visa Bulletin affects visa retrogression, let's consider an example:\n\nSuppose the Visa Bulletin shows a cut-off date of 15DEC07 for China in the family preference category (F1). This means that visas are currently available for immigrants who have a priority date earlier than Dec. 15, 2007. If more people apply for a visa in this category than there are visas available, the cut-off date may move backward to an earlier date, such as 01JAN07. This would cause visa retrogression, making it more difficult for immigrants to obtain a visa.\n\nIn summary, the Visa Bulletin plays a crucial role in determining visa availability and priority dates, which can affect visa retrogression. Immigrants should regularly check the Visa Bulletin to determine when their priority date is current and when they can apply for a visa.",
+      "retrieved_chunk_ids": [
+        "79afb1420ea0730a09ff72d5",
+        "38ff211d2360217fb0b81ae2",
+        "1e513271bef26c844205523a",
+        "b8914b3b6a405d498bdeaa55"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7557125702703167
+        }
+      }
+    },
+    {
+      "id": "syn-010",
+      "response": "Form I-765, Application for Employment Authorization, is used by certain aliens who are in the United States to request an Employment Authorization Document (EAD). It is also used by aliens whose immigration status authorizes them to work in the United States without restrictions to apply for an EAD that shows such authorization.",
+      "retrieved_chunk_ids": [
+        "54acd8ca41d1939fbacbbd85",
+        "1b33e391417e9fa2dc4d3437",
+        "6710afed16c9e1e4ac5cedb8",
+        "f27efba68416a29a253fc23a"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9550837650647527
+        }
+      }
+    },
+    {
+      "id": "syn-011",
+      "response": "To submit a request for a replacement EAD at Lee's Summit Production Facility, follow these steps:\n\n1. Determine the reason for requesting a replacement EAD. If the error is due to USCIS error, proceed to step 2. If the error is not due to USCIS error, proceed to step 3.\n\n2. If the error is due to USCIS error, submit a service request via the USCIS website. Explain the error and include the correct information. Select the \"EAD Replacement due to USCIS Error\" option when submitting your request. You must also return the card containing the error to the following address:\n\nUSCIS\nLee\u2019s Summit Production Facility\nAttn: I-765 Replacement Cards\n7 Product Way\nLee\u2019s Summit, MO 64002\n\nNote: You must use the United States Postal Service (USPS) when returning your card. The use of other carriers (such as UPS, FedEx, or DHL) is not available for this address.\n\n3. If the error is not due to USCIS error, you must submit:\n\n- A new Form I-765;\n- The filing fee, if required (or a request for a fee waiver);\n- Any documents specified in the form instructions; and\n- The card containing the error.\n\nReturn the card containing the error to the following address:\n\nUSCIS\nLee\u2019s Summit Production Facility\nAttn: I-765 Replacement Cards\n7 Product Way\nLee\u2019s Summit, MO 64002\n\nNote: You must use the United States Postal Service (USPS) when returning your card. The use of other carriers (such as UPS, FedEx, or DHL) is not available for this address.\n\n4. It will take approximately 30 days from the date the card is received for USCIS to process your request and, if we determine it was due to USCIS error, to issue you a new card. Please retain your tracking information to ensure your card was properly delivered. This processing time frame does not account for USPS mailing/processing.",
+      "retrieved_chunk_ids": [
+        "630665f5d1f4972fc8aa3a7a",
+        "2377502801af24fe66aea0bd",
+        "ec8ecb666ef685be8a145a41",
+        "54acd8ca41d1939fbacbbd85"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.8636363636363636
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9771850563671216
+        }
+      }
+    },
+    {
+      "id": "syn-012",
+      "response": "According to the provided context information, the eligibility categories for Form I-765 are as follows:\n\n1. (a)(20) - You may file Form I-765 at the same time as Form 918, Supplement A, Petition for Qualifying Family Member of U-1 Recipient, or you may file Form I-765 later.\n2. (c)(3)(A) - File Form I-765 up to 90 days before being enrolled for one full academic year, provided that the period of employment will not start before you have completed one full academic year.\n3. (c)(3)(B) - File Form I-765 up to 90 days before, but no later than 60 days after, your program end date. You must file your Form I-765 within 30 days of the date that your DSO enters the recommendation for OPT into your SEVIS record.\n4. (c)(3)(C) - File Form I-765 up to 90 days before the expiration of your current OPT, if you are requesting a 24-month STEM extension.\n5. (c)(6) - File Form I-765 with a copy of the Form I-20 endorsed by the DSO certifying eligibility for employment together with Form I-539, Application to Change/Extend Nonimmigrant Status, if applicable, completed according to the Form I-539 Instructions.\n6. (c)(8) - You must wait 150 days before you can apply for an EAD, and an additional 30 days before we can issue you an EAD, for a total of 180 days starting from when you filed your I-589 asylum application.\n7. (c)(9) - File Form I-765 together with Form I-485, Application to Register Permanent Residence or Adjust Status, or if filing separately, submit a copy of your I-485 receipt notice or other evidence to show that your Form I-485 is pending.\n8. (c)(10) - If you are eligible to apply for NACARA 203 relief with USCIS, you may file Form I-765 together with your Form I-881, Application for Suspension of Deportation or Special Rule Cancellation of Removal (Under Section 203 of Public Law 105-100 (NACARA)).\n9. (c)(11) - File Form I-765 with sufficient evidence to show that your parole status is current and has not expired or is about to expire.\n10. (c)(26) - You may file Form I-765 at the same time as your Form I-539 and your H1-B spouse\u2019s Form I-129, Petition for a Nonimmigrant Worker.\n11. (c)(36) - You may file your Form I-765 with your spouse\u2019s or parent\u2019s application under (c)(35).\n12. (c)(37) - You may file Form I-765 up to 180 days before your EAD expires.\n\nAdditionally, the context information also mentions the following eligibility categories:\n\n- (c)(35) - This category is mentioned in the context of (c)(36), but its specific requirements are not provided.\n- (c)(37) - This category is mentioned in the context of filing Form I-765 up to 180 days before your EAD expires.\n- (c)(8) - This category is mentioned in the context of asylum applicants, who must wait 150 days before applying for an EAD and an additional 30 days before the EAD can be issued.\n- (c)(6) - This category is mentioned in the context of filing Form I-765 with a copy of the Form I-20 endorsed by the DSO certifying eligibility for employment together with Form I-539, Application to Change/Extend Nonimmigrant Status.\n- (c)(9) - This category is mentioned in the context of filing Form I-765 together with Form I-485, Application to Register Permanent Residence or Adjust Status.\n- (c)(10) - This category is mentioned in the context of NACARA 203 relief applicants, who may file Form I-765 together with their Form I-881, Application for Suspension of Deportation or Special Rule Cancellation of Removal.\n- (c)(11) - This category is mentioned in the context of parole applicants, who must file Form I-765 with sufficient evidence to show that their parole status is current and has not expired or is about to expire.\n- (c)(26) - This category is mentioned in the context of filing Form I-765 at the same time as your Form I-539 and your H1-B spouse\u2019s Form I-129, Petition for a Nonimmigrant Worker.\n- (c)(36) - This category is mentioned in the context of filing your Form I-765 with your spouse\u2019s or parent\u2019s application under (c)(35).\n- (c)(37) - This category is mentioned in the context of filing Form I-765 up to 180 days before your EAD expires.\n\nIt's worth noting that the context information also mentions the following eligibility categories for specific groups:\n\n- Afghan Parolee: If you are an Afghan national paroled into the United States, you will need a Social Security number (SSN) to work in the United States. Your SSN allows employers to report your earnings to the U.S. government.\n- Liberian Refugee Immigration Fairness (LRIF) Applicants: If you are filing Form I-765 as an adjustment of status applicant based on LRIF, you should write \u201c(c)(9)\u201d as your eligibility category in Part 2, Item Number 27 on your Form I-765.\n- Deferred Action for Childhood Arrivals (DACA) requestors: To be considered for DACA, you must submit: Form I-821D, Consideration of Deferred Action for Childhood Arrivals; Form I-765, Application for Employment Authorization; Form I-765 Worksheet; and the correct fees.\n- T Applicants: If you are a principal T nonimmigrant applicant, you are authorized to work based on your status. After we approve the underlying application for T nonimmigrant status, we will issue you an Employment Authorization Document (EAD). This means you will not need to file Form I-765. If you are a derivative family member residing inside the United States, you are also authorized to work based on your status. After we approve the underlying application for derivative T nonimmigrant status, we will not issue you an EAD. You will need to file Form I-765.",
+      "retrieved_chunk_ids": [
+        "f27efba68416a29a253fc23a",
+        "1b33e391417e9fa2dc4d3437",
+        "87b4ec3b2a2e2d3688bad872",
+        "54acd8ca41d1939fbacbbd85"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9166666666361111
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 0.5
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.9666666666666667
+        },
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9247222020031612
+        }
+      }
+    },
+    {
+      "id": "syn-013",
+      "response": "According to the provided context information, the key responsibilities of the U.S. Department of State in administering the J-1 exchange visitor program include:\n\n1. Designating public and private entities to act as exchange program sponsors.\n2. Designating these sponsors to promote the interchange of persons, knowledge, and skills in the fields of education, arts, and science.\n3. Announcing measures to increase the flow of talent in science, technology, engineering, and math (STEM) fields through the Early Career STEM Research Initiative.\n\nTo obtain a J-1 visa, an individual must take the following steps:\n\n1. **Step 1: Obtain a Form DS-2019, Certificate of Eligibility for Exchange Visitor Status**:\n   - The individual's sponsoring agency will provide them with this form.\n   - The responsible officer (RO) or alternate responsible officer (ARO) at the sponsoring agency will explain the required documents needed to issue the DS-2019.\n\n2. **Step 2: Apply for a J-1 visa**:\n   - After obtaining the DS-2019, the individual may apply for a J-1 visa through the U.S. Department of State at a U.S. Embassy or Consulate.\n   - The waiting time for an interview appointment can vary, so submitting the visa application as early as possible is strongly encouraged.\n\nNote that the individual cannot enter the United States in J-1 status more than 30 days before their program begins.",
+      "retrieved_chunk_ids": [
+        "4d1a631c1694ada55be7f932",
+        "c3186fc9986366e028825845",
+        "c4740459fee7ffaad7beeb7d",
+        "5014a12fd8df3ee85c791198"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.99999999995
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9111039616427142
+        }
+      }
+    },
+    {
+      "id": "syn-014",
+      "response": "Based on the provided context information, there is no specific information about employment opportunities for J-2 nonimmigrants. However, we can infer that J-2 nonimmigrants are eligible to apply for employment authorization.\n\nAccording to the context information, if you are in the United States in a lawful nonimmigrant status that does not provide employment authorization, you generally may apply for:\n\n- A change of status to a nonimmigrant classification that provides employment authorization; or\n- An adjustment of status to become a lawful permanent resident.\n\nSince J-2 nonimmigrants are in a nonimmigrant status, they may be eligible to apply for a change of status to a nonimmigrant classification that provides employment authorization.\n\nTo obtain employment authorization as a J-2 nonimmigrant, you would need to file Form I-765, Application for Employment Authorization, and follow the instructions provided in the context information.\n\nHere are the steps to follow:\n\n1. Determine your eligibility: Check if you are eligible to apply for a change of status to a nonimmigrant classification that provides employment authorization.\n2. Gather required documents: Collect the necessary documents, including a government-issued identification document with a photo, proof of your relationship to the J-1 nonimmigrant, and evidence of your basis for eligibility.\n3. Complete Form I-765: Fill out Form I-765 using the instructions provided in the context information.\n4. Submit supporting evidence: Attach the required supporting evidence, including translations of any foreign language documents.\n5. File Form I-765: Mail the application to the proper location based on the chart provided in the context information.\n6. Wait for processing: USCIS will review your application and may request additional evidence or information.\n7. Receive an Employment Authorization Document (EAD): If your application is approved, you will receive an EAD, which is proof of your employment authorization.\n\nPlease note that this is a general outline, and you should consult the USCIS website or contact a USCIS representative for specific guidance on the process for obtaining employment authorization as a J-2 nonimmigrant.",
+      "retrieved_chunk_ids": [
+        "0af9946863f62fc44ff60d28",
+        "2377502801af24fe66aea0bd",
+        "5095a3d126bc8470e952d011",
+        "1b33e391417e9fa2dc4d3437"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.99999999995
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 0.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.8831088540499289
+        }
+      }
+    },
+    {
+      "id": "syn-015",
+      "response": "Based on the provided context information, the steps involved in the Adjustment of Status process for obtaining a Green Card while present in the United States are as follows:\n\n**Step 1: Determine if you are eligible to apply for a Green Card**\n\n1. Go to the Green Card Eligibility Categories page to see all the possible categories you can apply under.\n2. Find your immigrant category and go to the specific page that lists what the eligibility requirements are.\n\n**Step 2: You or someone else must file an immigrant petition for you (if applicable)**\n\n1. Determine if you need a petition by referring to your eligibility category.\n2. If required, file one of the following forms:\n   - Form I-130, Petition for Alien Relative\n   - Form I-140, Immigrant Petition for Alien Worker\n   - Form I-730, Refugee/Asylee Relative Petition\n   - Form I-589, Application for Asylum and for Withholding of Removal\n   - Other petitions include:\n     - Form I-360, Petition for Amerasian, Widow(er), or Special Immigrant\n     - Form I-526, Immigrant Petition by Alien Entrepreneur\n     - Form I-918, Petition for U Nonimmigrant Status\n     - Form I-929, Petition for Qualifying Family Member of a U-1 Nonimmigrant\n\n**Step 3: Check visa availability (if applicable)**\n\n1. Go to the Visa Availability and Priority Dates page, the Adjustment of Status Filing Charts, and the Department of State website to view the Visa Bulletin.\n2. Check if a visa is available in your category.\n\n**Step 4: File Form I-485**\n\n1. If you are present in the United States and are eligible for adjustment of status, you may file a Form I-485.\n2. Go to the Form I-485 instructions and the webpage for your immigrant category for instructions on how to complete your application and properly file it with USCIS.\n3. Go to the Direct Filing Addresses for Form I-485 page to see where you should file your application.\n\n**Step 5: Go to your Application Support Center appointment**\n\n1. After you file your Form I-485, USCIS will mail you a notice for your biometrics services appointment at a local Application Support Center (ASC).\n2. Provide your fingerprints, photograph, and/or signature at the appointment.\n\nNote: The steps may vary depending on your individual situation, and it is essential to follow the specific instructions for your immigrant category.",
+      "retrieved_chunk_ids": [
+        "e18c6b5a16f9f82ddf695443",
+        "54cf145cadc189dbdd77305d",
+        "e85159be0b023859a4bec0e2",
+        "107ad5e98bda3a0f24d32e55"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9657576106898894
+        }
+      }
+    },
+    {
+      "id": "syn-016",
+      "response": "To get a Permanent Resident Card after filing Form I-485, follow these steps:\n\n1. **After Filing Form I-485**: After you submit your Form I-485, Application to Register Permanent Residence or Adjust Status, you will receive a biometrics appointment notice. This is a required step in the application process.\n\n2. **Biometrics Appointment**: Attend your biometrics appointment to provide fingerprints, photos, and a signature. This is usually done at a local Application Support Center (ASC).\n\n3. **Wait for USCIS to Review Your Application**: After your biometrics appointment, USCIS will review your application. This may take several months.\n\n4. **Interview**: If your application is selected for an interview, you will be scheduled to meet with a USCIS officer. This is an opportunity for the officer to ask you questions about your application and verify the information you provided.\n\n5. **Receive a Decision**: After your interview, the USCIS officer will make a decision on your application. If your application is approved, you will receive a notice stating that your application has been approved.\n\n6. **Get Your Green Card**: Once your application is approved, you will receive a Permanent Resident Card (also known as a Green Card). This card will be mailed to the address you provided on your application.\n\n7. **Track Your Green Card**: You can track the delivery of your Green Card by signing up for a Case Status Online account or by registering for Informed Delivery through USPS.\n\n**Important**: Make sure to update your address with USCIS and USPS as soon as possible if your mailing address changes after you file your application. This will help prevent delays and ensure that your document(s) are delivered to the correct address.\n\n**Additional Tips**:\n\n- Sign up for a Case Status Online account to get automatic case updates, including your U.S. Postal Service (USPS) tracking number when we mail your card or travel document.\n- Register for Informed Delivery through USPS to get daily images of mail being sent to you.\n- Use the USPS Look Up a ZIP Code tool to ensure that you give USCIS your full address using the standard abbreviations and formatting recognized by USPS.",
+      "retrieved_chunk_ids": [
+        "58571826b83f21996195083e",
+        "7199c8229e2f9712ee64edb7",
+        "1e513271bef26c844205523a",
+        "54cf145cadc189dbdd77305d"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.499999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 0.8571428571428571
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.8421052631578947
+        },
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9583595893989911
+        }
+      }
+    },
+    {
+      "id": "syn-017",
+      "response": "To file an H-1B cap-subject petition, particularly in relation to temporary employment and the advanced degree exemption, follow these requirements and timelines:\n\n1. **Electronic Registration**: \n   - The initial registration period for the FY 2027 H-1B cap opens at noon Eastern on March 4 and will run through 5:00 p.m. Eastern on March 19, 2026.\n   - Prospective H-1B cap-subject petitioners and representatives must use a USCIS online account to electronically register each beneficiary for the selection process and pay the required $215 H-1B registration fee for each registration.\n\n2. **Selection Process**: \n   - USCIS will conduct a weighted selection among properly submitted electronic registrations for unique beneficiaries based on the highest Occupational Employment and Wage Statistics (OEWS) wage level that the beneficiary\u2019s proffered wage equals or exceeds for the relevant Standard Occupational Classification (SOC) code in the area(s) of intended employment.\n\n3. **Selection Notice**: \n   - If the unique beneficiary is selected, each registrant who registered for that beneficiary receives a registration selection notice and may file an H-1B cap-subject petition for them.\n\n4. **Filing an H-1B Cap-Subject Petition**: \n   - H-1B cap-subject petitions, including those eligible for the advanced degree exemption, may not be filed unless based on a valid and selected registration for the beneficiary named in the petition (unless the registration requirement is suspended).\n   - You may file an H-1B petition no more than 6 months before the employment start date requested for the beneficiary.\n\n5. **Advanced Degree Exemption**: \n   - An additional 20,000 petitions filed on behalf of beneficiaries who have earned a master\u2019s degree or higher from a U.S. institution of higher education are exempt from the cap.\n\n6. **Labor Condition Application (LCA)**: \n   - Prospective specialty occupation and distinguished fashion model employers or agents must obtain a certification of an LCA from the DOL.\n   - The application includes certain attestations, a violation which can result in fines, bars on sponsoring nonimmigrant or immigrant petitions, and other sanctions to the employer/agent.\n\n7. **Period of Stay**: \n   - As an H-1B specialty occupation worker, you may generally be admitted for a period of up to 3 years.\n   - This initial period of admission may generally be extended for an additional period of up to 3 years, for a total period of admission of 6 years.\n\n8. **Extension Beyond the Sixth Year**: \n   - You may be eligible for an H-1B extension beyond the sixth year under 8 CFR 214.2(h)(13)(iii)(E) if you are the beneficiary of an approved immigrant visa petition under the EB-1, EB-2, or EB-3 classifications, and are eligible to be granted that immigrant status but for application of the per country or worldwide limitations on immigrant visas.\n   - Alternatively, under 8 CFR 214.2(h)(13)(iii)(D), you may be eligible for an H-1B extension beyond the sixth year if at least 365 days have passed since a labor certification was filed with the Department of Labor on your behalf (if such certification is required) or an immigrant visa petition was filed with USCIS on your behalf.",
+      "retrieved_chunk_ids": [
+        "d26d1c3d5793519ec2177467",
+        "c4b905c80a754a640574bc9f",
+        "2fbda19b780ed7afce805ac6",
+        "5014a12fd8df3ee85c791198"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7695383423278993
+        }
+      }
+    },
+    {
+      "id": "syn-018",
+      "response": "Based on the provided context information, it appears that H-1B licensing is not directly related to concurrent employment. However, I will provide an answer based on the information provided.\n\nAccording to the context information, concurrent employment is possible in certain situations. Specifically, if you are currently employed in a cap-exempt position, you may engage in concurrent employment in a cap-subject position as long as you will continue to be employed in the cap-exempt position. You may begin working concurrently for the cap-subject employer as soon as they properly file a non-frivolous Form I-129 petition on your behalf, or as of the requested start date on that petition, whichever is later.\n\nHowever, it is not explicitly stated in the context information whether H-1B licensing is required for concurrent employment. If you need H-1B licensing, it is likely that you would need to meet the requirements for H-1B employment, which may include obtaining a Labor Condition Application (LCA) from the Department of Labor (DOL) and filing a Form I-129 petition with USCIS.\n\nTo determine whether you can do concurrent employment if you need H-1B licensing, you would need to consider the following steps:\n\n1. Determine whether your current employment is cap-exempt or cap-subject.\n2. Check if you need H-1B licensing for your current employment or the new employment.\n3. If you need H-1B licensing, ensure that you have obtained a Labor Condition Application (LCA) from the DOL and filed a Form I-129 petition with USCIS.\n4. If you meet the requirements for concurrent employment, you may begin working concurrently for the cap-subject employer as soon as they properly file a non-frivolous Form I-129 petition on your behalf, or as of the requested start date on that petition, whichever is later.\n\nPlease note that this answer is based on the provided context information and may not be comprehensive or up-to-date. It is always best to consult the official USCIS website or seek advice from a qualified immigration attorney for specific guidance on H-1B licensing and concurrent employment.",
+      "retrieved_chunk_ids": [
+        "107ad5e98bda3a0f24d32e55",
+        "5014a12fd8df3ee85c791198",
+        "1b33e391417e9fa2dc4d3437",
+        "2fbda19b780ed7afce805ac6"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 0.5
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.6428571428571429
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "id": "syn-019",
+      "response": "Based on the context information, the top two user errors in the H-1B electronic registration process are:\n\n1. Creating the wrong type of account; and\n2. Entering the same beneficiary more than once.\n\nTo avoid these common mistakes and potential fraud prevention issues, the beneficiary-centric selection process is implemented. This process helps in reducing the mistakes by:\n\n- **Ensuring the right type of account is created**: The beneficiary-centric selection process requires prospective petitioners to create an organizational account, which is the correct type of account for submitting H-1B registrations.\n- **Preventing duplicate entries**: The process uses a weighted selection among properly submitted registrations for unique beneficiaries based on the highest OEWS wage level that the beneficiary's proffered wage will equal or exceed. This helps in preventing duplicate entries and ensures that each beneficiary is registered only once.\n\nThe beneficiary-centric selection process also includes measures to combat fraud, such as:\n\n- **Attestation requirements**: Prospective petitioners must attest, under penalty of perjury, that all information contained in the submission is complete, true, and correct, and that each registration reflects a bona fide job offer.\n- **OEWS wage level selection**: The process requires prospective petitioners to select the highest OEWS wage level that the beneficiary's proffered wage will equal or exceed, which helps in preventing fraudulent registrations.\n- **Passport or travel document information**: H-1B registrants must provide valid passport information or valid travel document information for each beneficiary, which helps in preventing fraudulent registrations.\n\nOverall, the beneficiary-centric selection process helps in reducing the common mistakes in the H-1B registration process and preventing fraud prevention issues by ensuring that each beneficiary is registered only once, and that all information contained in the submission is complete, true, and correct.",
+      "retrieved_chunk_ids": [
+        "3e73813492eb6199b26682b7",
+        "5d92188dff11cc8f87d09177",
+        "c4b905c80a754a640574bc9f",
+        "da32faf4684c957aa84d3d91"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.692775648476759
+        }
+      }
+    },
+    {
+      "id": "syn-020",
+      "response": "To apply for an Employment Authorization Document (EAD) during their post-completion OPT, F-1 students must follow these steps:\n\n1. **Request a recommendation from the designated school official (DSO)**: The DSO at the student's academic institution must recommend the OPT by endorsing the student's Form I-20, Certification of Eligibility for Nonimmigrant Student Status, and making the appropriate notation in the Student and Exchange Visitor Information System (SEVIS).\n2. **File Form I-765, Application for Employment Authorization**: The student must properly file Form I-765 with the required fee and supporting documentation as described in the form instructions.\n3. **Submit the application**: The student must submit the application to USCIS, along with the required fee and supporting documentation.\n\nThe implications of pre-completion OPT on EAD eligibility are as follows:\n\n* If a student has already received 1 year of part-time (20 hours per week) pre-completion OPT, the total time of full-time OPT still available would be reduced by 6 months (50% of the previously authorized year at the same education level).\n* If a student has already received 1 year of full-time (40 hours per week) pre-completion OPT, the total time of full-time optional practical training still available would be reduced by 1 year (100% of the previously authorized year at the same education level).\n\nIn both cases, the student would only be entitled to a remaining period of post-completion OPT employment authorization, which would be reduced accordingly.\n\nIt is essential to note that the student's EAD eligibility is directly related to their OPT status, and any changes to their OPT status, such as transferring to a different school or beginning studies at another educational level, may affect their EAD eligibility.",
+      "retrieved_chunk_ids": [
+        "e21db1470f96c9f3a1d5766e",
+        "dfff6180a4b3449b5950df42",
+        "25cd8f8fff916b93ba9a52c5",
+        "2377502801af24fe66aea0bd"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.8103390023420983
+        }
+      }
+    },
+    {
+      "id": "syn-021",
+      "response": "Based on the provided context information, the employer requirements for providing post-completion OPT opportunities to F-1 students and STEM OPT extensions are as follows:\n\n**General Employer Requirements for Post-completion OPT:**\n\nTo provide a post-completion OPT opportunity to an F-1 student, the employer must:\n\n1. Be enrolled in E-Verify, as evidenced by either a valid E-Verify company identification number or, if the employer is using an employer agent to create its E-Verify cases, a valid E-Verify client company identification number.\n2. Remain a participant in good standing with E-Verify, as determined by USCIS.\n3. Have a valid Employer Identification Number (EIN) issued by the IRS for tax purposes.\n4. Report material changes of the student's employment by submitting a modified Form I-983 to the DSO at the earliest available opportunity.\n5. Report the student's termination of employment or departure to the DSO within 5 business days.\n6. Implement a formal training program to build on the student's academic learning through practical experience.\n7. Provide an OPT opportunity that is commensurate with those of similarly situated U.S. workers in duties, hours, and compensation.\n\n**Additional Requirements for STEM OPT Extensions:**\n\nTo provide a STEM OPT extension opportunity to an F-1 student, the employer must:\n\n1. Meet all the general employer requirements listed above.\n2. Ensure that the training opportunity is directly related to the student's qualifying STEM degree.\n3. Implement a formal training program that builds on the student's academic learning through practical experience.\n4. Provide an OPT opportunity that is commensurate with those of similarly situated U.S. workers in duties, hours, and compensation.\n5. Have sufficient resources and trained or supervisory personnel available to provide appropriate training in connection with the specified training opportunity at the location(s) where the student's practical training experience will take place.\n6. Not assign or delegate training responsibilities to a non-employer third party (such as a client/customer of the employer, employees of the client/customer, or contractors of the client/customer).\n\n**Key Differences:**\n\nThe key differences between the employer requirements for post-completion OPT and STEM OPT extensions are:\n\n* The STEM OPT extension requires the employer to have sufficient resources and trained or supervisory personnel available to provide appropriate training, whereas this is not a requirement for post-completion OPT.\n* The STEM OPT extension requires the employer to implement a formal training program that builds on the student's academic learning through practical experience, whereas this is not a requirement for post-completion OPT.\n* The STEM OPT extension requires the employer to ensure that the training opportunity is directly related to the student's qualifying STEM degree, whereas this is not a requirement for post-completion OPT.\n\nIt is essential for employers to understand these requirements and ensure that they meet all the necessary conditions to provide post-completion OPT and STEM OPT extension opportunities to F-1 students.",
+      "retrieved_chunk_ids": [
+        "dfff6180a4b3449b5950df42",
+        "0df80670745e49f170b3c8d9",
+        "c4740459fee7ffaad7beeb7d",
+        "e21db1470f96c9f3a1d5766e"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.8421052631578947
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 0.9197207891481876,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.8653424730542328
+        }
+      }
+    },
+    {
+      "id": "syn-022",
+      "response": "To apply for a STEM OPT extension after completing their post-completion OPT, an F-1 student with a STEM degree must meet the following eligibility requirements:\n\n1. The student must have been granted OPT and currently be in a valid period of post-completion OPT.\n2. The student must have earned a bachelor's, master's, or doctoral degree from a school that is accredited by a U.S. Department of Education-recognized accrediting agency and is certified by the Student and Exchange Visitor Program (SEVP) at the time the student submits their STEM OPT extension application.\n3. The student's STEM degree must be included on the STEM Designated Degree Program List (PDF).\n4. The student must be employed by an employer who is enrolled in and is using E-Verify, as evidenced by either a valid E-Verify company identification number or, if the employer is using an employer agent to create its E-Verify cases, a valid E-Verify client company identification number.\n5. The student must have received an initial grant of post-completion OPT employment authorization based on their STEM degree.\n\nAdditionally, the student's employer must meet the STEM OPT employer requirements and responsibilities, which include:\n\n- Being enrolled in E-Verify\n- Remaining a participant in good standing with E-Verify\n- Having a valid Employer Identification Number (EIN) issued by the IRS for tax purposes\n- Reporting material changes of the student's employment by submitting a modified Form I-983 to the DSO at the earliest available opportunity\n- Reporting the student's termination of employment or departure to the DSO within 5 business days\n- Implementing a formal training program to build on the student's academic learning through practical experience\n- Providing an OPT opportunity that is commensurate with those of similarly situated U.S. workers in duties, hours, and compensation.",
+      "retrieved_chunk_ids": [
+        "dfff6180a4b3449b5950df42",
+        "c4740459fee7ffaad7beeb7d",
+        "e21db1470f96c9f3a1d5766e",
+        "0df80670745e49f170b3c8d9"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 0.3333333333333333,
+        "ndcg": 0.5,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9365555894973695
+        }
+      }
+    },
+    {
+      "id": "syn-023",
+      "response": "To ensure timely processing of an H-1B petition, follow these necessary steps and documentation requirements:\n\n1. **Complete Form I-129 accurately**: Complete all required sections of the form accurately and in accordance with the regulations and form instructions. Ensure that the petitioner's name on the Form I-129 petition is the same as the petitioner's name on Form G-28, Notice of Entry of Appearance as Attorney or Accredited Representative, if you are filing Form G-28.\n\n2. **Include the H Classification Supplement**: Complete all required sections of the H Classification Supplement accurately and in accordance with the regulations and the form instructions. In listing previous periods of stay in H or L nonimmigrant classification, please also include the actual nonimmigrant classification held (such as H-1B or L-1).\n\n3. **Include the H-1B Data Collection and Filing Fee Exemption Supplement**: Complete all sections of the H-1B Data Collection and Filing Fee Exemption Supplement accurately. Make sure you are filing a valid edition of Form I-129, as specified in the Edition Date section on the Form I-129 page.\n\n4. **Submit evidence of the beneficiary's passport or travel document**: Include a copy of the beneficiary's valid passport or travel document. If the passport or travel document expires between when a registration is submitted and when the H-1B petition is filed, the petitioner should follow the form instructions about which passport information to enter on Page 3, Part 3 of Form I-129, Petition for Nonimmigrant Worker.\n\n5. **Submit evidence of the basis of the wage level selected on the registration**: You must submit evidence of the basis of the wage level selected on the registration as of the date that the registration underlying the petition was submitted.\n\n6. **Ensure that any information provided during the electronic registration process matches the information provided on the petition**: An H-1B petition filed for a beneficiary must contain and be supported by the same identifying information and position information as provided in the selected registration. If any information does not match, you should include an explanation with your petition and supporting documentation explaining why there was a change or why the information does not match.\n\n7. **Submit a Labor Condition Application (LCA)**: When filing your H-1B petition with USCIS, you must include evidence that an LCA (ETA 9035) has been certified by the U.S. Department of Labor. This may include a copy of the signed, certified LCA.\n\n8. **Submit evidence of the beneficiary's educational background**: You must submit evidence of the beneficiary's education credentials (with English translations when applicable) at the time you file your petition. If the beneficiary has met all of the requirements for a degree, but the degree has not yet been awarded, you may submit the following alternate evidence: a copy of the beneficiary's final transcript; or a letter from the registrar confirming that the beneficiary has met all of the degree requirements.\n\n9. **Submit evidence of a bona fide position**: You must submit evidence that you have a bona fide position in a specialty occupation available for the beneficiary as of the start date of the validity period requested on the petition.\n\n10. **Pay all required fees**: See the required fees section below for detailed information.\n\n11. **Submit all required documentation and evidence with the petition when you file it**: To ensure timely processing, submit all required documentation and evidence with the petition when you file it.\n\n12. **Ensure that the LCA properly corresponds to the position in your petition**: Ensure that the LCA properly corresponds to the position in your petition.\n\n13. **File the petition at the correct location**: For paper-filed forms, you must file the petition at the correct location. See the section below on **Where to Mail Your H-1B Petition**.\n\nThe accuracy of the Form I-129 is crucial in the H-1B petition process. If the information provided on the Form I-129 does not match the information provided during the electronic registration process, the petition may be rejected or denied. Therefore, it is essential to ensure that all information on the Form I-129 is accurate and consistent with the information provided during the electronic registration process.",
+      "retrieved_chunk_ids": [
+        "7ae8f92085ec59682b83f30e",
+        "4d19084489a92276c7f95ad0",
+        "d26d1c3d5793519ec2177467",
+        "5014a12fd8df3ee85c791198"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7737651125991678
+        }
+      }
+    },
+    {
+      "id": "syn-024",
+      "response": "According to the context information, if a legal representative submits an H-1B registration but then ceases to represent the registrant, the registrant will still be able to see all registration information in their own organizational account(s). However, the registrant will not be able to add a new attorney or representative to H-1B registrations prepared or submitted by the previous attorney.\n\nRegarding the authorized signatory, the context information states that the authorized signatory who signed the registration does not need to be the same authorized signatory who signs Form I-129. However, the prospective petitioner (registrant) at the registration stage must match the petitioner at the Form I-129 stage.\n\nTherefore, the implications for a registrant in this situation are:\n\n1. The registrant will still have access to their registration information, but they will not be able to add a new attorney or representative.\n2. The registrant can still file Form I-129, but they must ensure that the authorized signatory on the Form I-129 matches the prospective petitioner (registrant) who signed the registration.\n3. The registrant must also ensure that the information provided during the electronic registration process matches the information provided on the petition, including the same identifying information and position information as provided in the selected registration.",
+      "retrieved_chunk_ids": [
+        "ea22991d08908d18bd9e90df",
+        "6ddd0b9b0d9d373f0642035d",
+        "8e8de7e32de491d54084407e",
+        "d26d1c3d5793519ec2177467"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.859431938437535
+        }
+      }
+    },
+    {
+      "id": "syn-025",
+      "response": "To answer the query, we need to break it down into two parts: the information needed for the H-1B electronic registration process and what happens if a registration is found to be a duplicate.\n\n**Information Needed for the H-1B Electronic Registration Process:**\n\nTo create an H-1B electronic registration, you will need the following information about the beneficiary:\n\n1. Given Name\n2. Middle Name\n3. Family Name\n4. Sex\n5. Date of Birth\n6. Beneficiary earned, or will earn a master\u2019s or higher degree from a U.S. institution of higher education\n7. Country of Birth\n8. Country of Citizenship\n9. Passport or Travel Document Number\n10. Passport or Travel Document Country\n11. Passport or Travel Document Expiration Date\n12. Occupational Employment and Wage Statistics (OEWS) Wage Level\n13. Standard Occupational Classification (SOC) Code\n14. Area of intended employment for the beneficiary\u2019s proffered position, specifically city, state, and county.\n\nYou will also need to provide the following information about the registrant:\n\n1. Name\n2. Address\n3. Contact information\n\nAdditionally, you will need to select the highest OEWS wage level that the beneficiary\u2019s proffered wage equals or exceeds for the relevant SOC code in the areas of intended employment.\n\n**What Happens if a Registration is Found to be a Duplicate:**\n\nIf a registration is found to be a duplicate, USCIS will invalidate all registrations submitted for that beneficiary by that prospective petitioner, or their authorized attorney or representative, from the selection process. This means that if you have submitted multiple registrations for the same beneficiary, only one of them will be considered for selection.\n\nTo avoid duplicate registrations, you can use the duplicate checker functionality available in the electronic registration process. This will compare the beneficiaries listed in the draft with any registrations previously submitted during this registration period. However, this check does not guarantee that you will not submit a duplicate, and it is still your responsibility to ensure that you do not submit duplicate registrations.\n\nIf you discover that you have submitted multiple registrations for the same person and the initial registration period is still open, you can go into your account and delete the extra submission(s) until there is only one registration for the beneficiary. However, if the initial registration period has closed, there is no way to correct this error, and all registrations submitted for the beneficiary by that prospective petitioner will be removed from the selection process.\n\nIt is also worth noting that if one of the registrations submitted in a batch contains an error, you will be able to delete the registration for the beneficiary that contained the error without affecting the rest of the batch submission.",
+      "retrieved_chunk_ids": [
+        "da32faf4684c957aa84d3d91",
+        "3e73813492eb6199b26682b7",
+        "ea22991d08908d18bd9e90df",
+        "6ddd0b9b0d9d373f0642035d"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.9166666666666666
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.8148658707376254
+        }
+      }
+    },
+    {
+      "id": "syn-026",
+      "response": "To obtain a Social Security number as a temporary worker in the United States, you must have permission from the Department of Homeland Security (DHS) to work. \n\nAccording to the context information, you can find additional information about Foreign Workers and Social Security Numbers (PDF) on the Social Security Administration website. \n\nTo maintain nonimmigrant status, you must comply with all conditions of your employment authorization and the terms of your admission to the United States. If you violate any of the conditions, you could be removed from or denied re-entry into the United States.\n\nIn general, you can maintain nonimmigrant status by:\n\n1. Filing the required forms and petitions with USCIS, such as Form I-129, Petition for a Nonimmigrant Worker, and Form I-539, Application to Extend/Change Nonimmigrant Status.\n2. Meeting the requirements for your specific nonimmigrant classification, such as having a valid job offer and meeting the qualifications for your job.\n3. Complying with the terms of your employment authorization, such as not working for an unauthorized employer.\n4. Not violating any conditions of your nonimmigrant status, such as not engaging in unauthorized employment.\n\nTo obtain a Social Security number, you must:\n\n1. Have permission from DHS to work.\n2. Apply for a Social Security number through the Social Security Administration (SSA) after you have received your employment authorization document (EAD) from USCIS.\n3. Provide the required documentation, such as your EAD and proof of identity.\n\nIt is essential to note that you do not need to apply for a Social Security number if you are a lawful permanent resident. Your Green Card (Form I-551, Permanent Resident Card) is evidence of your employment authorization.",
+      "retrieved_chunk_ids": [
+        "734b3c5f9b222ca819b37e1d",
+        "0af9946863f62fc44ff60d28",
+        "2377502801af24fe66aea0bd",
+        "22d9fd89cbb106b18504acd0"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9176548031484243
+        }
+      }
+    },
+    {
+      "id": "syn-027",
+      "response": "According to the context information, in general, only aliens who have permission from DHS to work can apply for a Social Security number. \n\nTo apply for a Social Security number, the alien should first obtain employment authorization. \n\nFor employment-based visas, the alien can apply for an Employment Authorization Document (EAD) by filing Form I-765, Application for Employment Authorization. \n\nOnce the alien has an approved EAD, they can apply for a Social Security number. \n\nThe Social Security Administration website provides additional information about Foreign Workers and Social Security Numbers (PDF).",
+      "retrieved_chunk_ids": [
+        "734b3c5f9b222ca819b37e1d",
+        "0af9946863f62fc44ff60d28",
+        "1b33e391417e9fa2dc4d3437",
+        "54acd8ca41d1939fbacbbd85"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.6
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.8156334194675031
+        }
+      }
+    },
+    {
+      "id": "syn-028",
+      "response": "Based on the provided context information, an alien working in the United States can obtain a Social Security Number if they have permission from the Department of Homeland Security (DHS) to work. \n\nTo obtain a Social Security Number, the alien should follow the information on the Social Security Administration website, specifically the \"Foreign Workers and Social Security Numbers\" page (available in PDF format).\n\nAs for the employment-based visa classifications that allow an alien to work legally in the United States, the context information lists the following classifications:\n\n1. E-1: Treaty traders and qualified employees\n2. E-2: Treaty investors and qualified employees\n3. E-3: Certain \"specialty occupation\" professionals from Australia\n4. H-1B: Workers in a specialty occupation\n5. H-2A: Temporary or seasonal agricultural workers\n6. H-2B: Temporary non-agricultural workers\n7. H-3: Trainees other than medical or academic\n8. L-1A: Intracompany transferees in managerial or executive positions\n9. L-1B: Intracompany transferees in positions utilizing specialized knowledge\n10. O-1: Persons with extraordinary ability in sciences, arts, education, business, or athletics and motion picture or TV production\n11. O-2: Persons accompanying solely to assist an O-1 nonimmigrant\n12. P-1A: Internationally recognized athletes\n13. P-1B: Internationally recognized entertainers or members of internationally recognized entertainment groups\n14. P-2: Individual performer or part of a group entering to perform under a reciprocal exchange program\n15. P-3: Artists or entertainers, either an individual or group, to perform, teach, or coach under a program that is culturally unique\n16. Q-1: Persons participating in an international cultural exchange program for the purpose of providing practical training, employment, and to share the history, culture, and traditions of the alien's home country\n17. R-1: Religious workers\n18. TN: North American Free Trade Agreement (NAFTA) temporary professionals from Mexico and Canada\n\nAdditionally, the context information mentions that certain nonimmigrant classifications allow an alien to work in the United States without an employer having first filed a petition on their behalf. These classifications include E-1, E-2, E-3, and TN, as well as, in certain instances, the F-1 and M-1 student and J-1 exchange visitor classifications.",
+      "retrieved_chunk_ids": [
+        "0af9946863f62fc44ff60d28",
+        "734b3c5f9b222ca819b37e1d",
+        "1b33e391417e9fa2dc4d3437",
+        "54acd8ca41d1939fbacbbd85"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.96
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7713181409709126
+        }
+      }
+    },
+    {
+      "id": "syn-029",
+      "response": "According to the context information, the eligibility requirements for human trafficking victims to apply for a Green Card are as follows:\n\n1. You must currently have a T nonimmigrant visa.\n2. You must be a victim of human trafficking.\n\nTo apply for a Green Card as a human trafficking victim, you must follow the adjustment of status process. Here are the steps:\n\n1. Determine if you are eligible to apply for a Green Card: Go to the Green Card Eligibility Categories page to see if you fit into the human trafficking victim category.\n2. File Form I-485: If you are eligible, you may file a Form I-485, Application to Register Permanent Residence or Adjust Status. You can find the instructions and the webpage for your immigrant category on the USCIS website.\n3. Go to your Application Support Center appointment: After you file your Form I-485, you will receive a notice for your biometrics services appointment at a local Application Support Center (ASC) to provide your fingerprints, photograph, and/or signature.\n4. Attend an interview: After your biometrics appointment, you will be scheduled for an interview with a USCIS officer.\n5. Receive a decision on your application: After your interview, the USCIS officer will make a decision on your application.\n\nNote that the adjustment of status process for human trafficking victims may involve additional steps or requirements, and you should consult the USCIS website or seek guidance from a qualified immigration attorney for more information.",
+      "retrieved_chunk_ids": [
+        "54cf145cadc189dbdd77305d",
+        "e18c6b5a16f9f82ddf695443",
+        "008410cb14f778efedfb1ea0",
+        "ea0883fcc147ba49c29322a8"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.5714285714285714
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9088075595506102
+        }
+      }
+    },
+    {
+      "id": "syn-030",
+      "response": "Based on the provided context information, the forms required for an immigrant petition are:\n\n1. Form I-140, Immigrant Petition for Alien Workers\n2. Form I-129, Petition for a Nonimmigrant Worker (for certain employment-based classifications)\n3. Form I-539, Application to Extend/Change Nonimmigrant Status (for certain nonimmigrant categories)\n\nTo notify USCIS about a change of address, you should:\n\n1. File Form AR-11, Alien's Change of Address, with USCIS. This form is available on the USCIS website.\n2. Update your address with USCIS online account, if you have one.\n3. Mail a written notice to the address listed in the relevant form instructions, which is typically the address of the USCIS service center that handles your case.\n\nNote that the context information does not provide specific details on the requirements for Form AR-11, but it is mentioned as a form that can be used to notify USCIS about a change of address.",
+      "retrieved_chunk_ids": [
+        "58571826b83f21996195083e",
+        "d26d1c3d5793519ec2177467",
+        "7ae8f92085ec59682b83f30e",
+        "b414ace6d15f5e934b252d95"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.0
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 0.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.2
+        },
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9923293794534338
+        }
+      }
+    },
+    {
+      "id": "syn-031",
+      "response": "Based on the provided context information, the steps involved in the adjustment of status process to obtain a Permanent Resident Card while in the United States are as follows:\n\n**Step 1: Determine if you are eligible to apply for a Green Card**\n\n* Go to the USCIS Green Card Eligibility Categories page to see all the possible categories you can apply under.\n* Once you find your immigrant category, go to the specific page that lists what the eligibility requirements are.\n\n**Step 2: You or someone else must file an immigrant petition for you (if applicable)**\n\n* Most people who apply for a Green Card will need to complete at least two forms\u2014an immigrant petition and a Green Card application.\n* Someone else usually must file the petition for you (often referred to as sponsoring or petitioning for you), although you may be eligible to file for yourself in some cases.\n* The most common forms are:\n\t+ Form I-130, Petition for Alien Relative\n\t+ Form I-140, Immigrant Petition for Alien Worker\n\t+ Form I-730, Refugee/Asylee Relative Petition\n\t+ Form I-589, Application for Asylum and for Withholding of Removal\n* Other petitions include:\n\t+ Form I-360, Petition for Amerasian, Widow(er), or Special Immigrant\n\t+ Form I-526, Immigrant Petition by Alien Entrepreneur\n\t+ Form I-918, Petition for U Nonimmigrant Status\n\t+ Form I-929, Petition for Qualifying Family Member of a U-1 Nonimmigrant\n\n**Step 3: Check visa availability (if applicable)**\n\n* In general, you may not file your Form I-485 until a visa is available in your category.\n* For information on visa availability, see the Visa Availability and Priority Dates page, the Adjustment of Status Filing Charts, and the Department of State website to view the Visa Bulletin.\n\n**Step 4: File Form I-485**\n\n* If you are present in the United States and are eligible for adjustment of status, you may file a Form I-485.\n* Go to the Form I-485 instructions and the webpage for your immigrant category for instructions on how to complete your application and properly file it with USCIS.\n* Go to the Direct Filing Addresses for Form I-485 page to see where you should file your application.\n\n**Step 5: Go to your Application Support Center appointment**\n\n* After you file your Form I-485, USCIS will mail you a notice for your biometrics services appointment at a local Application Support Center (ASC) to provide your fingerprints, photograph, and/or signature.\n* The notice will include the date, time, and location of the appointment.\n\nNote: The steps may vary depending on your individual situation, and it's always best to consult the USCIS website or a qualified immigration attorney for specific guidance.",
+      "retrieved_chunk_ids": [
+        "e18c6b5a16f9f82ddf695443",
+        "54cf145cadc189dbdd77305d",
+        "107ad5e98bda3a0f24d32e55",
+        "e85159be0b023859a4bec0e2"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9166666666361111
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9912804059337587
+        }
+      }
+    },
+    {
+      "id": "syn-032",
+      "response": "Based on the provided context information, the requirements for H-1B nonimmigrants and how deferred action applies to them are as follows:\n\n**Requirements for H-1B Nonimmigrants:**\n\nTo be eligible for employment authorization as an H-4 dependent spouse, the H-1B nonimmigrant spouse must meet one of the following conditions:\n\n1. Be the principal beneficiary of an approved Form I-140, Immigrant Petition for Alien Worker.\n2. Have been granted H-1B status under sections 106(a) and (b) of the American Competitiveness in the Twenty-first Century Act of 2000 as amended by the 21st Century Department of Justice Appropriations Authorization Act (AC21).\n\n**Deferred Action:**\n\nDeferred action is not explicitly mentioned in the provided context information. However, it is mentioned in the context of the Presidential Proclamation on Restriction on Entry of Certain Nonimmigrant Workers, which applies to certain H-1B petitions filed at or after 12:01 a.m. Eastern on September 21, 2025. This Proclamation requires a $100,000 payment as a condition of eligibility for certain H-1B petitions.\n\nIt is essential to note that the context information does not provide specific information on deferred action for H-1B nonimmigrants. If you are seeking information on deferred action, I recommend consulting the USCIS website or other reliable sources for the most up-to-date information.\n\nHowever, based on the context information, it appears that the USCIS may grant exceptions to the $100,000 payment in the \"extraordinarily rare circumstance\" where the Secretary of Homeland Security determines that a particular alien worker's presence in the United States as an H-1B worker is in the national interest, that no American worker is available to fill the role, that the alien worker does not pose a threat to the security or welfare of the United States, and that requiring the petitioning employer to make the payment on the alien's behalf would significantly undermine the interests of the United States.",
+      "retrieved_chunk_ids": [
+        "1b33e391417e9fa2dc4d3437",
+        "5014a12fd8df3ee85c791198",
+        "b8914b3b6a405d498bdeaa55",
+        "6710afed16c9e1e4ac5cedb8"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 0.6666666666666666
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.8666666666666667
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 0.6131471927654584,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "id": "syn-033",
+      "response": "Based on the provided context information, here's the answer to your query:\n\n**Processing Time for Employment Authorization Application:**\n\nAccording to the context information, after USCIS approves a Form I-765, the Employment Authorization Document (EAD) card should be produced within 2 weeks. However, the timeframe in which you will receive your EAD card may vary, depending on USPS delivery times. Please allow a total of 30 days from approval before inquiring with USCIS.\n\n**Replacing a Lost EAD:**\n\nIf your EAD is lost, stolen, or destroyed, you may request a replacement EAD by filing a new Form I-765 and filing fee (if required), unless a fee waiver is requested and approved. If you did not receive an EAD that USCIS mailed, you can submit an inquiry on non-delivery of a card.\n\n**Steps to Replace a Lost EAD:**\n\n1. File a new Form I-765.\n2. Include the filing fee (if required) or a request for a fee waiver.\n3. Submit any documents specified in the form instructions.\n4. Return the card containing the error to the following address:\n   USCIS\n   Lee\u2019s Summit Production Facility\n   Attn: I-765 Replacement Cards\n   7 Product Way\n   Lee\u2019s Summit, MO 64002\n   (Note: Use the United States Postal Service (USPS) when returning your card.)\n\n**Processing Time for Replacing a Lost EAD:**\n\nIt will take approximately 30 days from the date the card is received for USCIS to process your request and, if they determine it was due to USCIS error, to issue you a new card. Please retain your tracking information to ensure your card was properly delivered.",
+      "retrieved_chunk_ids": [
+        "54acd8ca41d1939fbacbbd85",
+        "2377502801af24fe66aea0bd",
+        "6710afed16c9e1e4ac5cedb8",
+        "ec8ecb666ef685be8a145a41"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.9375
+        },
+        "hit_rate": 1.0,
+        "mrr": 0.5,
+        "ndcg": 0.6309297535714575,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7998201824625358
+        }
+      }
+    },
+    {
+      "id": "syn-034",
+      "response": "According to the context information, if you need to return a lost or incorrect Employment Authorization Document (EAD) card, you must use the United States Postal Service (USPS) when returning your card. The use of other carriers (such as UPS, FedEx, or DHL) is not available for this address.\n\nThe address to return the card is:\n\nUSCIS\n\nLee\u2019s Summit Production Facility\u00a0\n\nAttn: I-765 Replacement Cards\u00a0\n\n7 Product Way\u00a0\n\nLee\u2019s Summit, MO 64002\n\nThis requirement is mentioned in the context information under the sections \"Replace an EAD\" and \"If Your EAD Contains Incorrect Information\" for cases where the error is not due to a USCIS error.\n\nThis requirement does not directly relate to obtaining a Green Card, as the process of obtaining a Green Card involves different steps and forms, such as Form I-130, Form I-140, and Form I-485, as mentioned in the context information under the section \"How to Apply for a Green Card\". However, it is essential to note that if you are applying for a Green Card, you will need to provide a valid mailing address to USCIS, and it is crucial to update your address with USCIS and USPS as soon as possible to avoid delays in the processing of your application.",
+      "retrieved_chunk_ids": [
+        "630665f5d1f4972fc8aa3a7a",
+        "2377502801af24fe66aea0bd",
+        "54acd8ca41d1939fbacbbd85",
+        "54cf145cadc189dbdd77305d"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7539533467792862
+        }
+      }
+    },
+    {
+      "id": "syn-035",
+      "response": "Form I-730 is the Refugee/Asylee Relative Petition. It is one of the immigrant petitions that can be used in the adjustment of status process for obtaining a Green Card.\n\nAccording to the context information, Form I-730 is used when an individual is a refugee or asylee and wants to bring their relative to the United States. This form is used to petition for the relative's immigration benefits.\n\nIn the context of the adjustment of status process, Form I-730 is one of the forms that can be used to file an immigrant petition for a relative. The steps to use Form I-730 in the adjustment of status process are as follows:\n\n1. Determine if you are eligible to apply for a Green Card as a refugee or asylee.\n2. File Form I-730, Refugee/Asylee Relative Petition, to petition for your relative's immigration benefits.\n3. If your relative's immigration benefits are approved, you can then file Form I-485, Application to Register Permanent Residence or Adjust Status, to apply for a Green Card.\n\nIt's worth noting that Form I-730 is just one of the forms that can be used in the adjustment of status process, and the specific steps and requirements may vary depending on the individual's circumstances.",
+      "retrieved_chunk_ids": [
+        "e18c6b5a16f9f82ddf695443",
+        "54cf145cadc189dbdd77305d",
+        "107ad5e98bda3a0f24d32e55",
+        "1e513271bef26c844205523a"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.99999999995
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9322450776974381
+        }
+      }
+    },
+    {
+      "id": "syn-036",
+      "response": "Based on the provided context information, the eligibility criteria and application process for the Filipino World War II Veterans Parole Program are not explicitly stated. However, it is mentioned that an initial parole document may fall under an existing program or process, such as the Filipino World War II Veterans Parole Program.\n\nTo apply for the Filipino World War II Veterans Parole Program, you would need to file Form I-131, Application for Travel Documents, and indicate that you are applying for an initial parole document under the Filipino World War II Veterans Parole Program. You would need to provide the required documentation and evidence to support your application.\n\nRegarding the re-parole process for individuals already granted parole in the United States, it is mentioned that if you are an alien who is inside the United States, who was previously granted parole, and who needs an additional period of parole, then you may use Form I-131 to apply for re-parole based on urgent humanitarian reasons or a significant public benefit. If you are eligible for re-parole under the Filipino World War II Veterans Parole Program, you would need to file Form I-131 and indicate that you are applying for re-parole under this program.\n\nThe re-parole process typically involves filing Form I-131 and providing the required documentation and evidence to support your application. The Department of Homeland Security (DHS) will determine at its discretion whether to grant re-parole, and you may be issued a new Form I-94 Arrival/Departure Record with a new Admit Until Date or Parole Until Date.\n\nIt is worth noting that the DHS component that initially authorized parole has jurisdiction over any request for re-parole, unless DHS or USCIS provides alternate filing instructions. Please see the Memorandum of Agreement between USCIS, ICE, and CBP for more information about each agency's jurisdiction over re-parole requests.\n\nIn summary, to apply for the Filipino World War II Veterans Parole Program, you would need to file Form I-131 and indicate that you are applying for an initial parole document under this program. For re-parole, you would need to file Form I-131 and indicate that you are applying for re-parole under the Filipino World War II Veterans Parole Program, and provide the required documentation and evidence to support your application.",
+      "retrieved_chunk_ids": [
+        "d0ea5eb3ba5237efaff39720",
+        "850389d698047d0fc353db03",
+        "ea0883fcc147ba49c29322a8",
+        "54cf145cadc189dbdd77305d"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.99999999995
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "id": "syn-037",
+      "response": "According to the USCIS Policy Manual, an employer must have and maintain a bona fide employer-employee relationship with a STEM OPT student. To establish a bona fide relationship, the employer must:\n\n1. Be the same entity that provides the practical training experience to the student.\n2. Have sufficient resources and trained or supervisory personnel available to provide appropriate training in connection with the specified training opportunity at the location(s) where the student's practical training experience will take place.\n3. Not be the student's \"employer\" in name only, nor may the student work for the employer on a \"volunteer\" basis.\n4. Not assign, or otherwise delegate, its training responsibilities to a non-employer third party (such as a client/customer of the employer, employees of the client/customer, or contractors of the client/customer).\n5. Have a direct relationship between the STEM OPT opportunity and the student's qualifying STEM degree, as well as the relationship between the STEM OPT opportunity and the student's goals and objectives for work-based learning.\n\nAdditionally, the employer must attest to these facts by signing the Form I-983, Training Plan for STEM OPT Students.",
+      "retrieved_chunk_ids": [
+        "0df80670745e49f170b3c8d9",
+        "75e8450a2be2e0f4de8ed51a",
+        "c4740459fee7ffaad7beeb7d",
+        "dfff6180a4b3449b5950df42"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 0.6131471927654584,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9423935852431723
+        }
+      }
+    },
+    {
+      "id": "syn-038",
+      "response": "Based on the context information, the form that dependents need to file for change of status or extension of stay is:\n\n- For dependents of O-1 and O-2 visa holders, the dependents (spouse and children under the age of 21) must file Form I-539, Application to Extend/Change Nonimmigrant Status, and submit any supporting documents to extend their stay.\n\n- For dependents of E principal nonimmigrants, the dependents must file Form I-539, Application to Extend/Change Nonimmigrant Status, unless they are seeking to change to a status listed in the context information, in which case, they may NOT use the Form I-539.\n\n- For dependents of other nonimmigrant visa categories, the context information does not specify the form to be used for change of status or extension of stay. However, it is recommended to refer to the filing instructions for Form I-539 for further guidance.",
+      "retrieved_chunk_ids": [
+        "b414ace6d15f5e934b252d95",
+        "22d9fd89cbb106b18504acd0",
+        "3c6c3e7217e18a57145d821a",
+        "e85159be0b023859a4bec0e2"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.875
+        },
+        "hit_rate": 0.0,
+        "mrr": 0.0,
+        "ndcg": 0.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9536684384845887
+        }
+      }
+    },
+    {
+      "id": "syn-039",
+      "response": "According to the context information, the Arrival-Departure Record (Form I-94) is mentioned in the section \"Form I-129, Petition for a Nonimmigrant Worker\" as one of the documents that must be included with the petition if the beneficiary is seeking an extension of stay, amendment of stay, or change of status. \n\nIn this context, the Form I-94 is required to establish that the beneficiary will have maintained a valid nonimmigrant status through the employment start date being requested. \n\nTherefore, the significance of the Arrival-Departure Record (Form I-94) in the context of submitting an H-1B petition is to provide evidence of the beneficiary's valid nonimmigrant status.",
+      "retrieved_chunk_ids": [
+        "d26d1c3d5793519ec2177467",
+        "7ae8f92085ec59682b83f30e",
+        "5d92188dff11cc8f87d09177",
+        "107ad5e98bda3a0f24d32e55"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.499999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.375
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9958860104251265
+        }
+      }
+    },
+    {
+      "id": "syn-040",
+      "response": "According to the context information, the process for submitting Form I-907 for premium processing in relation to H-1B petitions is as follows:\n\n1. If you submit a request for premium processing postmarked on or after March 1, 2026, you must include the new fee for the specific benefit you are requesting.\n2. The new fee for premium processing is effective as of March 1, 2026, and is subject to the Adjustment to Premium Processing Fees final rule.\n3. If you submit a request for premium processing postmarked on or after March 1, 2026, with the incorrect filing fee, USCIS will reject Form I-907 and return the filing fee.\n\nTherefore, to avoid rejection, it is essential to include the correct filing fee for premium processing when submitting Form I-907 for H-1B petitions postmarked on or after March 1, 2026.",
+      "retrieved_chunk_ids": [
+        "2b9ee078b1a826259d6a1201",
+        "ea22991d08908d18bd9e90df",
+        "1876579fe153e6814e73452f",
+        "d26d1c3d5793519ec2177467"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.8571428571428571
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.8591225233580545
+        }
+      }
+    },
+    {
+      "id": "syn-041",
+      "response": "Based on the provided context information, Form I-539 is the \"Application to Extend/Change Nonimmigrant Status.\" It is used by certain nonimmigrants to extend their stay or change to another nonimmigrant status.\n\nTo answer your query, you need to file Form I-539 before your current authorized stay expires. It is recommended to file at least 45 days before your stay expires or as soon as you determine your need to change or extend status. However, if you fail to file before the expiration date, you may be excused if you demonstrate that:\n\n1. The delay was due to extraordinary circumstances beyond your control.\n2. The length of the delay was reasonable.\n3. You have not otherwise violated your status.\n4. You are still a bona fide nonimmigrant.\n5. You are not in removal proceedings.\n\nBefore filing Form I-539, you must also ensure that your passport is valid for your entire requested period of stay in the new nonimmigrant classification in the United States.\n\nAdditionally, you should carefully review the Form I-539 filing instructions to ensure you are filing your request for an extension or change of status using the proper form.",
+      "retrieved_chunk_ids": [
+        "3c6c3e7217e18a57145d821a",
+        "22d9fd89cbb106b18504acd0",
+        "b414ace6d15f5e934b252d95",
+        "6710afed16c9e1e4ac5cedb8"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.8460333973900592
+        }
+      }
+    },
+    {
+      "id": "syn-042",
+      "response": "Based on the provided context information, visa retrogression refers to a situation where the priority date of an applicant is later than the cut-off date listed in the \"Application Final Action Dates\" chart in the monthly Visa Bulletin for their preference category and country of chargeability.\n\nWhen the priority date is later than the cut-off date, the applicant is not eligible to file Form I-485 concurrently with Form I-130 or Form I-140. In this case, the applicant must wait until their priority date is earlier than the cut-off date before filing Form I-485.\n\nTo determine if the applicant is eligible to file Form I-485, they should check the \"Application Final Action Dates\" chart in the monthly Visa Bulletin for their preference category and country of chargeability. If the priority date is earlier than the cut-off date, the applicant can file Form I-485 concurrently with Form I-130 or Form I-140.\n\nAlternatively, if the Visa Bulletin chart indicates \"C\" instead of a specific cut-off date, it means that the preference category and country of chargeability is current, and the applicant can file Form I-485 regardless of the priority date.\n\nIt's also worth noting that when permitted by USCIS, the applicant's priority date may be earlier than the cut-off date listed in the \"Dates for Filing Applications\" chart for their preference category and country of chargeability, in which case they can file Form I-485 concurrently with Form I-130 or Form I-140.\n\nIn summary, visa retrogression affects the filing of Form I-485 by requiring applicants to wait until their priority date is earlier than the cut-off date listed in the \"Application Final Action Dates\" chart in the monthly Visa Bulletin for their preference category and country of chargeability.",
+      "retrieved_chunk_ids": [
+        "1e513271bef26c844205523a",
+        "7199c8229e2f9712ee64edb7",
+        "5d92188dff11cc8f87d09177",
+        "3c6c3e7217e18a57145d821a"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9652817431890108
+        }
+      }
+    },
+    {
+      "id": "syn-043",
+      "response": "Form I-130, Petition for Alien Relative, is a form used to petition for an alien relative to obtain a Green Card. It is typically filed by a U.S. citizen or a lawful permanent resident (LPR) who is a family member of the alien relative.\n\nIn the context of Adjustment of Status, Form I-130 is often used as part of the process to obtain a Green Card. The steps to use Form I-130 in conjunction with Adjustment of Status are as follows:\n\n1. Determine if you are eligible to apply for a Green Card through a family-based category. Go to the Green Card Eligibility Categories page to see all the possible categories you can apply under.\n2. If you are eligible, you or someone else must file an immigrant petition for you, which may include Form I-130, Petition for Alien Relative.\n3. Check if a visa is available in your category. For information on visa availability, see the Visa Availability and Priority Dates page, the Adjustment of Status Filing Charts, and the Department of State website to view the Visa Bulletin.\n4. If a visa is available, you can file Form I-485, Application to Register Permanent Residence or Adjust Status, along with Form I-130, if required for your category.\n\nIt's worth noting that not all categories require Form I-130. Some categories, such as the Cuban Adjustment Act, do not require an underlying immigrant petition. Go to the Green Card Eligibility Categories page to determine if an immigrant petition is or is not required for each category.\n\nIn summary, Form I-130 is a form used to petition for an alien relative to obtain a Green Card, and it is often used as part of the Adjustment of Status process.",
+      "retrieved_chunk_ids": [
+        "e18c6b5a16f9f82ddf695443",
+        "d26d1c3d5793519ec2177467",
+        "7ae8f92085ec59682b83f30e",
+        "1e513271bef26c844205523a"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.7499999999625
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9570881367034385
+        }
+      }
+    },
+    {
+      "id": "syn-044",
+      "response": "According to the context information, you can file Form I-907 online along with your H-1B cap petition. However, if you prefer to file a paper Form I-907, you can do so, but you will not be able to link it to your online account.\n\nTo file a paper Form I-907, you should follow the instructions on the H-1B registration selection notice, which may be different from the historical Form I-129 filing jurisdictions for cap cases. You can find the correct location to file your cap petition on the Direct Filing Addresses for Form I-129 webpage.\n\nSo, to summarize:\n\n1. Check if you need to file Form I-907 along with your H-1B cap petition.\n2. If you need to file Form I-907, you can do so online along with your H-1B cap petition.\n3. If you prefer to file a paper Form I-907, follow the instructions on the H-1B registration selection notice and file it at the correct location specified on the Direct Filing Addresses for Form I-129 webpage.",
+      "retrieved_chunk_ids": [
+        "ea22991d08908d18bd9e90df",
+        "e3c55c66888a8dcf0a09f046",
+        "107ad5e98bda3a0f24d32e55",
+        "da32faf4684c957aa84d3d91"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.8
+        },
+        "hit_rate": 1.0,
+        "mrr": 0.5,
+        "ndcg": 0.38685280723454163,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.857675140095583
+        }
+      }
+    },
+    {
+      "id": "syn-045",
+      "response": "To file a Form I-485 for adjustment of status based on the monthly Visa Bulletin, follow these steps:\n\n1. **Determine if you are eligible to apply for a Green Card**: Go to the USCIS Green Card Eligibility Categories page to see all the possible categories you can apply under. Once you find your immigrant category, you can then go to the specific page that lists what the eligibility requirements are.\n\n2. **Check visa availability**: In general, you may not file your Form I-485 until a visa is available in your category. For information on visa availability, see the Visa Availability and Priority Dates page, the Adjustment of Status Filing Charts, and the Department of State website to view the Visa Bulletin.\n\n3. **Check the Visa Bulletin chart**: The Visa Bulletin chart indicates whether a visa is available for your preference category and country of chargeability. If the chart shows a specific cut-off date, your priority date must be earlier than that date to file Form I-485. If the chart shows \u201cC\u201d instead of a specific cut-off date, your preference category and country of chargeability is current, and you may file Form I-485 regardless of the priority date.\n\n4. **Check if your priority date is earlier than the cut-off date**: If the Visa Bulletin chart shows a specific cut-off date, check if your priority date is earlier than that date. If it is, you may file Form I-485.\n\n5. **File Form I-485**: If you are present in the United States and are eligible for adjustment of status, you may file a Form I-485. Go to the Form I-485 instructions and the webpage for your immigrant category for instructions on how to complete your application and properly file it with USCIS. Go to the Direct Filing Addresses for Form I-485 page to see where you should file your application.\n\n6. **Assemble and file the Form I-485 package**: Assemble the Form I-485 package in the following order:\n   - Check or money order or Form G-1450, Authorization for Credit Card Transactions;\n   - Form G-1145, Request for e-Notification (if applicable);\n   - Form G-28 (if applicable);\n   - Form I-485; and\n   - Supporting documentation.\n\n7. **Sign the Form I-485**: Make sure to sign the Form I-485 with a valid signature as provided in the form instructions. Do not use a typed name, a signature by an attorney, representative, or family member, or an electronic signature rendered external to the USCIS online account.\n\n8. **Submit the Form I-485 package**: Submit the Form I-485 package to the correct address as indicated in the Direct Filing Addresses for Form I-485 page.\n\n9. **Go to your Application Support Center appointment**: After you file your Form I-485, we will mail you a notice for your biometrics services appointment at a local Application Support Center (ASC) to provide your fingerprints, photograph, and/or signature.",
+      "retrieved_chunk_ids": [
+        "1e513271bef26c844205523a",
+        "7199c8229e2f9712ee64edb7",
+        "e18c6b5a16f9f82ddf695443",
+        "79afb1420ea0730a09ff72d5"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.8055555555287036
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9651736108750364
+        }
+      }
+    },
+    {
+      "id": "syn-046",
+      "response": "According to the context information, the Department of Homeland Security (DHS) plays a role in the employment authorization process for aliens seeking to work in the United States. Specifically, it is mentioned that the conditions an alien must meet and how long they can work in the United States depend on the type of immigration status the Department of Homeland Security (DHS) grants. This indicates that DHS is involved in determining the immigration status of aliens and the conditions of their employment authorization.\n\nAdditionally, it is mentioned that aliens who are in the United States in a lawful nonimmigrant status that does not provide employment authorization may apply for a change of status to a nonimmigrant classification that provides employment authorization or an adjustment of status to become a lawful permanent resident. This suggests that DHS is involved in processing these applications and determining the eligibility of aliens for employment authorization.\n\nHowever, it is not explicitly stated what specific role DHS plays in the employment authorization process beyond determining immigration status and conditions of employment authorization.",
+      "retrieved_chunk_ids": [
+        "0af9946863f62fc44ff60d28",
+        "54acd8ca41d1939fbacbbd85",
+        "2377502801af24fe66aea0bd",
+        "1b33e391417e9fa2dc4d3437"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.9
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 0.6131471927654584,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.0
+        }
+      }
+    },
+    {
+      "id": "syn-047",
+      "response": "According to the context information, the purpose of Form I-539 for spouses and children of temporary workers seeking a change of status is to apply for an extension of stay in or a change of status to a dependent nonimmigrant classification. \n\nSpecifically, it states: \"Spouses and children requesting a change of status or extension of stay in a dependent nonimmigrant classification must file Form I-539, Application to Extend/Change Nonimmigrant Status.\"",
+      "retrieved_chunk_ids": [
+        "734b3c5f9b222ca819b37e1d",
+        "b414ace6d15f5e934b252d95",
+        "3c6c3e7217e18a57145d821a",
+        "0af9946863f62fc44ff60d28"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9598951850055544
+        }
+      }
+    },
+    {
+      "id": "syn-048",
+      "response": "To file Form I-140, Immigrant Petition for Alien Workers, you have two options: filing by mail or filing online. \n\n**Filing by Mail:**\n\n1. Check the Direct Filing Addresses for Form I-140 for instructions on where to mail your form.\n2. Ensure that the form edition date and page numbers are visible at the bottom of all pages and that all pages are from the same form edition.\n3. Assemble the form package in the following order:\n   - Form I-140\n   - Check or money order or Form G-1450, Authorization for Credit Card Transactions\n   - Form G-1145, Request for e-Notification (if applicable)\n   - Form G-28 (if applicable)\n   - Supporting documentation\n4. Sign the form. A valid signature is required, and it must be an original handwritten signature. A typed name, signature by an attorney or representative, or an electronic signature will not be accepted.\n5. Mail the form package to the designated address.\n\n**Filing Online:**\n\n1. Create a USCIS online account or login if you already have an account.\n2. Ensure that you are submitting a standalone Form I-140 without any other form (except Form G-28 if filing with an attorney or accredited representative).\n3. Assemble the form package in the following order:\n   - Form I-140\n   - Check or money order or Form G-1450, Authorization for Credit Card Transactions\n   - Form G-1145, Request for e-Notification (if applicable)\n   - Form G-28 (if applicable)\n   - Supporting documentation\n4. Sign the form. A valid signature is required, and it must be an original handwritten signature. A typed name, signature by an attorney or representative, or an electronic signature will not be accepted.\n5. Submit the form package online.\n\n**Submission of Form I-907 for Premium Processing:**\n\nForm I-907, Request for Premium Processing Service, may be filed by mail to request premium processing after you file your Form I-140 online. However, you cannot file Form I-907 online. If you are submitting Form I-140 together with another form, including Form I-907, you must file by mail.",
+      "retrieved_chunk_ids": [
+        "58571826b83f21996195083e",
+        "7199c8229e2f9712ee64edb7",
+        "79afb1420ea0730a09ff72d5",
+        "1e513271bef26c844205523a"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.9999999999666667
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.6221989267545949
+        }
+      }
+    },
+    {
+      "id": "syn-049",
+      "response": "Based on the provided context information, the requirements for H-1B petitions filed after the Presidential Proclamation on Sept. 21, 2025, are as follows:\n\n1. **Additional $100,000 payment**: Certain H-1B petitions filed at or after 12:01 a.m. Eastern on Sept. 21, 2025, must be accompanied by an additional $100,000 payment as a condition of eligibility. This payment must be made using pay.gov, following the instructions on pay.gov at H-1B Visa Payment to Remove Restriction.\n2. **Payment must be made before filing**: Payment must be made before filing a petition with USCIS, as petitioners must submit proof that the payment has been scheduled from pay.gov or evidence of an exception from the Secretary of Homeland Security at the time of filing the H-1B petition.\n3. **Exceptions granted by the Secretary of Homeland Security**: Exceptions to the $100,000 payment are granted by the Secretary of Homeland Security in the extraordinarily rare circumstance where the Secretary has determined that a particular alien worker\u2019s presence in the United States as an H-1B worker is in the national interest, that no American worker is available to fill the role, that the alien worker does not pose a threat to the security or welfare of the United States, and that requiring the petitioning employer to make the payment on the alien's behalf would significantly undermine the interests of the United States.\n\nThe additional documents that must be included with the H-1B petition are as follows:\n\n1. **Labor Condition Application (LCA)**: A certified LCA (ETA 9035) must be included with the petition. This may include a copy of the signed, certified LCA.\n2. **Evidence of beneficiary\u2019s educational background**: Evidence of the beneficiary\u2019s education credentials (with English translations when applicable) must be submitted at the time of filing the petition.\n3. **Evidence of bona fide position**: Evidence that the petitioner has a bona fide position in a specialty occupation available for the beneficiary as of the start date of the validity period requested on the petition must be submitted.\n4. **Copy of the H-1B Registration Selection Notice**: A copy of the H-1B Registration Selection Notice for the registration filed by the organization for the beneficiary with the petition must be included.\n5. **Beneficiary\u2019s passport or travel document number, country of issuance, and expiration date**: The beneficiary\u2019s passport or travel document number, country of issuance, and expiration date must be included on the Form I-129.\n6. **Evidence of the basis of the wage level selected on the registration**: Evidence of the basis of the wage level selected on the registration as of the date that the registration underlying the petition was submitted must be included.\n7. **Form I-129, Petition for a Nonimmigrant Worker**: The Form I-129 must be completed accurately and in accordance with the regulations and form instructions.\n8. **H Classification Supplement to Form I-129**: The H Classification Supplement must be completed accurately and in accordance with the regulations and form instructions.\n9. **H-1B and H-1B1 Data Collection and Filing Fee Exemption Supplement**: The H-1B and H-1B1 Data Collection and Filing Fee Exemption Supplement must be completed accurately.\n10. **Proof of payment**: Proof that the $100,000 payment has been scheduled from pay.gov or evidence of an exception from the Secretary of Homeland Security must be submitted at the time of filing the petition.",
+      "retrieved_chunk_ids": [
+        "b8914b3b6a405d498bdeaa55",
+        "4d19084489a92276c7f95ad0",
+        "d26d1c3d5793519ec2177467",
+        "7ae8f92085ec59682b83f30e"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.99999999995
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9256445332341686
+        }
+      }
+    },
+    {
+      "id": "syn-050",
+      "response": "According to the context information, Form I-907 is a request for premium processing. It may be filed by mail to request premium processing after you file your Form I-140 online. \n\nForm I-907 is associated with Form I-140 in the following way: If you are submitting Form I-140 together with another form, including Form I-907, you must file by mail. This means that if you are filing Form I-140 online, you cannot file Form I-907 online at the same time. However, you can file Form I-907 by mail after you have filed your Form I-140 online.",
+      "retrieved_chunk_ids": [
+        "58571826b83f21996195083e",
+        "7199c8229e2f9712ee64edb7",
+        "ea22991d08908d18bd9e90df",
+        "e3c55c66888a8dcf0a09f046"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.8055555555287036
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 0.6666666666666666
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.9927501687380295
+        }
+      }
+    },
+    {
+      "id": "syn-051",
+      "response": "If a petitioner has filed an H-1B cap petition but has not received a Form I-797, they should not submit a second petition. \n\nAccording to the context information, if a petitioner has confirmation from the delivery service that the petition was delivered, but they have not yet received a Form I-797 confirming receipt of the petition, the petitioner should not submit a second petition. \n\nHowever, if a petitioner has confirmation from the delivery service that the petition was delivered, and they submit a second petition, the petitioner will be considered to have submitted duplicate petitions. This will result in the denial or revocation of both petitions.\n\nIn the event of a delivery service error, the petitioner may file a second H-1B petition with a new fee payment during the designated 90-day filing window on their Registration Selection Notice, but only if they include:\n\n1. An explanation as to why a second petition is being filed, with supporting evidence, such as the notice from the delivery service; and\n2. A request to withdraw the first petition filed for the H-1B cap.\n\nIf the petitioner does not include these items, they will be considered to have submitted duplicate petitions.",
+      "retrieved_chunk_ids": [
+        "1eb3e4df703f690c4d06fb04",
+        "d26d1c3d5793519ec2177467",
+        "1876579fe153e6814e73452f",
+        "7ae8f92085ec59682b83f30e"
+      ],
+      "scores": {
+        "context_precision": {
+          "reason": null,
+          "value": 0.999999999975
+        },
+        "context_recall": {
+          "reason": null,
+          "value": 1.0
+        },
+        "faithfulness": {
+          "reason": null,
+          "value": 1.0
+        },
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg": 1.0,
+        "response_relevancy": {
+          "reason": null,
+          "value": 0.7587499506216305
+        }
+      }
+    }
+  ],
+  "timings": {
+    "p50_ms": 4053.218666522298,
+    "p95_ms": 9067.184118606376
+  }
+}
