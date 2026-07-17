@@ -85,6 +85,19 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
     ]
 
+    # ----- observability -----
+    # All default-empty: telemetry is a strict no-op until configured, so local
+    # dev and tests never open network connections or background threads.
+    # Setting the two Langfuse keys is enough — observability.py derives the
+    # OTLP endpoint + Basic-auth header from them. The generic OTEL_* pair
+    # overrides that derivation for any other OTLP backend (vendor-neutral).
+    otel_service_name: str = "visawise"
+    otel_exporter_otlp_endpoint: str = ""  # e.g. https://host/api/public/otel/v1/traces
+    otel_exporter_otlp_headers: str = ""  # e.g. Authorization=Basic <base64 pk:sk>
+    langfuse_public_key: str = ""
+    langfuse_secret_key: str = ""
+    langfuse_host: str = "https://cloud.langfuse.com"
+
     @field_validator("cors_allowed_origins", mode="before")
     @classmethod
     def _parse_cors_origins(cls, value: object) -> object:

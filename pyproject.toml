@@ -29,6 +29,11 @@ dependencies = [
     "rapidfuzz>=3.14.5",
     "sse-starlette>=3.4.5",
     "slowapi>=0.1.10",
+    "opentelemetry-sdk>=1.44.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.44.0",
+    "opentelemetry-instrumentation-fastapi>=0.65b0",
+    "opentelemetry-instrumentation-logging>=0.65b0",
+    "opentelemetry-instrumentation-google-genai>=1.0b1",
 ]
 
 [project.scripts]
