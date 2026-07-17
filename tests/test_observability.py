@@ -40,6 +40,7 @@ def test_langfuse_keys_derive_otlp_endpoint_and_auth(monkeypatch):
     monkeypatch.setattr(settings, "otel_exporter_otlp_endpoint", "")
     monkeypatch.setattr(settings, "langfuse_public_key", "pk-lf-x")
     monkeypatch.setattr(settings, "langfuse_secret_key", "sk-lf-y")
+    monkeypatch.setattr(settings, "langfuse_host", "https://cloud.langfuse.com")
 
     endpoint, headers = observability._otlp_traces_config()
 

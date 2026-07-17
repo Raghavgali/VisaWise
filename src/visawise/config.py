@@ -9,7 +9,7 @@ changing them invalidates comparability with the committed eval baselines.
 from pathlib import Path
 from typing import Annotated
 
-from pydantic import field_validator
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -96,7 +96,13 @@ class Settings(BaseSettings):
     otel_exporter_otlp_headers: str = ""  # e.g. Authorization=Basic <base64 pk:sk>
     langfuse_public_key: str = ""
     langfuse_secret_key: str = ""
-    langfuse_host: str = "https://cloud.langfuse.com"
+    # Default is the EU region; US-region projects must point this at
+    # https://us.cloud.langfuse.com (keys 401 against the wrong region).
+    # Accepts LANGFUSE_BASE_URL (official Langfuse SDK name) or LANGFUSE_HOST.
+    langfuse_host: str = Field(
+        "https://cloud.langfuse.com",
+        validation_alias=AliasChoices("langfuse_base_url", "langfuse_host"),
+    )
 
     @field_validator("cors_allowed_origins", mode="before")
     @classmethod
