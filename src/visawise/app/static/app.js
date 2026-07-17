@@ -300,22 +300,27 @@ if (presetQuestion) ask(presetQuestion);
 
 function shortModel(llm) {
   if (!llm) return "";
-  if (/8b/i.test(llm)) return "8B";
-  if (/70b/i.test(llm)) return "70B";
+  const m = llm.toLowerCase();
+  if (m.includes("gemini")) return "Gemini Flash-Lite";
+  if (m.includes("gpt-oss")) return "gpt-oss-20B";
+  if (m.includes("scout")) return "Llama-4-Scout";
+  if (m.includes("8b")) return "8B";
+  if (m.includes("70b")) return "70B";
   return llm.split("/").pop();
 }
 
+// The deployed serving config is Gemini on the curated_v2 safety set.
 function isServingConfig(run) {
-  const e = run;
-  return (
-    !e.aborted &&
-    e.retriever === "hybrid" &&
-    e.reranker === "local" &&
-    // rerank→4 is the serving default; the rerank→8 ablation rung must NOT be
-    // mistaken for it (rerank_top_n absent in older summaries -> assume serving).
-    (e.rerank_top_n == null || e.rerank_top_n === 4) &&
-    /8b/i.test(e.llm ?? "8b") // llm absent in older summaries -> assume serving default
-  );
+  return !run.aborted && run.dataset === "curated_v2" && /gemini/i.test(run.llm ?? "");
+}
+
+/* Safety = share of hard-slice cases handled correctly, shown as a count
+   (e.g. "14/15") using the abstention aggregate × its coverage total. */
+function safetyCell(run) {
+  const value = run.abstention;
+  if (value == null) return "—";
+  const total = run.coverage?.abstention?.total;
+  return total ? `${Math.round(value * total)}/${total}` : fmt(value, 2);
 }
 
 function fmt(value, decimals = 3) {
@@ -343,10 +348,6 @@ function renderDocket(runs) {
     const tr = document.createElement("tr");
     if (run.aborted) tr.className = "aborted";
 
-    const weight =
-      run.retriever === "hybrid" && run.vector_weight != null
-        ? ` ${run.vector_weight}/${(1 - run.vector_weight).toFixed(1)}`
-        : "";
     // Contexts reaching the LLM: rerank_top_n when reranked, else top_k. This
     // is the axis the reranker ablation turns on, so it belongs in the label —
     // "rerank→4" vs "rerank→8" is the difference between two otherwise-identical rows.
@@ -356,9 +357,11 @@ function renderDocket(runs) {
         : run.rerank_top_n != null
           ? `rerank→${run.rerank_top_n}`
           : "rerank";
+    // Lead with the dataset so the three studies (retrieval / bake-off / safety)
+    // are distinguishable in one flat table.
     const label = [
-      `${run.retriever}${weight}`,
-      rerankLabel,
+      run.dataset,
+      `${run.retriever} ${rerankLabel}`,
       shortModel(run.llm) || null,
     ].filter(Boolean).join(" · ");
 
@@ -391,6 +394,7 @@ function renderDocket(runs) {
       metricCell(run, "response_relevancy"),
       metricCell(run, "context_precision"),
       metricCell(run, "mrr"),
+      safetyCell(run),
       p50 == null ? "—" : `${p50.toFixed(1)}s`,
     ];
     for (const text of cells) {

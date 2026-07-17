@@ -97,26 +97,26 @@
 
     <section class="kpis" aria-label="Headline results">
       <div class="kpi">
-        <span class="kpi-value">0.913</span>
+        <span class="kpi-value">0.92</span>
         <span class="kpi-name">Faithfulness</span>
-        <span class="kpi-note">serving config · all 52 scored</span>
+        <span class="kpi-note">answerable questions · serving config</span>
       </div>
       <div class="kpi">
-        <span class="kpi-value">0.925</span>
-        <span class="kpi-name">Context precision</span>
-        <span class="kpi-note">hybrid beats vector-only by 8 pts</span>
+        <span class="kpi-value">14<small>/15</small></span>
+        <span class="kpi-name">Safety</span>
+        <span class="kpi-note">abstains · refuses · qualifies on the hard slices</span>
       </div>
       <div class="kpi">
-        <span class="kpi-value">4.1<small>s</small></span>
+        <span class="kpi-value">2.5<small>s</small></span>
         <span class="kpi-name">Median answer</span>
-        <span class="kpi-note">8B model, chosen by these numbers</span>
+        <span class="kpi-note">Gemini 3.1 Flash-Lite (free) · chosen by these evals</span>
       </div>
     </section>
 
     <section class="docket">
       <div class="docket-caption">
         <h2>Run docket</h2>
-        <p>Question set <code>synthetic_v2</code> · judge <code>gpt-4o-mini</code> · a controlled ablation: each row changes one variable</p>
+        <p>Every committed run — retrieval ablation, the free-model bake-off, and the deployed safety config. Live from the eval API · judge <code>gpt-4o-mini</code>.</p>
       </div>
       <div class="table-scroll">
         <table>
@@ -128,71 +128,47 @@
               <th scope="col" class="num">Relevancy</th>
               <th scope="col" class="num">Ctx&nbsp;prec</th>
               <th scope="col" class="num">MRR</th>
+              <th scope="col" class="num">Safety</th>
               <th scope="col" class="num">p50</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td><span class="cfg">hybrid · no rerank · 8B</span></td>
-              <td class="num">52</td>
-              <td class="num strong">0.945</td>
-              <td class="num">0.800</td>
-              <td class="num">0.887</td>
-              <td class="num">0.798</td>
-              <td class="num strong">3.3s</td>
-            </tr>
-            <tr>
-              <td><span class="cfg">hybrid · rerank→8 · 8B</span></td>
-              <td class="num">52</td>
-              <td class="num">0.929</td>
-              <td class="num strong">0.829</td>
-              <td class="num">0.887</td>
-              <td class="num strong">0.838</td>
-              <td class="num">6.1s</td>
-            </tr>
+            <!-- Fallback rows (the free-model bake-off) shown only if the eval API is
+                 unreachable; app.js replaces this tbody with the live run set. -->
             <tr class="serving">
               <td>
-                <span class="cfg">hybrid · rerank→4 · 8B</span>
+                <span class="cfg">gemini flash-lite · guardrail v4</span>
                 <span class="badge-serving">Serving</span>
               </td>
-              <td class="num">52</td>
-              <td class="num">0.913</td>
-              <td class="num">0.786</td>
-              <td class="num strong">0.925</td>
-              <td class="num">0.833</td>
-              <td class="num">4.1s</td>
+              <td class="num">30</td>
+              <td class="num strong">0.920</td>
+              <td class="num">—</td>
+              <td class="num">—</td>
+              <td class="num">—</td>
+              <td class="num strong">14/15</td>
+              <td class="num strong">2.5s</td>
             </tr>
             <tr>
-              <td><span class="cfg">vector · no rerank · 8B</span></td>
-              <td class="num">52</td>
-              <td class="num">0.908</td>
-              <td class="num">0.803</td>
-              <td class="num">0.849</td>
-              <td class="num">0.777</td>
-              <td class="num">9.1s</td>
+              <td><span class="cfg">gpt-oss-20b · guardrail v2</span></td>
+              <td class="num">30</td><td class="num">0.829</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">11/15</td><td class="num">31s</td>
             </tr>
-            <tr class="aborted">
-              <td>
-                <span class="cfg">hybrid · rerank→4 · 70B</span>
-                <span class="badge-aborted" title="Free 70B endpoint returned 503s; run stopped at sample 6">Aborted</span>
-              </td>
-              <td class="num">5</td>
-              <td class="num">—</td>
-              <td class="num">—</td>
-              <td class="num">—</td>
-              <td class="num">—</td>
-              <td class="num">187s</td>
+            <tr>
+              <td><span class="cfg">llama-4-scout · guardrail v2</span></td>
+              <td class="num">30</td><td class="num">0.743</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">5/15</td><td class="num">7.2s</td>
+            </tr>
+            <tr>
+              <td><span class="cfg">llama-3.1-8B · guardrail v2</span></td>
+              <td class="num">30</td><td class="num">0.546</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">7/15</td><td class="num">2.5s</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p class="docket-note">
-        Each row is one controlled config — same dataset, model, prompt, corpus and judge,
-        differing by a single variable — so any two can be compared cleanly. All 52
-        questions scored. The two <code>rerank→4 · 8B</code> runs are one identical config
-        run twice: they differ by ~0.03 on the judged metrics, which is the noise floor —
-        and why the reranker's <strong>+0.04 MRR</strong> (a judge-free retrieval metric)
-        is the result to trust here.
+        Nine committed runs across three studies: retrieval (<code>synthetic_v2</code> · 8B),
+        the free-model bake-off (<code>curated_v1</code> · guardrail v2), and the deployed
+        safety config (<code>curated_v2</code> · Gemini). Judged metrics carry a ~0.03 noise
+        floor; <code>—</code> means a metric doesn't apply to that run's slices. Safety = the
+        share of hard-slice cases handled correctly (abstain / refuse / qualify).
       </p>
     </section>
 
@@ -221,21 +197,49 @@
     </section>
 
     <section class="retest">
-      <h2>We re-tested our own 2024 finding. It didn't hold.</h2>
+      <h2>Four free models entered. One was fast, safe, and free.</h2>
       <div class="retest-grid">
         <div class="retest-then">
-          <span class="retest-label">2024 · research corpus</span>
-          <p><strong>0.44 → 0.83</strong> faithfulness, vector vs hybrid. A chasm — the finding this project was built on.</p>
+          <span class="retest-label">The free 8B (original default)</span>
+          <p>Fast and $0 — but it <strong>leaked its own system prompt</strong>, answered
+          out-of-scope questions, and gave confident advice where it should abstain:
+          <strong>2/15</strong> on the safety slices, and a guardrail prompt tanked its
+          answer quality instead of helping.</p>
         </div>
         <div class="retest-now">
-          <span class="retest-label">2026 · fresh corpus, same weights</span>
-          <p><strong>0.908 vs 0.945</strong> (vector vs hybrid, neither reranked) — both strong, the chasm gone.
-          Cleaner extraction lifted vector-only. Hybrid still wins ranking (MRR 0.798 vs 0.777), so it still serves.</p>
+          <span class="retest-label">Gemini 3.1 Flash-Lite (chosen)</span>
+          <p><strong>14/15</strong> safety, <strong>0.92</strong> faithfulness, ~2.5s, still $0.
+          gpt-oss-20b matched it on safety but ran at <strong>31s</strong> and hit a daily
+          token cap; Llama-4-Scout was fast but <strong>5/15</strong>. Only Flash-Lite
+          cleared all three bars.</p>
         </div>
       </div>
       <p class="retest-note">
-        A harness that can only confirm what you already believe isn't a harness.
-        This one gets to disagree with its own origin story.
+        The model is one flag in the config — and the eval harness, not a hunch, chose it,
+        after the free tiers of the "better" models turned out to be quota mirages.
+      </p>
+    </section>
+
+    <section class="retest">
+      <h2>Safety isn't a vibe. We slice it — and tuned a guardrail against it.</h2>
+      <div class="retest-grid">
+        <div class="retest-then">
+          <span class="retest-label">Six behaviours, measured</span>
+          <p>A human-reviewed set probes what synthetic questions can't: out-of-corpus
+          <em>abstention</em>, prompt-injection <em>resistance</em>, and high-risk
+          <em>qualification</em> — graded by an independent judge, on a set held out from
+          prompt tuning.</p>
+        </div>
+        <div class="retest-now">
+          <span class="retest-label">Guardrail prompt v1 → v4</span>
+          <p>v2 over-hedged (answer quality collapsed); v3's blunt binary broke refusals;
+          v4's explicit precedence — <em>refuse → qualify → answer</em> — restored both.
+          Result: <strong>14/15</strong> (out-of-corpus 5/5, high-risk 5/5, injection 4/5).</p>
+        </div>
+      </div>
+      <p class="retest-note">
+        Tuned on a separate dev split, measured once on the held-out set — so the 14/15 is an
+        honest read, not a number fit to its own test.
       </p>
     </section>
 
@@ -245,14 +249,15 @@
         <div><dt>Relevancy</dt><dd>Does the answer actually address the question asked?</dd></div>
         <div><dt>Context precision</dt><dd>Of the passages retrieved, how many were needed?</dd></div>
         <div><dt>MRR</dt><dd>How high does the first correct source rank in retrieval?</dd></div>
+        <div><dt>Safety</dt><dd>On the hard slices, does it correctly abstain, refuse, or qualify instead of answering?</dd></div>
       </dl>
     </section>
 
     <footer class="provenance">
-      <span>git <code>40dd25b</code></span>
-      <span>corpus <code>f71c7102…</code></span>
-      <span>dataset <code>synthetic_v2 · 52</code></span>
+      <span>serving <code>gemini-3.1-flash-lite · v4</code></span>
+      <span>datasets <code>synthetic_v2 · curated_v2</code></span>
       <span>judge <code>gpt-4o-mini</code></span>
+      <span>hosted <code>Modal · Vercel</code></span>
     </footer>
   </div>
 </main>
