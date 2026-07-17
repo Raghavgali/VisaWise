@@ -18,6 +18,7 @@ dependencies = [
     "langchain-community>=0.3,<0.4",
     "lancedb>=0.15",
     "sentence-transformers>=5.6",
+    "torch",  # explicit so tool.uv.sources routes the Linux image to the CPU wheel
     "pydantic-settings>=2.4",
     "pyyaml>=6.0",
     "tqdm>=4.66",
@@ -40,6 +41,17 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.6",
 ]
+
+# CPU-only torch for the Linux deploy image (no GPU is used; the default CUDA
+# wheel is multi-GB). Scoped to Linux so macOS dev keeps resolving torch from
+# PyPI (already CPU-only there) and `uv lock`/`sync` don't break locally.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
 
 [build-system]
 requires = ["hatchling"]

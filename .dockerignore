@@ -1,0 +1,46 @@
+# Build-context excludes. NOTE: this is independent of .gitignore — the build
+# needs data/lancedb/ (which IS gitignored), so we do NOT exclude it here.
+
+# VCS / tooling
+.git
+.gitignore
+.github
+
+# Local virtualenv + caches (huge, must never enter the image)
+.venv
+**/__pycache__
+*.pyc
+.pytest_cache
+.ruff_cache
+.mypy_cache
+
+# Secrets / local env (secrets are injected at runtime via Modal, never baked)
+.env
+.env.*
+!.env.example
+
+# Corpus build artifacts NOT needed to serve (only the built LanceDB index is).
+# Keep: data/lancedb/  (required at runtime, added back by the ! rule)
+data/raw
+data/extracted
+data/chunks
+
+# Eval/dev material not needed by the serving path.
+# Keep: evals/runs/latest_summary.json (dashboard payload) — re-included below.
+evals/datasets
+evals/runs
+!evals/runs/latest_summary.json
+research
+tests
+docs
+configs
+notebooks
+
+# Editor / OS cruft
+.DS_Store
+.idea
+.vscode
+*.swp
+
+# Deploy/plan files not needed inside the image
+.claude
