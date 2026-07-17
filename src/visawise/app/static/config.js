@@ -10,4 +10,4 @@
  * (No trailing slash. The Modal origin must also be in the backend's
  *  CORS_ALLOWED_ORIGINS.)
  */
-window.__VISAWISE_API_BASE__ = "";
+window.__VISAWISE_API_BASE__ = "https://raghavgali397--visawise-fastapi-app.modal.run";
