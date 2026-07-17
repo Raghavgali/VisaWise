@@ -91,6 +91,7 @@ corpus rather than assuming they still hold.
 | 3 — Eval harness | golden datasets, RAGAS 0.4 + retrieval metrics, YAML experiments, regression gates | ✅ done ([leaderboard](docs/EVALS.md)) |
 | 4 — App | FastAPI + chat UI + live eval dashboard | ✅ done |
 | 5 — Deploy | Dockerized backend on Modal (scale-to-zero) + static frontend on Vercel | ✅ [live](https://visa-wise-six.vercel.app) |
+| 6 — Observability | OTel traces → Langfuse (per-stage RAG spans + gen_ai token usage), trace-correlated JSON logs, SLOs | ✅ done ([SLOs](docs/observability-slo.md)) |
 
 ## Quickstart
 
@@ -132,4 +133,4 @@ docs/               build lessons log
 Python 3.12 · LangChain 1.x + LangGraph · LanceDB (embedded; vectors + tantivy FTS) ·
 `BAAI/bge-base-en-v1.5` embeddings · `bge-reranker-base` cross-encoder · Gemini 3.1
 Flash-Lite generation (chosen by the eval harness; provider is one flag away) ·
-RAGAS 0.4 + gpt-4o-mini judge · FastAPI · Modal + Vercel · uv
+RAGAS 0.4 + gpt-4o-mini judge · FastAPI · Modal + Vercel · OpenTelemetry → Langfuse · uv
