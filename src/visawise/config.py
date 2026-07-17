@@ -7,8 +7,10 @@ changing them invalidates comparability with the committed eval baselines.
 """
 
 from pathlib import Path
+from typing import Annotated
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -71,6 +73,31 @@ class Settings(BaseSettings):
     judged_coverage_threshold: float = 0.95
     datasets_dir: Path = REPO_ROOT / "evals" / "datasets"
     runs_dir: Path = REPO_ROOT / "evals" / "runs"
+
+    # ----- backend / serving -----
+    # Origins allowed to call the API cross-origin: the deployed frontend
+    # (Vercel) plus local dev. NoDecode + the validator let the env var be a
+    # plain comma-separated list, e.g.
+    #   CORS_ALLOWED_ORIGINS=https://visawise.vercel.app,http://localhost:5173
+    # (a JSON array also works), instead of requiring JSON in the Modal secret.
+    cors_allowed_origins: Annotated[list[str], NoDecode] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+
+    @field_validator("cors_allowed_origins", mode="before")
+    @classmethod
+    def _parse_cors_origins(cls, value: object) -> object:
+        # NoDecode hands us the raw env string; accept a JSON array or a plain
+        # comma-separated list.
+        if isinstance(value, str):
+            text = value.strip()
+            if text.startswith("["):
+                import json
+
+                return json.loads(text)
+            return [origin.strip() for origin in text.split(",") if origin.strip()]
+        return value
 
     @property
     def raw_dir(self) -> Path:
