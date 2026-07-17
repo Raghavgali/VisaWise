@@ -48,6 +48,49 @@ def test_langfuse_keys_derive_otlp_endpoint_and_auth(monkeypatch):
     assert headers["Authorization"].startswith("Basic ")
 
 
+def test_json_log_formatter_carries_trace_ids_and_extras():
+    import json
+    import logging
+
+    from visawise.observability import _JsonLogFormatter
+
+    record = logging.LogRecord("visawise.app", logging.INFO, __file__, 1, "chat completed", None, None)
+    record.otelTraceID = "abc123"
+    record.otelSpanID = "def456"
+    record.duration_ms = 8123.4
+    record.query_chars = 42
+
+    payload = json.loads(_JsonLogFormatter().format(record))
+
+    assert payload["message"] == "chat completed"
+    assert payload["level"] == "INFO"
+    assert payload["trace_id"] == "abc123"
+    assert payload["span_id"] == "def456"
+    assert payload["duration_ms"] == 8123.4
+    assert payload["query_chars"] == 42
+    assert "otelTraceID" not in payload  # normalized, not duplicated
+
+
+def test_json_log_formatter_omits_trace_ids_outside_spans():
+    import json
+    import logging
+
+    from visawise.observability import _JsonLogFormatter
+
+    record = logging.LogRecord("x", logging.WARNING, __file__, 1, "startup", None, None)
+    payload = json.loads(_JsonLogFormatter().format(record))
+
+    assert "trace_id" not in payload and "span_id" not in payload
+
+
+def test_record_chat_outcome_tolerates_noop_span():
+    from opentelemetry import trace
+
+    span = trace.INVALID_SPAN  # what current_span() returns when disabled
+    observability.record_chat_outcome(span, "success")
+    observability.record_chat_outcome(span, "error", RuntimeError("boom"))
+
+
 def test_traced_node_is_transparent_when_disabled():
     def node(state):
         return {"answer": "ok", "citations": []}

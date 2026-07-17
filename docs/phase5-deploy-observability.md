@@ -157,3 +157,27 @@ Document the error-budget concept; note runtime p95 (2) vs eval-time `timings.p9
 - **Thread-context for stage spans** — verify nesting with a real trace, don't assume.
 - **Span-loss on scale-to-zero** — flush in lifespan `finally:`.
 - **Free quotas** — Gemini RPD (bursty → 429 as SSE `error`); Langfuse 50k units/mo; Modal credits (scale-to-zero ≈ $0).
+
+## Part 2 gotchas (discovered during Phases 6–8)
+
+- **Langfuse Cloud is two regions.** Keys are region-bound: EU = `cloud.langfuse.com`,
+  US = `us.cloud.langfuse.com`. Wrong region = `401` — and on the OTLP export path
+  that 401 is *silent* (a dropped batch and a log line). Config accepts
+  `LANGFUSE_BASE_URL` (official SDK name) or `LANGFUSE_HOST`.
+- **Changing a Modal secret does NOT recycle warm containers, and neither does
+  `modal deploy` if the function definition didn't change** (the secret is referenced
+  by name). Force it: `modal container list` → `modal container stop --yes <id>`.
+- **A developer .env with real Langfuse keys makes the test suite export spans to the
+  production project** (app tests import `main.py`, which inits telemetry at import
+  time). `tests/conftest.py` blanks the telemetry settings before any test module
+  loads. The seven 0-duration junk traces this produced were deleted via the API.
+- **`init_observability(app)` must run at import time, not in the lifespan** —
+  Starlette freezes the middleware stack before the lifespan runs; the FastAPI
+  instrumentor needs to add middleware before that.
+- **Metrics deviation:** Langfuse's OTLP endpoint ingests traces only. Golden signals
+  are derived: latency/traffic/errors from traces in Langfuse, saturation from
+  Modal's built-in CPU/memory dashboard. No OTel metric instruments (no backend
+  for them = dead code).
+- **First production trace breakdown (13.1s total):** rerank 4.5s (CPU cross-encoder,
+  2 vCPU) + generate 8.5s (Gemini, ~4.7k input tokens) — retrieval ~0.1s. The ~8s
+  p50 is generation-dominated, not retrieval.

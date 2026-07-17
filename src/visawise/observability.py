@@ -22,7 +22,9 @@ from __future__ import annotations
 
 import base64
 import functools
+import json
 import logging
+import sys
 from collections.abc import Callable
 from importlib.metadata import PackageNotFoundError, version
 from typing import TYPE_CHECKING
@@ -37,6 +39,41 @@ logger = logging.getLogger(__name__)
 # Set only when init_observability() actually configured a provider; the
 # handle shutdown_observability() flushes through.
 _tracer_provider = None
+
+# Attributes every LogRecord has, so anything else is caller-supplied
+# `extra={...}` and belongs in the JSON payload.
+_STANDARD_LOG_ATTRS = frozenset(vars(logging.makeLogRecord({})).keys()) | {
+    "message",
+    "asctime",
+    "taskName",
+}
+
+
+class _JsonLogFormatter(logging.Formatter):
+    """One JSON object per line, carrying the OTel trace/span ids.
+
+    Values must stay bounded: log *about* requests (lengths, counts,
+    timings), never the query or answer text itself.
+    """
+
+    def format(self, record: logging.LogRecord) -> str:
+        payload: dict = {
+            "ts": self.formatTime(record, "%Y-%m-%dT%H:%M:%S%z"),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        # Injected by LoggingInstrumentor when a span is active.
+        for otel_key, json_key in (("otelTraceID", "trace_id"), ("otelSpanID", "span_id")):
+            value = getattr(record, otel_key, None)
+            if value and value != "0":
+                payload[json_key] = value
+        for key, value in record.__dict__.items():
+            if key not in _STANDARD_LOG_ATTRS and not key.startswith(("otel", "_")):
+                payload[key] = value
+        if record.exc_info:
+            payload["exception"] = self.formatException(record.exc_info)
+        return json.dumps(payload, ensure_ascii=False, default=str)
 
 
 def _otlp_traces_config() -> tuple[str, dict[str, str]] | None:
@@ -61,12 +98,13 @@ def _otlp_traces_config() -> tuple[str, dict[str, str]] | None:
 
 
 def init_observability(app: FastAPI) -> bool:
-    """Configure tracing if the env asks for it. Returns whether it did.
+    """Configure tracing + structured logging if the env asks for it.
 
-    Called from the app lifespan before serving traffic. Sets up, in order:
-    a TracerProvider with service identity, a batching OTLP/HTTP exporter,
-    FastAPI server spans (excluding /health — Modal pings it), and gen_ai
-    spans for every Gemini call.
+    Called at app import time, before Starlette freezes the middleware
+    stack. Sets up, in order: JSON logs to stdout with trace-id injection
+    (Modal captures stdout), a TracerProvider with service identity, a
+    batching OTLP/HTTP exporter, FastAPI server spans (excluding /health —
+    Modal pings it), and gen_ai spans for every Gemini call.
     """
     global _tracer_provider
 
@@ -80,9 +118,21 @@ def init_observability(app: FastAPI) -> bool:
     from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
     from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
     from opentelemetry.instrumentation.google_genai import GoogleGenAiSdkInstrumentor
+    from opentelemetry.instrumentation.logging import LoggingInstrumentor
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+    # Logging first, so the "observability enabled" line below is already
+    # visible in Modal logs. LoggingInstrumentor stamps otelTraceID/otelSpanID
+    # onto every record; the JSON formatter emits them, which is what lets a
+    # Modal log line be looked up as a Langfuse trace and vice versa.
+    LoggingInstrumentor().instrument(set_logging_format=False)
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(_JsonLogFormatter())
+    root = logging.getLogger()
+    root.addHandler(handler)
+    root.setLevel(logging.INFO)
 
     try:
         service_version = version("visawise")
@@ -136,6 +186,23 @@ def current_span():
     from opentelemetry import trace
 
     return trace.get_current_span()
+
+
+def record_chat_outcome(span, outcome: str, error: Exception | None = None) -> None:
+    """Stamp the request span with its outcome ("success" / "error").
+
+    The outcome attribute is what makes error *rate* queryable in Langfuse
+    (errors ÷ total chat traces); the ERROR status is what makes failed
+    requests jump out in the trace list. HTTP status can't carry this — the
+    SSE response is already 200 by the time generation fails mid-stream.
+    """
+    span.set_attribute("visawise.outcome", outcome)
+    if outcome == "error":
+        from opentelemetry.trace import Status, StatusCode
+
+        span.set_status(Status(StatusCode.ERROR, type(error).__name__ if error else "error"))
+        if error is not None:
+            span.record_exception(error)
 
 
 def record_first_token(span, ttft_ms: float) -> None:

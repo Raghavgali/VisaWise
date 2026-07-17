@@ -30,6 +30,7 @@ from ..config import settings
 from ..observability import (
     current_span,
     init_observability,
+    record_chat_outcome,
     record_first_token,
     shutdown_observability,
 )
@@ -229,11 +230,25 @@ async def chat_endpoint(payload: ChatRequest, request: Request) -> EventSourceRe
                 },
             )
 
+            record_chat_outcome(request_span, "success")
+            # Bounded request summary, correlated to the trace by the JSON
+            # formatter — never the query or answer text.
+            logger.info(
+                "chat completed",
+                extra={
+                    "duration_ms": round((time.perf_counter() - request_start) * 1000, 1),
+                    "query_chars": len(message),
+                    "answer_chars": len(final_update.get("answer", "")),
+                    "n_citations": len(final_update.get("citations", [])),
+                },
+            )
+
         except asyncio.CancelledError:
             raise
 
-        except Exception:
+        except Exception as exc:
             logger.exception("Chat graph streaming failed")
+            record_chat_outcome(request_span, "error", exc)
 
             if not await request.is_disconnected():
                 yield _sse_json(
