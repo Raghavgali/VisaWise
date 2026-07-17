@@ -2,6 +2,8 @@
 
 **A production RAG system for U.S. immigration policy (USCIS), built eval-first.**
 
+**▶ Live demo: [visa-wise-six.vercel.app](https://visa-wise-six.vercel.app)** — frontend on Vercel, API on Modal (scale-to-zero, so the first request after idle takes a few seconds to warm).
+
 Ask questions about F-1/OPT, H-1B, green cards, and status changes — answered from a
 continuously refreshable corpus of official USCIS pages, with citations. Every retrieval
 decision in this system (hybrid weights, chunking strategy, reranking) is a **measured
@@ -38,7 +40,7 @@ staleness detection, and an eval suite that regression-gates every change.
                       └─→ bm25_retrieve (native FTS) ───┘        │
                                                               rerank (local cross-encoder)
                                                                  │
-                                                              generate (NIM · Llama 3.1 8B)
+                                                              generate (Gemini 3.1 Flash-Lite)
                                                                  │
              EVALS (visawise-eval)                            answer + citations
              YAML experiments × versioned golden datasets
@@ -88,7 +90,7 @@ corpus rather than assuming they still hold.
 | 2 — RAG core | hybrid retrieval, reranking, LangGraph pipeline | ✅ done |
 | 3 — Eval harness | golden datasets, RAGAS 0.4 + retrieval metrics, YAML experiments, regression gates | ✅ done ([leaderboard](docs/EVALS.md)) |
 | 4 — App | FastAPI + chat UI + live eval dashboard | ✅ done |
-| 5 — Deploy | single self-contained container (index ships inside) | planned |
+| 5 — Deploy | Dockerized backend on Modal (scale-to-zero) + static frontend on Vercel | ✅ [live](https://visa-wise-six.vercel.app) |
 
 ## Quickstart
 
@@ -128,6 +130,6 @@ docs/               build lessons log
 ## Stack
 
 Python 3.12 · LangChain 1.x + LangGraph · LanceDB (embedded; vectors + tantivy FTS) ·
-`BAAI/bge-base-en-v1.5` embeddings · `bge-reranker-base` cross-encoder · Llama 3.1 8B
-generation (NVIDIA NIM; model size chosen by the eval harness — Groq one flag away) ·
-RAGAS 0.4 + gpt-4o-mini judge · FastAPI · uv
+`BAAI/bge-base-en-v1.5` embeddings · `bge-reranker-base` cross-encoder · Gemini 3.1
+Flash-Lite generation (chosen by the eval harness; provider is one flag away) ·
+RAGAS 0.4 + gpt-4o-mini judge · FastAPI · Modal + Vercel · uv
