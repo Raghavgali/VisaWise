@@ -164,9 +164,11 @@ Document the error-budget concept; note runtime p95 (2) vs eval-time `timings.p9
   US = `us.cloud.langfuse.com`. Wrong region = `401` — and on the OTLP export path
   that 401 is *silent* (a dropped batch and a log line). Config accepts
   `LANGFUSE_BASE_URL` (official SDK name) or `LANGFUSE_HOST`.
-- **Changing a Modal secret does NOT recycle warm containers, and neither does
-  `modal deploy` if the function definition didn't change** (the secret is referenced
-  by name). Force it: `modal container list` → `modal container stop --yes <id>`.
+- **Warm containers outlive `modal deploy`.** A secret change never recycles them
+  (referenced by name), and even an image-changing deploy left the old container
+  serving requests. After ANY deploy where the new behavior matters, force it:
+  `modal container list` → `modal container stop --yes <id>`, then verify against
+  a cold start (a sub-second /health right after deploying = you hit the old one).
 - **A developer .env with real Langfuse keys makes the test suite export spans to the
   production project** (app tests import `main.py`, which inits telemetry at import
   time). `tests/conftest.py` blanks the telemetry settings before any test module
