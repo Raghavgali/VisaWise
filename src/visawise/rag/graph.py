@@ -21,7 +21,7 @@ from langgraph.graph import END, START, StateGraph
 from dataclasses import asdict, dataclass
 
 from ..config import settings
-from .prompts import QA_PROMPT_VERSION, QA_SYSTEM_PROMPT, QA_USER_TEMPLATE
+from .prompts import get_prompt
 from .rerank import build_reranker, RerankerKind
 from .retrieval import ScoredChunk, bm25_search, dense_search, fuse_rrf # noqa: F401 - part of the state contract
 
@@ -36,6 +36,13 @@ class EngineConfig:
     rerank_top_n: int = settings.rerank_top_n
     llm: str = settings.generation_llm
     prompt_version: str = "v1"
+    reasoning_effort: str | None = None  # gpt-oss (Groq): "low"|"medium"|"high"
+    thinking_budget: int | None = None  # Gemini 2.5: 0 disables thinking
+    # If set, drop retrieved context when the top cross-encoder rerank score is
+    # below this (nothing on-topic) so the prompt abstains/refuses/qualifies
+    # instead of answering from loosely-related passages. Calibrated for the
+    # local bge-reranker (0-1); only meaningful with a cross-encoder reranker.
+    grounding_threshold: float | None = None
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -49,14 +56,31 @@ class GraphState(TypedDict, total=False):
     answer: str 
     citations: list[dict[str, str]]
 
+def _message_text(response) -> str:
+    """Plain text from an LLM response. `.content` is a str for OpenAI/Groq/
+    NVIDIA but a list of content blocks for Gemini 3.x / Anthropic (e.g.
+    [{'type': 'text', 'text': ...}]); join the text parts so downstream (stored
+    answer, judge, UI) never sees a stringified list."""
+    content = getattr(response, "content", response)
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = [
+            block if isinstance(block, str) else block.get("text", "")
+            for block in content
+            if isinstance(block, (str, dict))
+        ]
+        return "".join(p for p in parts if isinstance(p, str))
+    return str(content)
+
+
 def build_graph(config: EngineConfig):
     """EngineConfig -> compiled LangGraph app (shared by serving and evals)."""
-    if config.prompt_version != QA_PROMPT_VERSION:
-        raise ValueError(f"Unsupported prompt version: {config.prompt_version}")
+    system_prompt, user_template = get_prompt(config.prompt_version)
     
     provider, separator, model_name = config.llm.partition(":")
-    if provider not in ("groq", "nvidia") or not separator or not model_name:
-        raise ValueError("llm must look like 'groq:<model>' or 'nvidia:<model>'")
+    if provider not in ("groq", "nvidia", "gemini") or not separator or not model_name:
+        raise ValueError("llm must look like 'groq:<model>', 'nvidia:<model>' or 'gemini:<model>'")
 
     if config.retriever not in ("vector", "bm25", "hybrid"):
         raise ValueError(f"Unknown retriever: {config.retriever!r}")
@@ -64,7 +88,27 @@ def build_graph(config: EngineConfig):
     if provider == "groq":
         if not settings.groq_api_key:
             raise RuntimeError("GROQ_API_KEY is not set -- llm 'groq:...' requires it (.env)")
-        llm = ChatGroq(model=model_name, api_key=settings.groq_api_key, temperature=0)
+        groq_kwargs = {}
+        if config.reasoning_effort is not None:
+            # gpt-oss reasoning models: trade depth for latency. Ignored by
+            # non-reasoning Groq models, so only set when asked.
+            groq_kwargs["reasoning_effort"] = config.reasoning_effort
+        llm = ChatGroq(model=model_name, api_key=settings.groq_api_key, temperature=0, **groq_kwargs)
+    elif provider == "gemini":  # Google AI Studio (free tier), independent of the gpt-4o-mini judge
+        if not settings.google_api_key:
+            raise RuntimeError("GOOGLE_API_KEY is not set -- llm 'gemini:...' requires it (.env)")
+        from langchain_google_genai import ChatGoogleGenerativeAI
+
+        gemini_kwargs = {}
+        if config.thinking_budget is not None:
+            # Gemini 2.5 thinks by default; 0 disables it (fewer tokens, faster).
+            gemini_kwargs["thinking_budget"] = config.thinking_budget
+        llm = ChatGoogleGenerativeAI(
+            model=model_name,
+            google_api_key=settings.google_api_key,
+            temperature=0,
+            **gemini_kwargs,
+        )
     else:  # nvidia: hosted NIM, OpenAI-compatible endpoint
         if not settings.nvidia_api_key:
             raise RuntimeError("NVIDIA_API_KEY is not set -- llm 'nvidia:...' requires it (.env)")
@@ -115,6 +159,13 @@ def build_graph(config: EngineConfig):
     def generate(state: GraphState) -> dict:
         final_hits = state.get("reranked", state["fused"])
 
+        # Grounding gate: if nothing retrieved clears the relevance threshold,
+        # answer with NO context so the prompt's precedence (abstain / refuse /
+        # qualify) fires instead of stretching off-topic passages into an answer.
+        if config.grounding_threshold is not None and final_hits:
+            if max(hit.score for hit in final_hits) < config.grounding_threshold:
+                final_hits = []
+
         context_parts: list[str] = []
         citations: list[dict[str, str]] = []
         seen_sources: set[tuple[str, str]] = set()
@@ -131,20 +182,19 @@ def build_graph(config: EngineConfig):
                 seen_sources.add(source_key)
                 citations.append({"url": hit.url, "title": hit.title})
         
-        prompt = QA_USER_TEMPLATE.format(
+        prompt = user_template.format(
             context="\n\n".join(context_parts),
             query=state["query"],
-
         )
 
         response = llm.invoke(
             [
-                ("system", QA_SYSTEM_PROMPT),
+                ("system", system_prompt),
                 ("human", prompt),
             ]
         )
 
-        answer = response.content if isinstance(response.content, str) else str(response.content)
+        answer = _message_text(response)
         return {"answer": answer, "citations": citations}
     
     graph = StateGraph(GraphState)

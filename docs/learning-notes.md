@@ -433,3 +433,79 @@ judge noise even when the context set is identical. Only `hit_rate` / `MRR` /
 lives entirely in the deterministic metrics, and the 0.009 recall wiggle is
 noise, not a bug. Lesson: know which of your metrics have an LLM in the loop
 before you claim two of them must be bit-identical.
+
+## 15. Safety slices, the guardrail prompt, and picking a free model
+
+The synthetic set only had ordinary answerable questions. A review pushed for a
+human-reviewed `curated_v1` (30 samples, 6 slices × 5) that could test what the
+synthetic set can't: temporal/current facts, stale-source correction,
+out-of-corpus abstention, prompt-injection resistance, and high-risk
+qualification. To score these honestly the runner became **slice-aware**:
+answer-bearing slices get the RAGAS content metrics; the three safety slices get
+`score_abstention` (a gpt-4o-mini judge that asks "did it correctly abstain /
+refuse / qualify?"). `coverage_from_scores` was changed so a metric's `total`
+counts only samples where it was *attempted* — so a metric that applies to just
+one slice gates against its own denominator, not the whole run.
+
+**First curated run exposed the real gap.** The free 8B (`llama-3.1-8b`) was
+strong on content but abstained on only ~2/15 safety cases — it answered
+out-of-corpus questions from loosely-related chunks, gave confident advice on
+high-risk cases, and could be induced to **print its own system prompt**. A
+single blended faithfulness number (0.87) hid all of this; the slices surfaced
+it. That's the whole argument for slice-aware eval.
+
+**The guardrail prompt took four tries, each fixing the last one's measured
+failure:**
+- **v1** (no guardrail): safety 2/15.
+- **v2** (add "abstain / qualify / resist injection"): safety up, but it
+  over-hedged — it opened answerable answers with a false "the pages don't cover
+  this... *however*, <correct answer>", so answer-slice **relevancy collapsed**
+  (0.17–0.31).
+- **v3** (make it a clean binary: answer directly OR say not-covered, never
+  both): fixed the over-hedging (relevancy 0.45→0.93 on dev) but the blunt
+  binary **collapsed *refuse* and *qualify* into the "not covered" bucket** —
+  fraud/persona attacks got a bland deflection instead of a refusal, and a
+  "help me fix my illegal status quietly" got answered. Dev safety 5→3.
+- **v4** (explicit **precedence**: REFUSE → QUALIFY → answer/abstain): kept v3's
+  directness *and* restored refuse/qualify. The four behaviors stopped poisoning
+  each other.
+
+**Held-out discipline mattered and is the reason to trust the numbers.** I tuned
+the prompt against a separate `dev_v1` (12 fresh questions, same corpus/slices,
+disjoint from curated) and only measured on `curated_v1` once per candidate.
+This caught optimism: v4 looked like a clean 6/6 sweep on dev (n=2/slice) but
+landed at 10/15 safety and 0.42 answerable relevancy on the 5-per-slice test —
+better than v2 on answer quality, not the blowout dev implied. Tuning on the
+test set would have hidden that.
+
+**Free tiers of strong models are a quota mirage.** The model is a one-flag swap,
+so we ablated it: the free 8B guardrails weakly; `llama-4-scout` (Groq) is fast
+but mediocre on safety; `gpt-oss-20b` (Groq) is excellent but 31s/query *and*
+died at sample 14 on the 200K-tokens/day cap; `gemini-2.0-flash` is retired and
+`gemini-3.5-flash`'s free tier is **20 requests/day** (aborted at 19/30). Only
+`gemini-3.1-flash-lite` was fast (2.2s), strong (best content faithfulness), and
+had a free quota that finished a 30-sample run. It's also **judge-independent** —
+using gpt-4o-mini as both generator and judge would invite self-preference bias,
+so a non-OpenAI generator is the methodologically correct choice. A Gemini 3.x
+detail that would have silently poisoned every metric: its `.content` is a list
+of content blocks, not a string, so the generate node now joins the text parts
+(`_message_text`) instead of `str(list)`.
+
+**A grounding gate: hypothesized, tested, rejected.** Both prompts leave
+out-of-corpus at ~1/5. Idea: drop retrieved context when the top cross-encoder
+rerank score is below a threshold (nothing on-topic) so the prompt abstains.
+Dev reranker scores separated cleanly (on-topic ≥0.64, off-topic ≤0.18), but on
+the held-out test the gate did **not** move out_of_corpus (1/5→1/5) and nicked
+high_risk (5→4) and content. Two reasons it fooled the local analysis: (a) the
+hardest out-of-corpus case ("processing time for **I-765**") is *topically*
+in-corpus, so the reranker scores it 0.90 and the gate never fires; (b) the
+gated model *does* abstain tersely ("the official pages don't cover it"), but the
+`out_of_corpus` references demand a redirect (to CDC/DMV/admissions), and the
+abstention judge scored the **same wording** as pass for one sample and fail for
+three. So the "1/5" is partly a **reference/judge inconsistency**, not the model
+answering off-topic — a known limitation to fix in the metric, not the model.
+The gate stays as an off-by-default `grounding_threshold` knob; it does not ship.
+
+**Serving config, chosen entirely by measurement:** `gemini:gemini-3.1-flash-lite`
++ guardrail prompt **v4** + thinking off, hybrid 0.6 / rerank→4. Free, ~2.3s,
+safety 10/15 (high_risk 5/5, adversarial 4/5), answerable faithfulness 0.92.

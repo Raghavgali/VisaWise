@@ -125,6 +125,33 @@ async def _score_judged_all_pass(samples: list[dict], judge_model: str) -> list[
     return [{"faithfulness": {"value": 0.9, "reason": None}} for _ in samples]
 
 
+def _fake_sliced_samples() -> list[GoldenSample]:
+    slices = ["answerable_grounded", "temporal_current", "out_of_corpus", "adversarial_injection"]
+    return [
+        GoldenSample(
+            id=f"s{i}",
+            user_input=f"question {i}",
+            reference="reference text",
+            reference_contexts=["ctx"],
+            source_urls=["https://example.com/a"],
+            origin="curated",
+            slice=sl,
+        )
+        for i, sl in enumerate(slices)
+    ]
+
+
+async def _score_abstention_all_pass(samples: list[dict], judge_model: str) -> list[dict]:
+    return [{"abstention": {"value": 1.0, "reason": None}} for _ in samples]
+
+
+async def _score_abstention_partial_failure(samples: list[dict], judge_model: str) -> list[dict]:
+    return [
+        {"abstention": {"error": "boom"}} if i == 0 else {"abstention": {"value": 1.0, "reason": None}}
+        for i in range(len(samples))
+    ]
+
+
 def _write_experiment(tmp_path, metrics: str = "judged"):
     path = tmp_path / "experiment.yaml"
     path.write_text(f"name: judged_exp\ndataset: curated_v1\nmetrics: {metrics}\n", encoding="utf-8")
@@ -175,3 +202,68 @@ def test_run_experiment_full_coverage_passes_and_records_coverage(wired_runner, 
     record = json.loads(records[0].read_text(encoding="utf-8"))
     assert record["run_id"] == run_ids[0]
     assert record["coverage"]["faithfulness"] == {"scored": 3, "total": 3}
+    assert record["slices"] == {}  # no slice tags -> no breakdown
+
+
+def test_run_experiment_slice_aware_routing_and_breakdown(wired_runner, monkeypatch):
+    monkeypatch.setattr(runner_module, "load_dataset", lambda name: _fake_sliced_samples())
+    monkeypatch.setattr(runner_module, "score_judged", _score_judged_all_pass)
+    monkeypatch.setattr(runner_module, "score_abstention", _score_abstention_all_pass)
+    experiment_path = _write_experiment(wired_runner)
+
+    run_experiment(str(experiment_path))
+    record = json.loads(next(iter(settings.runs_dir.glob("*.json"))).read_text(encoding="utf-8"))
+
+    # content metric gated over the 2 answer-mode samples only; abstention over
+    # the 2 safety samples only -- neither denominator is the full run of 4.
+    assert record["coverage"]["faithfulness"] == {"scored": 2, "total": 2}
+    assert record["coverage"]["abstention"] == {"scored": 2, "total": 2}
+
+    slices = record["slices"]
+    assert slices["answerable_grounded"]["n"] == 1
+    assert "faithfulness" in slices["answerable_grounded"]["aggregates"]
+    assert "abstention" not in slices["answerable_grounded"]["aggregates"]
+    assert slices["out_of_corpus"]["aggregates"]["abstention"] == 1.0
+    assert "faithfulness" not in slices["out_of_corpus"]["aggregates"]
+
+
+def test_invoke_retries_transient_then_succeeds(monkeypatch):
+    monkeypatch.setattr(runner_module.time, "sleep", lambda _s: None)
+    calls = {"n": 0}
+
+    class _FlakyGraph:
+        def invoke(self, state):
+            calls["n"] += 1
+            if calls["n"] < 3:
+                raise RuntimeError("Error code: 503 - scheduler queue full")
+            return {"answer": "ok"}
+
+    state = runner_module._invoke_with_retry(_FlakyGraph(), "q", "exp", "s0")
+    assert state == {"answer": "ok"}
+    assert calls["n"] == 3
+
+
+def test_invoke_does_not_retry_non_transient(monkeypatch):
+    monkeypatch.setattr(runner_module.time, "sleep", lambda _s: None)
+    calls = {"n": 0}
+
+    class _BrokenGraph:
+        def invoke(self, state):
+            calls["n"] += 1
+            raise ValueError("bad config key")
+
+    with pytest.raises(ValueError, match="bad config"):
+        runner_module._invoke_with_retry(_BrokenGraph(), "q", "exp", "s0")
+    assert calls["n"] == 1  # non-transient -> no retry
+
+
+def test_run_experiment_gates_on_abstention_coverage(wired_runner, monkeypatch):
+    monkeypatch.setattr(runner_module, "load_dataset", lambda name: _fake_sliced_samples())
+    monkeypatch.setattr(runner_module, "score_judged", _score_judged_all_pass)
+    monkeypatch.setattr(runner_module, "score_abstention", _score_abstention_partial_failure)
+    experiment_path = _write_experiment(wired_runner)
+
+    # 1 of 2 safety samples failed to grade -> abstention 1/2 < 0.95 gate.
+    with pytest.raises(RuntimeError, match="abstention"):
+        run_experiment(str(experiment_path))
+    assert len(list(settings.runs_dir.glob("*.json"))) == 1  # record still written

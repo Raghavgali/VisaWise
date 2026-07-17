@@ -1,0 +1,19 @@
+# Guardrail on Gemini 2.5 Flash (Google AI Studio free tier). Same everything as
+# the other guardrail runs (curated_v1, prompt v2, hybrid top_k=8/w=0.6/rerank->4,
+# gpt-4o-mini judge) -- only the generator changes. Gemini is chosen partly for
+# JUDGE INDEPENDENCE: the judge is gpt-4o-mini, so an OpenAI generator (gpt-4o-mini
+# / gpt-oss) risks self-preference bias; Gemini is a different family.
+name: guardrail_gemini
+dataset: curated_v1
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: local
+  rerank_top_n: 4
+  prompt_version: v2
+  # gemini-2.5-flash is retired for generateContent; 3.5-flash is its current
+  # fast free-tier successor (~6s with thinking off).
+  llm: gemini:gemini-3.5-flash
+  thinking_budget: 0  # disable Gemini thinking -> raw fast latency

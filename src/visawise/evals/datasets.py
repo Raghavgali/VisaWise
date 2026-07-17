@@ -2,7 +2,15 @@
 
 Schema (one JSONL line per sample):
     {id, user_input, reference, reference_contexts: [str], source_urls: [str],
-     origin: "synthetic" | "curated"}
+     origin: "synthetic" | "curated", slice?: str}
+
+- `slice` is optional (synthetic sets omit it). On the curated set it tags the
+  behaviour under test -- e.g. "temporal_current", "out_of_corpus",
+  "stale_source", "adversarial_injection", "high_risk_abstain",
+  "answerable_grounded" -- so metrics can be read per behaviour, not just in
+  aggregate. Safety slices (out_of_corpus / adversarial / high_risk) carry a
+  reference describing the correct *abstention/qualification*, and typically an
+  empty source_urls (nothing in the corpus should be cited).
 
 - synthetic_vN.jsonl: RAGAS 0.4 TestsetGenerator (knowledge-graph based) over
   the fresh corpus, judge/generator = settings.judge_model. Target ~40-50
@@ -29,9 +37,10 @@ class GoldenSample:
     reference_contexts: list[str]
     source_urls: list[str]
     origin: str  # "synthetic" | "curated"
+    slice: str | None = None  # curated behaviour tag; synthetic sets omit it
 
 
-_DATASET_NAME = re.compile(r"^(synthetic|curated)_v(\d+)$")
+_DATASET_NAME = re.compile(r"^(synthetic|curated|dev)_v(\d+)$")
 _ORIGINS = {"synthetic", "curated"}
 _WHITESPACE = re.compile(r"\s+")
 
@@ -76,7 +85,7 @@ def _find_source_url(context: str, docs_index: list[tuple[str, str]]) -> str | N
 
 def dataset_path(name: str) -> Path:
     if not _DATASET_NAME.fullmatch(name):
-        raise ValueError("Dataset name must look like 'synthetic_v1' or 'curated_v2'")
+        raise ValueError("Dataset name must look like 'synthetic_v1', 'curated_v2', or 'dev_v1'")
 
     return settings.datasets_dir / f"{name}.jsonl"
 
@@ -90,10 +99,11 @@ def _parse_sample(data: object, path: Path, lineno: int) -> GoldenSample:
     _require(isinstance(data, dict), path, lineno, "line is not a JSON object")
     assert isinstance(data, dict)  # for type-checkers
 
-    expected = {"id", "user_input", "reference", "reference_contexts", "source_urls", "origin"}
-    missing = expected - data.keys()
+    required = {"id", "user_input", "reference", "reference_contexts", "source_urls", "origin"}
+    optional = {"slice"}
+    missing = required - data.keys()
     _require(not missing, path, lineno, f"missing field(s): {sorted(missing)}")
-    extra = data.keys() - expected
+    extra = data.keys() - required - optional
     _require(not extra, path, lineno, f"unexpected field(s): {sorted(extra)}")
 
     _require(isinstance(data["id"], str) and data["id"].strip() != "", path, lineno,
@@ -115,6 +125,12 @@ def _parse_sample(data: object, path: Path, lineno: int) -> GoldenSample:
     _require(data["origin"] in _ORIGINS, path, lineno,
              f"'origin' must be one of {sorted(_ORIGINS)}, got {data['origin']!r}")
 
+    slice_value = data.get("slice")
+    _require(
+        slice_value is None or (isinstance(slice_value, str) and slice_value.strip() != ""),
+        path, lineno, "'slice' must be a non-empty string when present",
+    )
+
     return GoldenSample(
         id=data["id"],
         user_input=data["user_input"],
@@ -122,6 +138,7 @@ def _parse_sample(data: object, path: Path, lineno: int) -> GoldenSample:
         reference_contexts=list(data["reference_contexts"]),
         source_urls=list(data["source_urls"]),
         origin=data["origin"],
+        slice=slice_value,
     )
 
 
@@ -177,7 +194,10 @@ def save_dataset(samples: list[GoldenSample], name: str, force: bool = False) ->
     tmp_path = path.with_name(path.name + ".tmp")
     with tmp_path.open("w", encoding="utf-8") as file:
         for sample in samples:
-            file.write(json.dumps(asdict(sample), sort_keys=True) + "\n")
+            row = asdict(sample)
+            if row.get("slice") is None:
+                del row["slice"]  # keep slice-less (e.g. synthetic) sets clean
+            file.write(json.dumps(row, sort_keys=True) + "\n")
     tmp_path.replace(path)
 
     return path

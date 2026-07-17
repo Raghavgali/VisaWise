@@ -25,6 +25,20 @@ def test_unsupported_prompt_version_raises():
         build_graph(EngineConfig(prompt_version="v999"))
 
 
+def test_message_text_extracts_string_and_block_content():
+    from types import SimpleNamespace
+
+    from visawise.rag.graph import _message_text
+
+    # OpenAI/Groq/NVIDIA: plain string
+    assert _message_text(SimpleNamespace(content="hello")) == "hello"
+    # Gemini 3.x / Anthropic: list of content blocks -> joined text, not str(list)
+    blocks = [{"type": "text", "text": "part one "}, {"type": "text", "text": "part two"}]
+    assert _message_text(SimpleNamespace(content=blocks)) == "part one part two"
+    # mixed / stray non-text blocks are skipped
+    assert _message_text(SimpleNamespace(content=["a", {"foo": "bar"}, {"text": "b"}])) == "ab"
+
+
 @pytest.mark.parametrize("llm", ["openai:gpt-4o", "groq:", "llama-3.3-70b-versatile"])
 def test_malformed_llm_raises(llm):
     with pytest.raises(ValueError, match="groq:"):

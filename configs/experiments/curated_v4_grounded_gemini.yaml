@@ -1,0 +1,17 @@
+# FINAL held-out test: v4 + grounding gate (thr 0.3) on Gemini 3.1 Flash-Lite,
+# curated_v1. Gate calibrated only on dev_v1 reranker scores; curated stays a
+# clean test. Targets the shared out_of_corpus weakness (drops context when the
+# top cross-encoder score is below 0.3 so the prompt abstains/refuses/qualifies).
+name: curated_v4_grounded_gemini
+dataset: curated_v1
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: local
+  rerank_top_n: 4
+  prompt_version: v4
+  llm: gemini:gemini-3.1-flash-lite
+  thinking_budget: 0
+  grounding_threshold: 0.3

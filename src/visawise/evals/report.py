@@ -25,6 +25,7 @@ _METRIC_KEYS = [
     "hit_rate",
     "mrr",
     "ndcg",
+    "abstention",  # safety slices only; "—" elsewhere
 ]
 
 # Metrics the regression gate is allowed to compare (whichever of these both
@@ -80,6 +81,7 @@ def _compact_run(record: dict) -> dict:
         "llm": engine.get("llm"),
         "p50_ms": timings.get("p50_ms"),
         "coverage": coverage,
+        "slices": record.get("slices") or {},
     }
     for key in _METRIC_KEYS:
         compact[key] = aggregates.get(key)
@@ -122,8 +124,8 @@ def _render_markdown(compacts: list[dict], generated_at: str) -> str:
         f"Generated {generated_at} -- {len(compacts)} run(s).",
         "",
         "| run_id | retriever | w_vec | reranker | dataset | n | faith | relevancy | "
-        "ctx_prec | ctx_recall | hit_rate | mrr | ndcg | p50_ms |",
-        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "ctx_prec | ctx_recall | hit_rate | mrr | ndcg | abstention | p50_ms |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for c in compacts:
         n = c.get("n_samples")
@@ -132,7 +134,8 @@ def _render_markdown(compacts: list[dict], generated_at: str) -> str:
             n_cell += " ⚠ aborted"
         lines.append(
             "| {run_id} | {retriever} | {w_vec} | {reranker} | {dataset} | {n} | {faith} | "
-            "{relevancy} | {ctx_prec} | {ctx_recall} | {hit_rate} | {mrr} | {ndcg} | {p50_ms} |".format(
+            "{relevancy} | {ctx_prec} | {ctx_recall} | {hit_rate} | {mrr} | {ndcg} | "
+            "{abstention} | {p50_ms} |".format(
                 run_id=c["run_id"] or "—",
                 n=n_cell,
                 retriever=c["retriever"] or "—",
@@ -146,10 +149,59 @@ def _render_markdown(compacts: list[dict], generated_at: str) -> str:
                 hit_rate=_metric_cell(c, "hit_rate"),
                 mrr=_metric_cell(c, "mrr"),
                 ndcg=_metric_cell(c, "ndcg"),
+                abstention=_metric_cell(c, "abstention"),
                 p50_ms=_fmt(c["p50_ms"], 0),
             )
         )
-    return "\n".join(lines) + "\n"
+
+    slice_section = _render_slice_sections(compacts)
+    body = "\n".join(lines) + "\n"
+    return body + slice_section if slice_section else body
+
+
+# Slices whose success metric is abstention, not answer content (mirrors
+# metrics.ABSTENTION_SLICES; kept local so report has no runner dependency).
+_SLICE_METRICS = {
+    "answerable_grounded": ["faithfulness", "response_relevancy", "context_precision", "mrr"],
+    "temporal_current": ["faithfulness", "response_relevancy", "context_precision", "mrr"],
+    "stale_source": ["faithfulness", "response_relevancy", "context_precision", "mrr"],
+    "out_of_corpus": ["abstention"],
+    "adversarial_injection": ["abstention"],
+    "high_risk_abstain": ["abstention"],
+}
+_SLICE_METRIC_HEADERS = [
+    ("faithfulness", "faith"),
+    ("response_relevancy", "relevancy"),
+    ("context_precision", "ctx_prec"),
+    ("mrr", "mrr"),
+    ("abstention", "abstention"),
+]
+
+
+def _render_slice_sections(compacts: list[dict]) -> str:
+    """One per-slice table per run that carries a slice breakdown (curated
+    runs). Shows the metric(s) that actually apply to each behaviour, with '—'
+    where a metric doesn't apply (e.g. faithfulness on a refusal slice)."""
+    blocks: list[str] = []
+    for c in compacts:
+        slices = c.get("slices") or {}
+        if not slices:
+            continue
+        header = "| slice | n | " + " | ".join(h for _, h in _SLICE_METRIC_HEADERS) + " |"
+        divider = "|---|---|" + "|".join(["---"] * len(_SLICE_METRIC_HEADERS)) + "|"
+        rows = [f"### Per-slice — `{c['run_id']}`", "", header, divider]
+        for slice_name in sorted(slices):
+            data = slices[slice_name]
+            applies = set(_SLICE_METRICS.get(slice_name, []))
+            pseudo = {**data.get("aggregates", {}), "coverage": data.get("coverage", {})}
+            cells = []
+            for key, _ in _SLICE_METRIC_HEADERS:
+                cells.append(_metric_cell(pseudo, key) if key in applies else "—")
+            rows.append(f"| {slice_name} | {data.get('n', '—')} | " + " | ".join(cells) + " |")
+        blocks.append("\n".join(rows))
+    if not blocks:
+        return ""
+    return "\n## Per-slice breakdown\n\n" + "\n\n".join(blocks) + "\n"
 
 
 def report() -> None:

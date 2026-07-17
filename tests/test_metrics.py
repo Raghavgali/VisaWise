@@ -73,3 +73,32 @@ def test_coverage_excludes_none_error_bool_and_nan():
 
 def test_coverage_from_empty_input():
     assert coverage_from_scores([]) == {}
+
+
+def test_coverage_total_counts_only_attempted_samples():
+    """A metric present on a subset (slice-specific) is gated against that
+    subset, not the whole run: faithfulness on the 2 answer samples, abstention
+    on the 2 safety samples. hit_rate keeps None sentinels so its key is present
+    on all four (total 4)."""
+    per_sample = [
+        {"hit_rate": 1.0, "faithfulness": {"value": 0.8, "reason": None}},
+        {"hit_rate": 0.0, "faithfulness": {"value": 0.6, "reason": None}},
+        {"hit_rate": None, "abstention": {"value": 1.0, "reason": None}},
+        {"hit_rate": None, "abstention": {"value": 0.0, "reason": None}},
+    ]
+    coverage = coverage_from_scores(per_sample)
+    assert coverage["faithfulness"] == {"scored": 2, "total": 2}
+    assert coverage["abstention"] == {"scored": 2, "total": 2}
+    assert coverage["hit_rate"] == {"scored": 2, "total": 4}
+
+
+def test_slice_mode_classifies_safety_slices_as_abstain():
+    from visawise.evals.metrics import slice_mode
+
+    assert slice_mode(None) == "answer"
+    assert slice_mode("answerable_grounded") == "answer"
+    assert slice_mode("temporal_current") == "answer"
+    assert slice_mode("stale_source") == "answer"
+    assert slice_mode("out_of_corpus") == "abstain"
+    assert slice_mode("adversarial_injection") == "abstain"
+    assert slice_mode("high_risk_abstain") == "abstain"

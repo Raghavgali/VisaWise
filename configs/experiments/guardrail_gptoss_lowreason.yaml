@@ -1,0 +1,15 @@
+# Can gpt-oss-20b keep its quality at an acceptable latency? Same as the
+# ablation winner but with Groq reasoning_effort=low -- the reasoning depth is
+# what made it ~31s p50. Single variable vs the default-effort gpt-oss run.
+name: guardrail_gptoss_lowreason
+dataset: curated_v1
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: local
+  rerank_top_n: 4
+  prompt_version: v2
+  llm: groq:openai/gpt-oss-20b
+  reasoning_effort: low

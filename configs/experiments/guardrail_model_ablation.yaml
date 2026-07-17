@@ -1,0 +1,23 @@
+# Model ablation for the guardrail: does a stronger instruction-follower make
+# prompt v2 deliver safety WITHOUT the helpfulness collapse the free 8B showed?
+# Single variable = the generation model; everything else (curated_v1, prompt
+# v2, hybrid top_k=8 / w=0.6 / rerank->4, gpt-4o-mini judge) is held constant.
+# Baseline to beat: nvidia:meta/llama-3.1-8b-instruct on prompt v2
+# (20260717T014941Z_curated_review_v2 -- safety 7/15, content relevancy ~0.17-0.31).
+#
+# Gemma was requested but 404s on our free NVIDIA account and is absent from
+# Groq's current lineup, so it can't be tested on the free tier right now.
+name: guardrail_model_ablation
+dataset: curated_v1
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: local
+  rerank_top_n: 4
+  prompt_version: v2
+sweep:
+  llm:
+    - groq:meta-llama/llama-4-scout-17b-16e-instruct
+    - groq:openai/gpt-oss-20b

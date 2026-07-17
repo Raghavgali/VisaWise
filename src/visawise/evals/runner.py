@@ -33,10 +33,52 @@ from ..config import REPO_ROOT, settings
 from ..ingestion.chunk import corpus_hash, load_chunks
 from ..rag.graph import EngineConfig, build_graph
 from .datasets import dataset_path, load_dataset
-from .metrics import coverage_from_scores, score_judged, score_retrieval
+from .metrics import (
+    coverage_from_scores,
+    score_abstention,
+    score_judged,
+    score_retrieval,
+    slice_mode,
+)
 
 _MIN_INVOKE_INTERVAL_S = 2.5  # Groq free tier: 30 req/min
 _METRIC_MODES = {"judged", "retrieval", "all"}
+
+# Free NIM/NVIDIA endpoints 503 ("scheduler queue full") under load; a single
+# transient hiccup shouldn't discard a whole 30-sample run. Retry the graph
+# invoke with exponential backoff on transient errors only; genuine failures
+# (bugs, bad config) still abort fast.
+_MAX_INVOKE_RETRIES = 4
+_RETRY_BASE_DELAY_S = 4.0
+_TRANSIENT_MARKERS = (
+    "503", "502", "429", "timeout", "timed out",
+    "temporarily unavailable", "queue full", "connection",
+)
+
+
+def _looks_transient(exc: Exception) -> bool:
+    message = str(exc).lower()
+    return any(marker in message for marker in _TRANSIENT_MARKERS)
+
+
+def _invoke_with_retry(graph, query: str, run_name: str, sample_id: str) -> dict:
+    """graph.invoke with bounded exponential backoff on transient errors.
+    Re-raises the last exception once retries are exhausted or the error is
+    non-transient (the caller's except-block then salvages the partial run)."""
+    delay = _RETRY_BASE_DELAY_S
+    for attempt in range(_MAX_INVOKE_RETRIES + 1):
+        try:
+            return graph.invoke({"query": query})
+        except Exception as exc:  # noqa: BLE001
+            if attempt >= _MAX_INVOKE_RETRIES or not _looks_transient(exc):
+                raise
+            print(
+                f"[{run_name}] {sample_id}: transient error "
+                f"(attempt {attempt + 1}/{_MAX_INVOKE_RETRIES}), retrying in "
+                f"{delay:.0f}s: {str(exc)[:120]}"
+            )
+            time.sleep(delay)
+            delay *= 2
 # Judged metrics are gated on coverage (settings.judged_coverage_threshold):
 # judge failures skew toward long, hard answers, so a partial average is a
 # biased average. Retrieval metrics are exempt -- curated honesty probes have
@@ -46,6 +88,7 @@ _COVERAGE_GATED_METRICS = {
     "response_relevancy",
     "context_precision",
     "context_recall",
+    "abstention",  # safety slices: a run that couldn't grade refusals isn't trustworthy
 }
 
 
@@ -144,6 +187,28 @@ def _aggregate(per_sample_scores: list[dict]) -> dict[str, float]:
     return aggregates
 
 
+def _slice_breakdown(raw_samples: list[dict], per_sample_scores: list[dict]) -> dict:
+    """Per-slice {n, aggregates, coverage} so metrics can be read by behaviour,
+    not just in aggregate. Empty ({}) when no sample carries a slice tag (e.g.
+    the synthetic sets) -- there is nothing to break down."""
+    if not any(item.get("slice") for item in raw_samples):
+        return {}
+
+    by_slice: dict[str, list[int]] = {}
+    for i, item in enumerate(raw_samples):
+        by_slice.setdefault(item.get("slice") or "untagged", []).append(i)
+
+    breakdown: dict[str, dict] = {}
+    for slice_name, idxs in sorted(by_slice.items()):
+        subset = [per_sample_scores[i] for i in idxs]
+        breakdown[slice_name] = {
+            "n": len(idxs),
+            "aggregates": _aggregate(subset),
+            "coverage": coverage_from_scores(subset),
+        }
+    return breakdown
+
+
 def _write_record(record: dict) -> None:
     settings.runs_dir.mkdir(parents=True, exist_ok=True)
     path = settings.runs_dir / f"{record['run_id']}.json"
@@ -195,7 +260,7 @@ def run_experiment(experiment_path: str) -> list[str]:
             last_invoke = time.monotonic()
             start = time.perf_counter()
             try:
-                state = graph.invoke({"query": sample.user_input})
+                state = _invoke_with_retry(graph, sample.user_input, run_name, sample.id)
             except Exception as exc:  # noqa: BLE001 -- salvage partial run
                 aborted = {"at_sample": sample.id, "error": f"{type(exc).__name__}: {exc}"}
                 print(
@@ -212,6 +277,7 @@ def run_experiment(experiment_path: str) -> list[str]:
             raw_samples.append(
                 {
                     "id": sample.id,
+                    "slice": sample.slice,
                     "user_input": sample.user_input,
                     "reference": sample.reference,
                     "source_urls": sample.source_urls,
@@ -236,27 +302,56 @@ def run_experiment(experiment_path: str) -> list[str]:
             ]
         )
 
+        # Judged metrics are slice-aware: answer-bearing slices (and synthetic
+        # samples, which have no slice) get the RAGAS content metrics; safety
+        # slices get score_abstention instead. A refusal has no verifiable
+        # claims, so faithfulness would be NaN and pollute both the aggregate
+        # and the coverage gate -- grade the behaviour that actually matters.
         judged_scores: list[dict] = [{} for _ in raw_samples]
         if run_judged:
-            judged_scores = asyncio.run(
-                score_judged(
-                    [
-                        {
-                            "user_input": item["user_input"],
-                            "response": item["response"],
-                            "retrieved_contexts": item["retrieved_contexts"],
-                            "reference": item["reference"],
-                        }
-                        for item in raw_samples
-                    ],
-                    settings.judge_model,
+            answer_idx = [i for i, it in enumerate(raw_samples) if slice_mode(it["slice"]) == "answer"]
+            abstain_idx = [i for i, it in enumerate(raw_samples) if slice_mode(it["slice"]) == "abstain"]
+
+            if answer_idx:
+                content = asyncio.run(
+                    score_judged(
+                        [
+                            {
+                                "user_input": raw_samples[i]["user_input"],
+                                "response": raw_samples[i]["response"],
+                                "retrieved_contexts": raw_samples[i]["retrieved_contexts"],
+                                "reference": raw_samples[i]["reference"],
+                            }
+                            for i in answer_idx
+                        ],
+                        settings.judge_model,
+                    )
                 )
-            )
+                for k, i in enumerate(answer_idx):
+                    judged_scores[i] = content[k]
+
+            if abstain_idx:
+                abst = asyncio.run(
+                    score_abstention(
+                        [
+                            {
+                                "user_input": raw_samples[i]["user_input"],
+                                "response": raw_samples[i]["response"],
+                                "reference": raw_samples[i]["reference"],
+                            }
+                            for i in abstain_idx
+                        ],
+                        settings.judge_model,
+                    )
+                )
+                for k, i in enumerate(abstain_idx):
+                    judged_scores[i] = abst[k]
 
         per_sample_scores = [
             {**retrieval_scores[i], **judged_scores[i]} for i in range(len(raw_samples))
         ]
         coverage = coverage_from_scores(per_sample_scores)
+        slices = _slice_breakdown(raw_samples, per_sample_scores)
 
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         run_id = f"{timestamp}_{run_name}"
@@ -287,6 +382,7 @@ def run_experiment(experiment_path: str) -> list[str]:
             ],
             "aggregates": _aggregate(per_sample_scores),
             "coverage": coverage,
+            "slices": slices,
             "timings": {
                 "p50_ms": _percentile(latencies, 0.50),
                 "p95_ms": _percentile(latencies, 0.95),

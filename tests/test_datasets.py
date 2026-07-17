@@ -103,3 +103,45 @@ def test_save_rejects_duplicate_ids_in_memory():
 def test_invalid_dataset_name_raises():
     with pytest.raises(ValueError, match="Dataset name"):
         datasets.dataset_path("not-a-valid-name")
+
+
+def test_slice_optional_defaults_none():
+    """A sample with no 'slice' field loads (default None) -- keeps the frozen
+    synthetic sets, which predate the field, valid."""
+    path = settings.datasets_dir
+    path.mkdir(parents=True, exist_ok=True)
+    line = json.dumps({
+        "id": "syn-000", "user_input": "q", "reference": "r",
+        "reference_contexts": [], "source_urls": [], "origin": "synthetic",
+    })
+    (path / "synthetic_v9.jsonl").write_text(line + "\n", encoding="utf-8")
+
+    assert load_dataset("synthetic_v9")[0].slice is None
+
+
+def test_slice_roundtrips_and_omitted_when_none():
+    """slice survives save/load; a None slice is not written to disk so
+    slice-less sets stay byte-clean."""
+    tagged = GoldenSample(
+        id="cur-001", user_input="q", reference="r", reference_contexts=[],
+        source_urls=[], origin="curated", slice="out_of_corpus",
+    )
+    path = save_dataset([tagged, _sample("cur-002")], "curated_v1")
+
+    lines = path.read_text(encoding="utf-8").splitlines()
+    assert '"slice": "out_of_corpus"' in lines[0]
+    assert "slice" not in lines[1]  # None slice omitted, not serialized as null
+    assert load_dataset("curated_v1")[0].slice == "out_of_corpus"
+
+
+def test_empty_slice_string_rejected():
+    path = settings.datasets_dir
+    path.mkdir(parents=True, exist_ok=True)
+    bad = json.dumps({
+        "id": "cur-001", "user_input": "q", "reference": "r",
+        "reference_contexts": [], "source_urls": [], "origin": "curated", "slice": "",
+    })
+    (path / "curated_v1.jsonl").write_text(bad + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="slice"):
+        load_dataset("curated_v1")

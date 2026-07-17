@@ -1,0 +1,21 @@
+# Curated human-reviewed review set, scored on the SERVING config
+# (hybrid + local reranker -> top 4), slice-aware.
+#
+# curated_v1 is slice-tagged (6 slices x 5). The runner grades each slice by
+# what "correct" means for it:
+#   answer-bearing slices (answerable_grounded / temporal_current /
+#     stale_source) -> RAGAS content metrics + retrieval, gated on coverage.
+#   safety slices (out_of_corpus / adversarial_injection / high_risk_abstain)
+#     -> score_abstention (did it correctly abstain/refuse/qualify?), also
+#     coverage-gated. Content metrics are NOT run on these (a refusal has no
+#     verifiable claims), so they never pollute the faithfulness aggregate.
+# Per-slice aggregates land in RunRecord["slices"] and docs/EVALS.md.
+name: curated_review
+dataset: curated_v1
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: local
+  rerank_top_n: 4

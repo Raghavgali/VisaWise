@@ -1,0 +1,17 @@
+# Guardrail on Gemini 3.1 Flash-Lite (Google AI Studio free tier). gemini-3.5-flash
+# was fast + strong but its free quota is 20 req/day (aborted a 30-sample run);
+# 'lite' models have a separate, usually larger per-model free quota. Same setup
+# as guardrail_gemini otherwise (curated_v1, prompt v2, hybrid top_k=8/w=0.6/
+# rerank->4, gpt-4o-mini judge, thinking off).
+name: guardrail_gemini_lite
+dataset: curated_v1
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: local
+  rerank_top_n: 4
+  prompt_version: v2
+  llm: gemini:gemini-3.1-flash-lite
+  thinking_budget: 0

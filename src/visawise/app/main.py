@@ -42,10 +42,16 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
     app.state.ready = False
 
+    # Serving config, chosen by the eval harness: Gemini 3.1 Flash-Lite (free,
+    # fast, judge-independent) + guardrail prompt v4 + thinking off. See
+    # docs/learning-notes.md for the model/guardrail selection story.
     production_config = EngineConfig(
         retriever="hybrid",
         vector_weight=0.6,
         reranker="local",
+        llm=settings.generation_llm,
+        prompt_version="v4",
+        thinking_budget=0,
     )
 
     graph = build_graph(production_config)
