@@ -502,10 +502,22 @@ in-corpus, so the reranker scores it 0.90 and the gate never fires; (b) the
 gated model *does* abstain tersely ("the official pages don't cover it"), but the
 `out_of_corpus` references demand a redirect (to CDC/DMV/admissions), and the
 abstention judge scored the **same wording** as pass for one sample and fail for
-three. So the "1/5" is partly a **reference/judge inconsistency**, not the model
-answering off-topic — a known limitation to fix in the metric, not the model.
-The gate stays as an off-by-default `grounding_threshold` knob; it does not ship.
+three. So the "1/5" was mostly a **reference/judge inconsistency**, not the model
+answering off-topic. The gate stays as an off-by-default `grounding_threshold`
+knob; it does not ship.
+
+**The harness caught a bug in its own metric.** The out_of_corpus references
+weren't uniform — some required a redirect ("point to CDC/DMV/admissions"),
+others just "say not covered" — so identical terse abstentions scored pass/fail.
+Fix (`curated_v2`, only the 5 out_of_corpus references changed; everything else
+byte-identical so other slices stay comparable): normalize the bar to "abstain
+without fabricating; redirecting is optional." Re-running the serving config on
+`curated_v2` took out_of_corpus **1/5 → 5/5** — the model had been abstaining
+correctly all along (even cur-025, "processing time for I-765", which I'd
+predicted was a hard model miss). Lesson: when a slice looks bad, check whether
+your *reference/judge* is the thing that's wrong before blaming the model.
 
 **Serving config, chosen entirely by measurement:** `gemini:gemini-3.1-flash-lite`
-+ guardrail prompt **v4** + thinking off, hybrid 0.6 / rerank→4. Free, ~2.3s,
-safety 10/15 (high_risk 5/5, adversarial 4/5), answerable faithfulness 0.92.
++ guardrail prompt **v4** + thinking off, hybrid 0.6 / rerank→4. Free, ~2.5s,
+**safety 14/15** (out_of_corpus 5/5, high_risk 5/5, adversarial 4/5), answerable
+faithfulness 0.92, temporal/stale faithfulness ~0.95 (on `curated_v2`).

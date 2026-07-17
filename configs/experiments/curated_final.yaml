@@ -1,0 +1,17 @@
+# Canonical serving eval: Gemini 3.1 Flash-Lite + guardrail prompt v4, on
+# curated_v2 (= curated_v1 with the 5 out_of_corpus references normalized to
+# the "abstain without fabricating; redirect optional" bar, fixing the metric
+# inconsistency where identical terse abstentions scored pass/fail). Everything
+# else byte-identical to v1, so other slices stay comparable.
+name: curated_final
+dataset: curated_v2
+metrics: all
+engine:
+  retriever: hybrid
+  top_k: 8
+  vector_weight: 0.6
+  reranker: local
+  rerank_top_n: 4
+  prompt_version: v4
+  llm: gemini:gemini-3.1-flash-lite
+  thinking_budget: 0

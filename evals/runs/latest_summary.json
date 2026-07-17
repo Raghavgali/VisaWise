@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T03:59:51.931469+00:00",
+  "generated_at": "2026-07-17T04:15:14.367267+00:00",
   "runs": [
     {
       "run_id": "20260715T175949Z_hybrid_no_rerank",
@@ -53,6 +53,268 @@
       "mrr": 0.7980769230769231,
       "ndcg": 0.8023669590650564,
       "abstention": null
+    },
+    {
+      "run_id": "20260717T041144Z_curated_final",
+      "experiment": "curated_final",
+      "dataset": "curated_v2",
+      "n_samples": 30,
+      "aborted": false,
+      "retriever": "hybrid",
+      "vector_weight": 0.6,
+      "reranker": "local",
+      "rerank_top_n": 4,
+      "top_k": 8,
+      "llm": "gemini:gemini-3.1-flash-lite",
+      "p50_ms": 2499.740458530141,
+      "coverage": {
+        "abstention": {
+          "scored": 15,
+          "total": 15
+        },
+        "context_precision": {
+          "scored": 15,
+          "total": 15
+        },
+        "context_recall": {
+          "scored": 15,
+          "total": 15
+        },
+        "faithfulness": {
+          "scored": 15,
+          "total": 15
+        },
+        "hit_rate": {
+          "scored": 24,
+          "total": 30
+        },
+        "mrr": {
+          "scored": 24,
+          "total": 30
+        },
+        "ndcg": {
+          "scored": 24,
+          "total": 30
+        },
+        "response_relevancy": {
+          "scored": 15,
+          "total": 15
+        }
+      },
+      "slices": {
+        "adversarial_injection": {
+          "aggregates": {
+            "abstention": 0.8,
+            "hit_rate": 0.75,
+            "mrr": 0.625,
+            "ndcg": 0.6577324383928644
+          },
+          "coverage": {
+            "abstention": {
+              "scored": 5,
+              "total": 5
+            },
+            "hit_rate": {
+              "scored": 4,
+              "total": 5
+            },
+            "mrr": {
+              "scored": 4,
+              "total": 5
+            },
+            "ndcg": {
+              "scored": 4,
+              "total": 5
+            }
+          },
+          "n": 5
+        },
+        "answerable_grounded": {
+          "aggregates": {
+            "context_precision": 0.8777777777465741,
+            "context_recall": 0.9166666666666666,
+            "faithfulness": 0.9199999999999999,
+            "hit_rate": 1.0,
+            "mrr": 0.7666666666666667,
+            "ndcg": 0.6781283924892362,
+            "response_relevancy": 0.4202623421862894
+          },
+          "coverage": {
+            "context_precision": {
+              "scored": 5,
+              "total": 5
+            },
+            "context_recall": {
+              "scored": 5,
+              "total": 5
+            },
+            "faithfulness": {
+              "scored": 5,
+              "total": 5
+            },
+            "hit_rate": {
+              "scored": 5,
+              "total": 5
+            },
+            "mrr": {
+              "scored": 5,
+              "total": 5
+            },
+            "ndcg": {
+              "scored": 5,
+              "total": 5
+            },
+            "response_relevancy": {
+              "scored": 5,
+              "total": 5
+            }
+          },
+          "n": 5
+        },
+        "high_risk_abstain": {
+          "aggregates": {
+            "abstention": 1.0,
+            "hit_rate": 1.0,
+            "mrr": 0.75,
+            "ndcg": 0.5754430630676098
+          },
+          "coverage": {
+            "abstention": {
+              "scored": 5,
+              "total": 5
+            },
+            "hit_rate": {
+              "scored": 5,
+              "total": 5
+            },
+            "mrr": {
+              "scored": 5,
+              "total": 5
+            },
+            "ndcg": {
+              "scored": 5,
+              "total": 5
+            }
+          },
+          "n": 5
+        },
+        "out_of_corpus": {
+          "aggregates": {
+            "abstention": 1.0
+          },
+          "coverage": {
+            "abstention": {
+              "scored": 5,
+              "total": 5
+            },
+            "hit_rate": {
+              "scored": 0,
+              "total": 5
+            },
+            "mrr": {
+              "scored": 0,
+              "total": 5
+            },
+            "ndcg": {
+              "scored": 0,
+              "total": 5
+            }
+          },
+          "n": 5
+        },
+        "stale_source": {
+          "aggregates": {
+            "context_precision": 0.9999999999583334,
+            "context_recall": 0.96,
+            "faithfulness": 0.95,
+            "hit_rate": 1.0,
+            "mrr": 0.9,
+            "ndcg": 0.9386852807234541,
+            "response_relevancy": 0.5436938192540108
+          },
+          "coverage": {
+            "context_precision": {
+              "scored": 5,
+              "total": 5
+            },
+            "context_recall": {
+              "scored": 5,
+              "total": 5
+            },
+            "faithfulness": {
+              "scored": 5,
+              "total": 5
+            },
+            "hit_rate": {
+              "scored": 5,
+              "total": 5
+            },
+            "mrr": {
+              "scored": 5,
+              "total": 5
+            },
+            "ndcg": {
+              "scored": 5,
+              "total": 5
+            },
+            "response_relevancy": {
+              "scored": 5,
+              "total": 5
+            }
+          },
+          "n": 5
+        },
+        "temporal_current": {
+          "aggregates": {
+            "context_precision": 0.9999999999683332,
+            "context_recall": 0.7666666666666666,
+            "faithfulness": 0.95,
+            "hit_rate": 1.0,
+            "mrr": 1.0,
+            "ndcg": 1.0,
+            "response_relevancy": 0.7974552860393203
+          },
+          "coverage": {
+            "context_precision": {
+              "scored": 5,
+              "total": 5
+            },
+            "context_recall": {
+              "scored": 5,
+              "total": 5
+            },
+            "faithfulness": {
+              "scored": 5,
+              "total": 5
+            },
+            "hit_rate": {
+              "scored": 5,
+              "total": 5
+            },
+            "mrr": {
+              "scored": 5,
+              "total": 5
+            },
+            "ndcg": {
+              "scored": 5,
+              "total": 5
+            },
+            "response_relevancy": {
+              "scored": 5,
+              "total": 5
+            }
+          },
+          "n": 5
+        }
+      },
+      "faithfulness": 0.94,
+      "response_relevancy": 0.5871371491598735,
+      "context_precision": 0.9592592592244136,
+      "context_recall": 0.8811111111111111,
+      "hit_rate": 0.9583333333333334,
+      "mrr": 0.8159722222222222,
+      "ndcg": 0.7746755597905399,
+      "abstention": 0.9333333333333333
     },
     {
       "run_id": "20260715T181259Z_hybrid_rerank_full",
