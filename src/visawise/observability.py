@@ -63,11 +63,16 @@ class _JsonLogFormatter(logging.Formatter):
             "logger": record.name,
             "message": record.getMessage(),
         }
-        # Injected by LoggingInstrumentor when a span is active.
-        for otel_key, json_key in (("otelTraceID", "trace_id"), ("otelSpanID", "span_id")):
-            value = getattr(record, otel_key, None)
-            if value and value != "0":
-                payload[json_key] = value
+        # format() runs synchronously in the emitting context, so the active
+        # span here IS the span the log line belongs to. (LoggingInstrumentor
+        # was supposed to inject these onto the record but doesn't in 0.65b0;
+        # reading the context directly is fewer moving parts anyway.)
+        from opentelemetry import trace
+
+        ctx = trace.get_current_span().get_span_context()
+        if ctx.is_valid:
+            payload["trace_id"] = f"{ctx.trace_id:032x}"
+            payload["span_id"] = f"{ctx.span_id:016x}"
         for key, value in record.__dict__.items():
             if key not in _STANDARD_LOG_ATTRS and not key.startswith(("otel", "_")):
                 payload[key] = value
@@ -118,16 +123,14 @@ def init_observability(app: FastAPI) -> bool:
     from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
     from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
     from opentelemetry.instrumentation.google_genai import GoogleGenAiSdkInstrumentor
-    from opentelemetry.instrumentation.logging import LoggingInstrumentor
     from opentelemetry.sdk.resources import Resource
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
     # Logging first, so the "observability enabled" line below is already
-    # visible in Modal logs. LoggingInstrumentor stamps otelTraceID/otelSpanID
-    # onto every record; the JSON formatter emits them, which is what lets a
-    # Modal log line be looked up as a Langfuse trace and vice versa.
-    LoggingInstrumentor().instrument(set_logging_format=False)
+    # visible in Modal logs. The JSON formatter stamps trace_id/span_id onto
+    # every line logged inside a request, which is what lets a Modal log line
+    # be looked up as a Langfuse trace and vice versa.
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(_JsonLogFormatter())
     root = logging.getLogger()

@@ -52,23 +52,27 @@ def test_json_log_formatter_carries_trace_ids_and_extras():
     import json
     import logging
 
+    from opentelemetry.sdk.trace import TracerProvider
+
     from visawise.observability import _JsonLogFormatter
 
     record = logging.LogRecord("visawise.app", logging.INFO, __file__, 1, "chat completed", None, None)
-    record.otelTraceID = "abc123"
-    record.otelSpanID = "def456"
     record.duration_ms = 8123.4
     record.query_chars = 42
 
-    payload = json.loads(_JsonLogFormatter().format(record))
+    # A local provider is enough: start_as_current_span activates the context
+    # the formatter reads, no global registration needed.
+    tracer = TracerProvider().get_tracer("test")
+    with tracer.start_as_current_span("request") as span:
+        payload = json.loads(_JsonLogFormatter().format(record))
+        expected_trace_id = f"{span.get_span_context().trace_id:032x}"
 
     assert payload["message"] == "chat completed"
     assert payload["level"] == "INFO"
-    assert payload["trace_id"] == "abc123"
-    assert payload["span_id"] == "def456"
+    assert payload["trace_id"] == expected_trace_id
+    assert len(payload["span_id"]) == 16
     assert payload["duration_ms"] == 8123.4
     assert payload["query_chars"] == 42
-    assert "otelTraceID" not in payload  # normalized, not duplicated
 
 
 def test_json_log_formatter_omits_trace_ids_outside_spans():
