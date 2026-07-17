@@ -9,6 +9,10 @@ const ENGINE_UNREACHABLE =
 const RATE_LIMITED =
   "You're asking faster than the rate limit allows. Wait a minute and try again.";
 
+/* Backend origin. "" = same origin; set by config.js (loaded before this file)
+   to the Modal URL when the frontend is served from Vercel. */
+const API_BASE = window.__VISAWISE_API_BASE__ || "";
+
 /* ---- theme ---------------------------------------------------------------- */
 
 const themeToggle = document.getElementById("theme-toggle");
@@ -64,7 +68,7 @@ function parseSseFrame(frame) {
 }
 
 async function streamAsk(message, { onToken, onDone }) {
-  const response = await fetch("/api/chat", {
+  const response = await fetch(API_BASE + "/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message }),
@@ -401,7 +405,7 @@ function renderDocket(runs) {
 
 async function loadDocket() {
   try {
-    const response = await fetch("/api/eval/runs");
+    const response = await fetch(API_BASE + "/api/eval/runs");
     if (!response.ok) return; // keep the baked-in rows
     const summary = await response.json();
     renderDocket(summary.runs);
