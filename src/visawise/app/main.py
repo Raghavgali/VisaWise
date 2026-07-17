@@ -12,6 +12,7 @@ slowapi rate limiting; DISCLAIMER shown in UI.
 import asyncio
 import json
 import logging
+import time
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -26,6 +27,12 @@ from slowapi.util import get_remote_address
 from sse_starlette import EventSourceResponse, ServerSentEvent
 
 from ..config import settings
+from ..observability import (
+    current_span,
+    init_observability,
+    record_first_token,
+    shutdown_observability,
+)
 from ..rag.prompts import DISCLAIMER
 
 logger = logging.getLogger(__name__)
@@ -89,6 +96,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         yield
     finally:
         app.state.ready = False
+        # Flush buffered spans before Modal freezes the scale-to-zero
+        # container; otherwise the last requests' traces are silently lost.
+        shutdown_observability()
 
 
 limiter = Limiter(key_func=get_remote_address)
@@ -104,6 +114,12 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
+
+# Instrument at import time, NOT in the lifespan: Starlette finalizes the
+# middleware stack before the lifespan runs, and the FastAPI instrumentor
+# must add its middleware before that or it raises. No-op (returns False)
+# unless the Langfuse/OTLP env is configured.
+init_observability(app)
 
 
 def get_graph(request: Request):
@@ -158,8 +174,15 @@ async def chat_endpoint(payload: ChatRequest, request: Request) -> EventSourceRe
     graph = get_graph(request)
     message = payload.message
 
+    # Captured here, where the server span is guaranteed active; the
+    # generator body runs later, during response send. No-op span when
+    # telemetry is off.
+    request_span = current_span()
+    request_start = time.perf_counter()
+
     async def stream_events() -> AsyncIterator[ServerSentEvent]:
         final_update: dict | None = None
+        first_token_seen = False
 
         try:
             # With multiple stream modes, astream yields (mode, data) tuples.
@@ -181,6 +204,11 @@ async def chat_endpoint(payload: ChatRequest, request: Request) -> EventSourceRe
                     token = message_chunk.content
 
                     if isinstance(token, str) and token:
+                        if not first_token_seen:
+                            first_token_seen = True
+                            record_first_token(
+                                request_span, (time.perf_counter() - request_start) * 1000.0
+                            )
                         yield _sse_json("token", {"text": token})
 
                 elif mode == "updates":

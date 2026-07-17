@@ -21,6 +21,7 @@ from langgraph.graph import END, START, StateGraph
 from dataclasses import asdict, dataclass
 
 from ..config import settings
+from ..observability import traced_node
 from .prompts import get_prompt
 from .rerank import build_reranker, RerankerKind
 from .retrieval import ScoredChunk, bm25_search, dense_search, fuse_rrf # noqa: F401 - part of the state contract
@@ -197,13 +198,15 @@ def build_graph(config: EngineConfig):
         answer = _message_text(response)
         return {"answer": answer, "citations": citations}
     
+    # traced_node = per-stage latency + bounded metadata in the trace; a
+    # strict no-op when telemetry is unconfigured (evals, tests, local dev).
     graph = StateGraph(GraphState)
-    graph.add_node("generate", generate)
+    graph.add_node("generate", traced_node("generate", generate))
 
     if config.retriever == "hybrid":
-        graph.add_node("dense_retrieve", dense_retrieve)
-        graph.add_node("bm25_retrieve", bm25_retrieve)
-        graph.add_node("fuse", fuse)
+        graph.add_node("dense_retrieve", traced_node("dense_retrieve", dense_retrieve))
+        graph.add_node("bm25_retrieve", traced_node("bm25_retrieve", bm25_retrieve))
+        graph.add_node("fuse", traced_node("fuse", fuse))
 
         graph.add_edge(START, "dense_retrieve")
         graph.add_edge(START, "bm25_retrieve")
@@ -212,17 +215,17 @@ def build_graph(config: EngineConfig):
         previous_node = "fuse"
 
     elif config.retriever == "vector":
-        graph.add_node("dense_retrieve", dense_retrieve)
+        graph.add_node("dense_retrieve", traced_node("dense_retrieve", dense_retrieve))
         graph.add_edge(START, "dense_retrieve")
         previous_node = "dense_retrieve"
 
     elif config.retriever == "bm25":
-        graph.add_node("bm25_retrieve", bm25_retrieve)
+        graph.add_node("bm25_retrieve", traced_node("bm25_retrieve", bm25_retrieve))
         graph.add_edge(START, "bm25_retrieve")
         previous_node = "bm25_retrieve"
 
     if config.reranker != "none":
-        graph.add_node("rerank", rerank)
+        graph.add_node("rerank", traced_node("rerank", rerank))
         graph.add_edge(previous_node, "rerank")
         previous_node = "rerank"
 

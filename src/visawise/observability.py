@@ -21,7 +21,9 @@ user queries about their immigration status never leave the request path.
 from __future__ import annotations
 
 import base64
+import functools
 import logging
+from collections.abc import Callable
 from importlib.metadata import PackageNotFoundError, version
 from typing import TYPE_CHECKING
 
@@ -126,3 +128,64 @@ def get_tracer():
     from opentelemetry import trace
 
     return trace.get_tracer("visawise")
+
+
+def current_span():
+    """The active span (the request's server span inside an endpoint), or a
+    no-op span when telemetry is disabled — callers never need to check."""
+    from opentelemetry import trace
+
+    return trace.get_current_span()
+
+
+def record_first_token(span, ttft_ms: float) -> None:
+    """Mark time-to-first-token on the request span.
+
+    On a streaming endpoint TTFT is the latency users actually feel; the
+    span's total duration (which includes streaming the whole answer) would
+    overstate it badly.
+    """
+    span.add_event("first_token", {"ttft_ms": round(ttft_ms, 1)})
+    span.set_attribute("visawise.ttft_ms", round(ttft_ms, 1))
+
+
+def traced_node(name: str, fn: Callable) -> Callable:
+    """Wrap a LangGraph node callable in a span named ``rag.<name>``.
+
+    The graph's nodes are sync functions, so an async invocation (the app's
+    ``astream``) runs them in a worker thread; langchain-core copies
+    contextvars into that thread, which is what lets these spans nest under
+    the request's server span — tests/test_observability.py pins that
+    behavior so a langgraph upgrade can't silently orphan the spans.
+
+    Only bounded metadata goes on the span (counts, scores, lengths); query
+    and chunk text never do.
+    """
+
+    @functools.wraps(fn)
+    def wrapper(state):
+        with get_tracer().start_as_current_span(f"rag.{name}") as span:
+            span.set_attribute("rag.stage", name)
+            result = fn(state)
+            _set_stage_attributes(span, result)
+            return result
+
+    return wrapper
+
+
+def _set_stage_attributes(span, result) -> None:
+    if not isinstance(result, dict):
+        return
+    for key in ("dense_hits", "bm25_hits", "fused", "reranked"):
+        hits = result.get(key)
+        if isinstance(hits, list):
+            span.set_attribute(f"rag.{key}.count", len(hits))
+            top_score = getattr(hits[0], "score", None) if hits else None
+            if isinstance(top_score, (int, float)):
+                span.set_attribute(f"rag.{key}.top_score", float(top_score))
+    answer = result.get("answer")
+    if isinstance(answer, str):
+        span.set_attribute("rag.answer.chars", len(answer))
+        citations = result.get("citations")
+        if isinstance(citations, list):
+            span.set_attribute("rag.citations.count", len(citations))
