@@ -86,6 +86,8 @@ Verify checkpoint. Finish and verify one before starting the next.
 - Secret: `modal secret create visawise-secrets GOOGLE_API_KEY=… CORS_ALLOWED_ORIGINS='["http://localhost:5173"]'` (add Vercel origin in Phase 5).
 - `modal serve deploy/modal_app.py` to iterate; then `modal deploy`.
 **Verify:** Modal URL `/health`, SSE `/api/chat`, `/api/eval/runs`; first cold hit warms within timeout and streams. Record the URL.
+**Done 2026-07-17:** live at `https://raghavgali397--visawise-fastapi-app.modal.run` (built on Modal's x86 in ~108s — the amd64 image that segfaults under local QEMU runs fine here). Cold start ~40s.
+**Gotcha — secrets:** a generic SSE `error` ("answer could not be generated") with a healthy `/health` = the `generate` step threw. Check `modal app logs visawise`; first failure was `400 API_KEY_INVALID` (a bad `GOOGLE_API_KEY` in the secret — paste with no quotes/trailing whitespace). A changed secret only takes effect on a **fresh container**, so `modal deploy` again (or `modal app stop`) after `modal secret create --force`.
 
 ## Phase 5 — Vercel deploy + end-to-end
 **Goal:** public frontend calling the Modal API.
