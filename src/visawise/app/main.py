@@ -34,6 +34,7 @@ from ..observability import (
     record_first_token,
     shutdown_observability,
 )
+from ..rag.graph import _message_text
 from ..rag.prompts import DISCLAIMER
 
 logger = logging.getLogger(__name__)
@@ -212,9 +213,13 @@ async def chat_endpoint(payload: ChatRequest, request: Request) -> EventSourceRe
                     if metadata.get("langgraph_node") != "generate":
                         continue
 
-                    token = message_chunk.content
+                    # Gemini 3.x streams chunks whose .content is a LIST of
+                    # content blocks, not a str — forwarding only str chunks
+                    # silently killed token streaming (the answer arrived in
+                    # one lump at `done`). _message_text joins either shape.
+                    token = _message_text(message_chunk)
 
-                    if isinstance(token, str) and token:
+                    if token:
                         if not first_token_seen:
                             first_token_seen = True
                             record_first_token(
