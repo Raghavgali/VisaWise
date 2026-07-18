@@ -185,11 +185,117 @@ class TestCompare:
         with pytest.raises(ValueError, match="gated"):
             report.compare("judged_only", RUN_C["run_id"])
 
-    def test_mismatched_dataset_warns(self, runs_dir, capsys):
-        report.compare(RUN_A["run_id"], RUN_C["run_id"], max_drop=0.5)
+    def test_mismatched_dataset_fails_closed(self, runs_dir, capsys):
+        assert report.compare(RUN_A["run_id"], RUN_C["run_id"], max_drop=0.5) is False
         out = capsys.readouterr().out
-        assert "WARNING" in out
+        assert "GATE FAIL" in out
         assert "sha_common" in out and "sha_other" in out
+
+    def test_aborted_run_fails_closed(self, runs_dir):
+        aborted = dict(RUN_B, run_id="aborted_run", aborted="rate limit at sample 12")
+        (runs_dir / "aborted_run.json").write_text(json.dumps(aborted), encoding="utf-8")
+
+        assert report.compare(RUN_A["run_id"], "aborted_run", max_drop=0.5) is False
+
+    def test_partial_coverage_fails_closed(self, runs_dir):
+        partial = dict(RUN_B, run_id="partial_run")
+        partial["coverage"] = {"faithfulness": {"scored": 29, "total": 52}}
+        (runs_dir / "partial_run.json").write_text(json.dumps(partial), encoding="utf-8")
+
+        assert report.compare(RUN_A["run_id"], "partial_run", max_drop=0.5) is False
+
+    def test_identical_partial_subsets_are_comparable(self, runs_dir, capsys):
+        # Structural partiality (e.g. retrieval metrics undefined on
+        # citation-less safety samples) excludes the SAME samples in both
+        # runs — that must stay comparable, not fail the gate.
+        samples = [
+            {"id": "s1", "scores": {"hit_rate": 1.0}},
+            {"id": "s2", "scores": {"hit_rate": None}},
+        ]
+        cov = {"hit_rate": {"scored": 1, "total": 2}}
+        left = dict(RUN_A, run_id="subset_left", samples=samples, coverage=cov)
+        right = dict(RUN_A, run_id="subset_right", samples=samples, coverage=cov)
+        for r in (left, right):
+            (runs_dir / f"{r['run_id']}.json").write_text(json.dumps(r), encoding="utf-8")
+
+        assert report.compare("subset_left", "subset_right", max_drop=0.5) is True
+        assert "same 1-sample subset" in capsys.readouterr().out
+
+    def test_abstention_regression_fails(self, runs_dir):
+        base = dict(RUN_A, run_id="abst_base")
+        base["aggregates"] = dict(RUN_A["aggregates"], abstention=14 / 15)
+        cand = dict(RUN_A, run_id="abst_cand")
+        cand["aggregates"] = dict(RUN_A["aggregates"], abstention=11 / 15)
+        for r in (base, cand):
+            (runs_dir / f"{r['run_id']}.json").write_text(json.dumps(r), encoding="utf-8")
+
+        assert report.compare("abst_base", "abst_cand", max_drop=0.05) is False
+
+
+def _canonical_run(run_id="20260717T000000Z_serving", *, abstention=14 / 15, ans_faith=0.92, **extra):
+    run = make_run(
+        run_id,
+        dataset_name="curated_v2",
+        dataset_sha="sha_curated_v2",
+        corpus_hash="corpus_common",
+        retriever="hybrid",
+        vector_weight=0.6,
+        reranker="local",
+        aggregates={"faithfulness": 0.94, "abstention": abstention, "hit_rate": 1.0, "mrr": 0.77},
+        p50_ms=2500.0,
+    )
+    run["slices"] = {
+        "answerable_grounded": {"n": 5, "aggregates": {"faithfulness": ans_faith}, "coverage": {}}
+    }
+    run.update(extra)
+    return run
+
+
+class TestGate:
+    def test_passes_on_healthy_canonical_run(self, runs_dir, capsys):
+        run = _canonical_run()
+        (runs_dir / f"{run['run_id']}.json").write_text(json.dumps(run), encoding="utf-8")
+
+        assert report.gate() is True
+        assert "GATE PASS" in capsys.readouterr().out
+
+    def test_fails_below_safety_floor(self, runs_dir, capsys):
+        run = _canonical_run(abstention=13 / 15)  # 0.867 < 0.93 floor
+        (runs_dir / f"{run['run_id']}.json").write_text(json.dumps(run), encoding="utf-8")
+
+        assert report.gate() is False
+        assert "safety abstention" in capsys.readouterr().out
+
+    def test_fails_below_faithfulness_floor(self, runs_dir):
+        run = _canonical_run(ans_faith=0.80)
+        (runs_dir / f"{run['run_id']}.json").write_text(json.dumps(run), encoding="utf-8")
+
+        assert report.gate() is False
+
+    def test_fails_on_aborted_canonical_run(self, runs_dir):
+        run = _canonical_run(aborted="quota exhausted")
+        (runs_dir / f"{run['run_id']}.json").write_text(json.dumps(run), encoding="utf-8")
+
+        assert report.gate() is False
+
+    def test_fails_when_no_canonical_runs(self, runs_dir):
+        # fixture dir has only curated_v1/synthetic_v1 runs
+        assert report.gate() is False
+
+    def test_picks_newest_canonical_run(self, runs_dir):
+        old_bad = _canonical_run("20260716T000000Z_serving", abstention=10 / 15)
+        new_good = _canonical_run("20260718T000000Z_serving")
+        for r in (old_bad, new_good):
+            (runs_dir / f"{r['run_id']}.json").write_text(json.dumps(r), encoding="utf-8")
+
+        assert report.gate() is True
+
+    def test_cli_gate_exits_nonzero_on_failure(self, runs_dir):
+        run = _canonical_run(abstention=13 / 15)
+        (runs_dir / f"{run['run_id']}.json").write_text(json.dumps(run), encoding="utf-8")
+
+        result = CliRunner().invoke(cli.app, ["gate"])
+        assert result.exit_code == 1
 
 
 class TestCli:

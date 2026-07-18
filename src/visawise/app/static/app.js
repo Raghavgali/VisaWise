@@ -13,6 +13,16 @@ const RATE_LIMITED =
    to the Modal URL when the frontend is served from Vercel. */
 const API_BASE = window.__VISAWISE_API_BASE__ || "";
 
+/* Pre-warm the scale-to-zero backend the moment the page loads: the cold
+   start (~30s) then happens while the visitor is still reading, not after
+   they've asked their first question. Fire-and-forget; a 503 is fine — it's
+   the warm-up itself we're after. */
+fetch(API_BASE + "/health").catch(() => {});
+
+const COLD_START_NOTICE =
+  "Waking the answer engine — this demo scales to zero when idle, so the " +
+  "first request can take 30–45 seconds. After that, answers are much faster.";
+
 /* ---- theme ---------------------------------------------------------------- */
 
 const themeToggle = document.getElementById("theme-toggle");
@@ -67,7 +77,7 @@ function parseSseFrame(frame) {
   return { event, data: dataLines.join("\n") };
 }
 
-async function streamAsk(message, { onToken, onDone }) {
+async function streamAsk(message, { onToken, onDone, onStatus }) {
   const response = await fetch(API_BASE + "/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -76,6 +86,9 @@ async function streamAsk(message, { onToken, onDone }) {
 
   if (response.status === 429) throw new Error(RATE_LIMITED);
   if (!response.ok || !response.body) throw new Error(ENGINE_UNREACHABLE);
+
+  // Stream open = the container is warm and working on this request.
+  onStatus?.("retrieving");
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
@@ -95,6 +108,8 @@ async function streamAsk(message, { onToken, onDone }) {
 
       if (frame.event === "token") {
         onToken(JSON.parse(frame.data).text);
+      } else if (frame.event === "status") {
+        onStatus?.(JSON.parse(frame.data).stage);
       } else if (frame.event === "done") {
         onDone(JSON.parse(frame.data));
         finished = true;
@@ -229,7 +244,26 @@ async function ask(message) {
 
   const caret = document.createElement("span");
   caret.className = "caret";
+
+  /* Progress line while there's nothing to stream yet. Lives inside .det-body,
+     so the first token (which rewrites body.innerHTML) clears it naturally.
+     Without this, a scale-to-zero cold start looks like a broken app: an
+     empty card for 30+ seconds. */
+  const status = document.createElement("p");
+  status.className = "det-status";
+  status.textContent = "Contacting the answer engine…";
+  body.appendChild(status);
   body.appendChild(caret);
+
+  // No stream open after a few seconds = we're paying the cold start; say so.
+  const coldStartTimer = setTimeout(() => {
+    status.textContent = COLD_START_NOTICE;
+  }, 3000);
+
+  const STAGE_LABELS = {
+    retrieving: "Searching official USCIS sources…",
+    generating: "Generating a cited answer…",
+  };
 
   sendButton.disabled = true;
   scrollToEnd(true);
@@ -238,9 +272,13 @@ async function ask(message) {
 
   try {
     await streamAsk(message, {
+      onStatus(stage) {
+        clearTimeout(coldStartTimer);
+        if (STAGE_LABELS[stage]) status.textContent = STAGE_LABELS[stage];
+      },
       onToken(text) {
         accumulated += text;
-        body.innerHTML = renderAnswerHtml(accumulated);
+        body.innerHTML = renderAnswerHtml(accumulated); // clears status line
         body.appendChild(caret);
         scrollToEnd();
       },
@@ -258,6 +296,7 @@ async function ask(message) {
     card.classList.add("det-error");
     body.textContent = error.message || ENGINE_UNREACHABLE;
   } finally {
+    clearTimeout(coldStartTimer);
     sendButton.disabled = false;
     scrollToEnd();
   }

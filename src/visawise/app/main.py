@@ -181,9 +181,19 @@ async def chat_endpoint(payload: ChatRequest, request: Request) -> EventSourceRe
     request_span = current_span()
     request_start = time.perf_counter()
 
+    # The node whose completion means generation is about to start — lets the
+    # UI flip from "searching sources" to "generating" at the real boundary.
+    engine_config = getattr(request.app.state, "engine_config", None)
+    generate_trigger = "rerank" if getattr(engine_config, "reranker", "local") != "none" else "fuse"
+
     async def stream_events() -> AsyncIterator[ServerSentEvent]:
         final_update: dict | None = None
         first_token_seen = False
+        generating_announced = False
+
+        # The stream opening at all tells the client the container is warm;
+        # this frame tells it what's happening during the pre-token seconds.
+        yield _sse_json("status", {"stage": "retrieving"})
 
         try:
             # With multiple stream modes, astream yields (mode, data) tuples.
@@ -213,6 +223,10 @@ async def chat_endpoint(payload: ChatRequest, request: Request) -> EventSourceRe
                         yield _sse_json("token", {"text": token})
 
                 elif mode == "updates":
+                    if not generating_announced and generate_trigger in (data or {}):
+                        generating_announced = True
+                        yield _sse_json("status", {"stage": "generating"})
+
                     generate_update = (data or {}).get("generate")
 
                     if generate_update is not None:

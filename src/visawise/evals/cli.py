@@ -34,10 +34,23 @@ def run(experiment: str) -> None:
 
 @app.command()
 def compare(baseline: str, candidate: str, max_drop: float = 0.05) -> None:
-    """Regression gate: nonzero exit if candidate regresses vs baseline."""
+    """Regression gate: nonzero exit if candidate regresses vs baseline,
+    or if the two runs aren't comparable (dataset/corpus mismatch, aborted,
+    partial coverage). Fails closed."""
     from . import report as report_
 
     if not report_.compare(baseline, candidate, max_drop):
+        raise typer.Exit(code=1)
+
+
+@app.command()
+def gate(run_id: str = typer.Option(None, help="Specific run to gate (default: newest canonical-dataset run)")) -> None:
+    """Release gate: absolute floors (answerable faithfulness, safety
+    abstention 14/15) on the canonical serving run. Runs offline on committed
+    RunRecords — this is what CI executes. Nonzero exit on failure."""
+    from . import report as report_
+
+    if not report_.gate(run_id=run_id):
         raise typer.Exit(code=1)
 
 

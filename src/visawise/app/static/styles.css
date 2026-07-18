@@ -331,6 +331,19 @@ code {
 
 .det-error .det-body { white-space: pre-wrap; }
 
+/* Progress line shown before the first token arrives (cold start + RAG
+   stages). Cleared automatically when streaming rewrites .det-body. */
+.det-body .det-status {
+  color: var(--ink-soft);
+  font-style: italic;
+  animation: pulse-status 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-status {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
 .det-body .caret {
   display: inline-block;
   width: 8px;
@@ -729,5 +742,6 @@ tr.aborted { color: var(--ink-faint); }
   .determination { animation: none; }
   .det-stamp { animation: none; }
   .det-body .caret { animation: none; }
+  .det-body .det-status { animation: none; }
   .starter { transition: none; }
 }

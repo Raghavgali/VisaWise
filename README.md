@@ -1,5 +1,7 @@
 # VisaWise
 
+[![CI](https://github.com/Raghavgali/VisaWise/actions/workflows/ci.yml/badge.svg)](https://github.com/Raghavgali/VisaWise/actions/workflows/ci.yml)
+
 **A production RAG system for U.S. immigration policy (USCIS), built eval-first and run like a service.**
 
 **▶ Live demo: [visa-wise-six.vercel.app](https://visa-wise-six.vercel.app)** — frontend on Vercel, API on Modal
@@ -38,24 +40,37 @@ human-curated dataset tags each question with a slice (answerable, temporal, sta
 out-of-corpus, adversarial-injection, high-risk). First run: content metrics looked great
 — and the safety slices scored **~3/15**. The engine answered out-of-corpus questions with
 invented specifics, gave confident advice on high-risk questions, and one prompt-injection
-sample leaked the system prompt. Four guardrail-prompt iterations later (tuned on a
-held-out dev set, measured once on the test set), the serving config scores **14/15 on the
-safety slices** with answerable faithfulness at **0.92** — and the remaining failure is
-documented, not hidden.
+sample leaked the system prompt. Four guardrail-prompt iterations (tuned on a held-out
+dev set, measured once on the test set) plus a reference-text fix in the safety set
+later, the serving config scores **14/15 on the safety slices** with answerable
+faithfulness at **0.92** — and the remaining failure is documented, not hidden.
 
-**3 — The serving model was a controlled bake-off, not a brand preference.** Four
-free-tier models ran the same curated benchmark under the same guardrail:
+**3 — The serving model was a controlled bake-off, then a refinement — and the two
+stages are not comparable, so they're reported separately.** First the **screen**: four
+free-tier models, identical conditions (dataset `curated_v1`, guardrail prompt v2, judge
+`gpt-4o-mini`):
 
-| Model (free tier) | Faithfulness (answerable) | Safety | Offline p50 |
+| Model (free tier) | Faithfulness | Safety | p50 |
 |---|---|---|---|
-| **Gemini 3.1 Flash-Lite** (serves today) | **0.92** | **14/15** | **2.5 s** |
-| gpt-oss-20B (Groq) | 0.83 | 11/15 | 31 s |
+| **Gemini 3.1 Flash-Lite** | **0.85** | **11/15** | **2.2 s** |
+| gpt-oss-20B (Groq) | 0.83 | 11/15 | 31.4 s |
 | Llama-4-Scout (Groq) | 0.74 | 5/15 | 7.2 s |
 | Llama-3.1-8B (NVIDIA NIM) | 0.55 | 7/15 | 2.5 s |
 
+Gemini and gpt-oss tied on safety with comparable faithfulness; Gemini won on latency
+(2.2 s vs 31.4 s) and free-quota viability. Then the **refinement, applied to the winner
+only**: the guardrail prompt evolved v2 → v4 (tuned on a held-out dev set) and the five
+out-of-corpus reference texts were fixed (`curated_v2` — the other 25 samples are
+byte-identical). Result for the serving config: **0.92 answerable faithfulness, 14/15
+safety, 2.5 s**. That 14/15 is *not* a bake-off column — the other three models never ran
+with prompt v4 or the corrected references, and rerunning them wasn't worth the quota.
+
 The judge stays `gpt-4o-mini` (OpenAI) precisely so the serving model isn't graded by its
 own family. Eval integrity is enforced mechanically: any judged metric scoring <95% of its
-samples **fails the run** — averages over silent survivor subsets aren't comparable.
+samples **fails the run**, the compare gate **fails closed** on dataset/corpus mismatches,
+aborted runs, and differing survivor subsets, and **CI runs a release gate on every push**
+(answerable faithfulness ≥ 0.85, safety ≥ 14/15, over the committed run records — no API
+keys needed).
 
 Full leaderboard and methodology: [docs/EVALS.md](docs/EVALS.md) · the live
 [eval dashboard](https://visa-wise-six.vercel.app) renders the committed run records.

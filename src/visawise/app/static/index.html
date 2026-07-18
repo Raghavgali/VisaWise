@@ -141,12 +141,16 @@
                 <span class="badge-serving">Serving</span>
               </td>
               <td class="num">30</td>
-              <td class="num strong">0.920</td>
+              <td class="num strong">0.940</td>
               <td class="num">—</td>
               <td class="num">—</td>
               <td class="num">—</td>
               <td class="num strong">14/15</td>
               <td class="num strong">2.5s</td>
+            </tr>
+            <tr>
+              <td><span class="cfg">gemini flash-lite · guardrail v2</span></td>
+              <td class="num">30</td><td class="num">0.848</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">11/15</td><td class="num">2.2s</td>
             </tr>
             <tr>
               <td><span class="cfg">gpt-oss-20b · guardrail v2</span></td>
@@ -208,15 +212,17 @@
         </div>
         <div class="retest-now">
           <span class="retest-label">Gemini 3.1 Flash-Lite (chosen)</span>
-          <p><strong>14/15</strong> safety, <strong>0.92</strong> faithfulness, ~2.5s, still $0.
-          gpt-oss-20b matched it on safety but ran at <strong>31s</strong> and hit a daily
-          token cap; Llama-4-Scout was fast but <strong>5/15</strong>. Only Flash-Lite
-          cleared all three bars.</p>
+          <p>In the controlled screen (same set, same guardrail): <strong>11/15</strong>
+          safety — tied with gpt-oss-20b, which ran at <strong>31s</strong> against a daily
+          token cap; Llama-4-Scout was fast but <strong>5/15</strong>. Flash-Lite matched
+          the best safety at <strong>2.2s</strong> and $0, so it won the slot.</p>
         </div>
       </div>
       <p class="retest-note">
         The model is one flag in the config — and the eval harness, not a hunch, chose it,
-        after the free tiers of the "better" models turned out to be quota mirages.
+        after the free tiers of the "better" models turned out to be quota mirages. The
+        <strong>14/15 · 0.92</strong> serving numbers came after, from refinements applied
+        to the winner only (next card) — screen and refinement aren't one comparison.
       </p>
     </section>
 
@@ -234,12 +240,16 @@
           <span class="retest-label">Guardrail prompt v1 → v4</span>
           <p>v2 over-hedged (answer quality collapsed); v3's blunt binary broke refusals;
           v4's explicit precedence — <em>refuse → qualify → answer</em> — restored both.
-          Result: <strong>14/15</strong> (out-of-corpus 5/5, high-risk 5/5, injection 4/5).</p>
+          With v4 plus a fix to five inconsistent out-of-corpus reference texts
+          (<code>curated_v2</code>): <strong>14/15</strong> (out-of-corpus 5/5, high-risk
+          5/5, injection 4/5).</p>
         </div>
       </div>
       <p class="retest-note">
-        Tuned on a separate dev split, measured once on the held-out set — so the 14/15 is an
-        honest read, not a number fit to its own test.
+        Tuned on a separate dev split, measured once on the held-out set — so the 14/15 is
+        an honest read, not a number fit to its own test. Part of the earlier "failure"
+        was the metric grading identical abstentions inconsistently; fixing the references
+        moved out-of-corpus 1/5 → 5/5 with the other 25 samples byte-identical.
       </p>
     </section>
 

@@ -1,0 +1,37 @@
+# Lint + tests + the eval release gate, on every push/PR.
+#
+# The gate step is the part that makes "regression-gated" a real claim: it
+# fails the build if the newest canonical-dataset run (committed RunRecord)
+# is aborted, has partial judge coverage, or slips below the published
+# floors — answerable faithfulness >= 0.85, safety abstention >= 0.93
+# (14/15). It runs entirely offline on committed artifacts: no API keys,
+# no network calls to judges or LLMs.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies (locked)
+        run: uv sync --frozen
+
+      - name: Lint
+        run: uv run ruff check src tests
+
+      - name: Unit tests (offline)
+        run: uv run pytest -q
+
+      - name: Eval release gate (committed RunRecords, offline)
+        run: uv run visawise-eval gate
